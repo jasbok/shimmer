@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 2.6)
+project(sdl_shim)
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -DDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
+
+find_package(OpenGL)
+find_package(GLEW)
+
+set(ALL_OPENGL_INCLUDES ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS} )
+set(ALL_OPENGL_LIBRARIES ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+
+add_subdirectory(src)
+
