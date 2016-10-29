@@ -38,6 +38,14 @@ void sw_surface::update()
         sdl::SDL_Flip ( _target );
 }
 
+void sw_surface::update(int numrects, SDL_Rect* rects)
+{
+        update();
+}
+
+
+void sw_surface::resize()
+{}
 
 
 

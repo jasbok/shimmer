@@ -8,7 +8,6 @@ shimmer shimmer;
 int SDL_Init ( Uint32 flags )
 {
         SHIM_LOG();
-        shimmer.init();
         return sdl::SDL_Init ( flags );
 }
 
@@ -19,6 +18,11 @@ SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
                 sdl::SDL_FreeSurface ( shimmer.source() );
         }
         shimmer.source ( sdl::SDL_CreateRGBSurface ( flags, width, height, bpp, 0,0,0,0 ) );
+        
+        if(flags && SDL_OPENGL){
+            printf("==> Application requested an OpenGL context.\n");
+        }
+        
         shimmer.setup_video();
         return shimmer.source();
 }
@@ -48,17 +52,19 @@ void SDL_UpdateRect ( SDL_Surface* screen, Sint32 x, Sint32 y, Sint32 w, Sint32 
 {
         SHIM_LOG();
         sdl::SDL_UpdateRect ( screen, x, y, w, h );
-        if ( screen == shimmer.source() ) {
-                shimmer.update_video();
+        if ( screen == shimmer.source()) {
+                SDL_Rect rect = {(Sint16)x, (Sint16)y, (Sint16)w, (Sint16)h};
+                shimmer.update_video(1, &rect);
         }
 }
 
 void SDL_UpdateRects ( SDL_Surface* screen, int numrects, SDL_Rect* rects )
 {
         SHIM_LOG();
+
         sdl::SDL_UpdateRects ( screen, numrects, rects );
-        if ( screen == shimmer.source() ) {
-                shimmer.update_video();
+        if ( screen == shimmer.source()) {
+                shimmer.update_video(numrects, rects);
         }
 }
 
@@ -66,8 +72,8 @@ int SDL_UpperBlit ( SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_R
 {
         SHIM_LOG();
         int result = sdl::SDL_UpperBlit ( src, srcrect, dst, dstrect );
-        if ( src == shimmer.source() ) {
-            shimmer.update_video();
+        if ( dst == shimmer.source()) {
+            shimmer.update_video(1, dstrect);
         }
         return result;
 

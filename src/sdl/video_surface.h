@@ -13,6 +13,8 @@ public:
     virtual void target ( SDL_Surface* target ) = 0;
     virtual SDL_Surface* target() = 0;
     virtual void update() = 0;
+    virtual void update(int numrects, SDL_Rect* rects) = 0;
+    virtual void resize() = 0;
 };
 
 #endif

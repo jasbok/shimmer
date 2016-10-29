@@ -14,6 +14,8 @@ public:
         virtual void target ( SDL_Surface* target );
         virtual SDL_Surface* target();
         virtual void update();
+        virtual void update(int numrects, SDL_Rect* rects);
+        virtual void resize();
 
 private:
         SDL_Surface *_source, *_target;

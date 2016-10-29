@@ -3,6 +3,7 @@
 
 #include "video_surface.h"
 #include <SDL.h>
+#include <thread>
 
 class shimmer
 {
@@ -26,6 +27,7 @@ public:
         //
         void setup_video();
         void update_video();
+        void update_video(int numrects, SDL_Rect* rects);
         void resize_video();
 
         //
@@ -69,7 +71,6 @@ private:
         //
         //  PROCESS FLOW
         //
-        bool _do_resize;
         bool _user_mode;
 
 private:
