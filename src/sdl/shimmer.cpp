@@ -33,6 +33,10 @@ void shimmer::init()
 {
     DLOG ( "Initialising Shimmer..." );
     _print_out_configuration();
+
+    if(!_use_software) {
+
+    }
 }
 
 void shimmer::destroy()
@@ -49,8 +53,8 @@ void shimmer::destroy()
 void shimmer::setup_video()
 {
     DLOG ( "Setting video..." );
-    
-    if(_source->flags & SDL_OPENGL){
+
+    if(_source->flags & SDL_OPENGL) {
         printf("==> Application requested an OpenGL context.");
     }
     _configure_video_from_source();
@@ -62,6 +66,7 @@ void shimmer::setup_video()
         _video = new sw_surface ( _source, _target );
     } else {
         _video = new hw_surface ( _source, _target );
+        _video->filtering(_filtering_level);
     }
 }
 
@@ -72,8 +77,7 @@ void shimmer::update_video()
 
 void shimmer::update_video(int numrects, SDL_Rect* rects)
 {
-    _video->update();
-    // _video->update(numrects, rects);
+    _video->update(numrects, rects);
 }
 
 void shimmer::resize_video()
@@ -81,7 +85,6 @@ void shimmer::resize_video()
     DLOG ( "Resizing video..." );
     _create_video_surface();
     _video->resize();
-    _video->update();
 }
 
 
@@ -176,12 +179,20 @@ void shimmer::_configure_video_from_source()
 void shimmer::_create_video_surface()
 {
     DLOG ( "Create video surface..." );
+
+    // Do not allow the window to resize into nothing.
+    _w = _w > 50 ? _w : 50;
+    _h = _h > 50 ? _h: 50;
+
     if ( _use_software ) {
         DLOG ( "Created software surface." );
         _target = sdl::SDL_SetVideoMode ( _w, _h, _bpp, _video_flags );
     } else {
         DLOG ( "Created hardware surface." );
         _target = sdl::SDL_SetVideoMode ( _w, _h, _bpp, _video_flags | SDL_RESIZABLE | SDL_OPENGL );
+
+        glewExperimental = true;
+        glewInit();
     }
 
     _calculate_warp_factor();
@@ -203,17 +214,33 @@ void shimmer::_process_keyboard ( SDL_Event* event )
     switch ( event->key.keysym.sym ) {
     case SDLK_LSUPER:
     case SDLK_RSUPER:
-        if ( event->active.type == SDL_KEYDOWN ) {
-            _user_mode = !_user_mode;
-            //sdl::SDL_WM_GrabInput ( _user_mode == false ? SDL_GRAB_ON : SDL_GRAB_OFF );
+        _user_mode = event->active.type == SDL_KEYDOWN;
+        if ( _user_mode ) {
             sdl::SDL_WM_GrabInput ( SDL_GRAB_OFF );
+        }
+        break;
+    default:
+        break;
+    }
+
+    if(_user_mode) {
+        if(event->active.type == SDL_KEYUP) {
+            switch ( event->key.keysym.sym ) {
+            case SDLK_l:
+                _filtering_level = !_filtering_level;
+                _video->filtering(_filtering_level);
+                break;
+            case SDLK_a:
+                _keep_aspect_ratio = !_keep_aspect_ratio;
+                _video->keep_aspect_ratio(_keep_aspect_ratio);
+                break;
+            default:
+                break;
+            }
         }
 
         // Never pass a user mode key to the application (KEYDOWN or KEYUP).
         event->active.type = SDL_NOEVENT;
-        break;
-    default:
-        break;
     }
 }
 

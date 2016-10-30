@@ -47,6 +47,13 @@ void sw_surface::update(int numrects, SDL_Rect* rects)
 void sw_surface::resize()
 {}
 
+void sw_surface::filtering(unsigned int level)
+{}
+
+void sw_surface::keep_aspect_ratio(bool keep)
+{}
+
+
 
 
 

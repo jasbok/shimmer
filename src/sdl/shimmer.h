@@ -62,7 +62,9 @@ private:
         video_surface *_video;
         SDL_Surface *_source, *_target;
         UPDATE_SCHEME _update_scheme;
-
+        unsigned int _filtering_level;
+        bool _keep_aspect_ratio;
+        
         //
         //  INPUT
         //

@@ -16,6 +16,8 @@ public:
         virtual void update();
         virtual void update(int numrects, SDL_Rect* rects);
         virtual void resize();
+        virtual void filtering(unsigned int level);
+        virtual void keep_aspect_ratio(bool keep);
 
 private:
         SDL_Surface *_source, *_target;

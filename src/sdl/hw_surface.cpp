@@ -7,14 +7,24 @@
 #include <stdlib.h>
 
 hw_surface::hw_surface ( SDL_Surface* source, SDL_Surface* target )
-    : _source ( source ), _target( target ), _pbo_index(0), _palette(nullptr)
+    : _source ( source ), _target( target ), _pbo_index(0),
+      _texture_filter(GL_NEAREST), _keep_aspect_ratio(true), _palette(nullptr)
 {
+    glGenBuffers ( 1, &_vbo );
+    glGenBuffers (2, _pbo);
+    glGenTextures ( 1, &_texture );
+    glGenVertexArrays ( 1, &_vao );
+    _shader_program = glCreateProgram();
+
     _init();
 }
 
 hw_surface::~hw_surface()
 {
-    glDeleteTextures ( 1, &_texture );
+    glDeleteBuffers(1, &_vbo);
+    glDeleteBuffers(2, _pbo);
+    glDeleteTextures(1, &_texture );
+    glDeleteVertexArrays(1, &_vao);
     glDeleteProgram ( _shader_program );
 
     if(_palette) {
@@ -58,8 +68,35 @@ void hw_surface::update(int numrects, SDL_Rect* rects)
 void hw_surface::resize()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    _setup_buffers();
     glViewport(0,0,_target->w,_target->h);
+    update();
 }
+
+void hw_surface::filtering(unsigned int level)
+{
+    switch(level) {
+    case 0:
+        _texture_filter = GL_NEAREST;
+        break;
+    case 1:
+        _texture_filter = GL_LINEAR;
+        break;
+    default:
+        _texture_filter = GL_NEAREST;
+        break;
+    }
+    _setup_textures();
+    update();
+}
+
+void hw_surface::keep_aspect_ratio(bool keep)
+{
+    _keep_aspect_ratio = keep;
+    _setup_buffers();
+    update();
+}
+
 
 void hw_surface::_init()
 {
@@ -87,84 +124,69 @@ void hw_surface::_init()
 
 void hw_surface::_gl_init()
 {
-    printf("==> Initialising OpenGL...\n");
-    glewExperimental = true;
-    glewInit();
-
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
     _setup_buffers();
     _setup_textures();
-    _compile_program();
-
-    glGenVertexArrays ( 1, &_vao );
-    glBindVertexArray ( _vao );
-
-    glUseProgram ( _shader_program );
-
-    GLuint position_attrib = glGetAttribLocation ( _shader_program, "position" );
-    GLuint texcoord_attrib = glGetAttribLocation ( _shader_program, "texcoord" );
-    GLuint texture_uniform = glGetUniformLocation ( _shader_program, "texture_unit" );
-
-    glEnableVertexAttribArray ( position_attrib );
-    glEnableVertexAttribArray ( texcoord_attrib );
-    glActiveTexture ( GL_TEXTURE0 );
-    glUniform1i ( texture_uniform, 0 );
-    glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
-    glVertexAttribPointer ( position_attrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof ( GLfloat ), ( GLvoid* ) 0 );
-    glVertexAttribPointer ( texcoord_attrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof ( GLfloat ), ( GLvoid* ) ( 3 * sizeof ( GLfloat ) ) );
-
-    //glDisableVertexAttribArray ( position_attrib );
-    //glDisableVertexAttribArray ( texcoord_attrib );
-
-    glBindVertexArray ( 0 );
-}
-
-void hw_surface::_render_texture()
-{
-    glActiveTexture ( GL_TEXTURE0 );
-    glUniform1i ( _texture_uniform, 0 );
-    glBindTexture ( GL_TEXTURE_2D, _texture );
+    _setup_program();
+    _setup_vao();
 }
 
 void hw_surface::_draw_quad()
 {
-    glBindTexture ( GL_TEXTURE_2D, _texture );
     glBindVertexArray ( _vao );
+    glBindTexture ( GL_TEXTURE_2D, _texture );
+    glUseProgram ( _shader_program );
+    glUniform1i ( _texunit_uniform, 0 );
+
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT);
     glDrawArrays ( GL_QUADS, 0, 4 );
+
+    glUseProgram ( 0 );
     glBindVertexArray ( 0 );
     sdl::SDL_GL_SwapBuffers();
 }
 
 void hw_surface::_setup_buffers()
 {
+    GLfloat aspect_ratio_x = 1.0f;
+    GLfloat aspect_ratio_y = 1.0f;
+
+    if(_keep_aspect_ratio) {
+        GLfloat ar_source = _source->w / (float) _source->h;
+        GLfloat ar_target = _target->w / (float) _target->h;
+        GLfloat ar_factor = ar_source / ar_target;
+        aspect_ratio_x = ar_factor > 1.0f ?  1.0f : ar_factor;
+        aspect_ratio_y = ar_factor > 1.0f ? 1.0f / ar_factor : 1.0f;
+    }
+
     GLfloat screen_vertices[] = {
-        1.0,   1.0,   0.0,        1.0, 0.0,
-        1.0,   -1.0,  0.0,        1.0, 1.0,
-        -1.0,  -1.0,  0.0,        0.0, 1.0,
-        -1.0,  1.0,   0.0,        0.0, 0.0
+        // Vertices               // Texcoord
+        aspect_ratio_x,   aspect_ratio_y,   0.0,        1.0, 0.0,
+        aspect_ratio_x,   -aspect_ratio_y,  0.0,        1.0, 1.0,
+        -aspect_ratio_x,  -aspect_ratio_y,  0.0,        0.0, 1.0,
+        -aspect_ratio_x,  aspect_ratio_y,   0.0,        0.0, 0.0
     };
 
-    glGenBuffers ( 1, &_vbo );
     glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
     glBufferData ( GL_ARRAY_BUFFER, sizeof ( screen_vertices ), screen_vertices, GL_STATIC_DRAW );
     glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
     for(int i = 0; i < 2; i++) {
-        glGenBuffers (1, &_pbo[i]);
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _pbo[i]);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, _source->w * _source->h * _source->format->BitsPerPixel * 0.125, 0, GL_STREAM_DRAW );
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, _source->w * _source->h * _source->format->BytesPerPixel, 0, GL_STREAM_DRAW );
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
     }
 }
 
 void hw_surface::_setup_textures()
 {
-    glGenTextures ( 1, &_texture );
     glBindTexture ( GL_TEXTURE_2D, _texture );
-    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    //glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-
+    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _texture_filter );
+    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _texture_filter );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexImage2D ( GL_TEXTURE_2D,
                    0,
                    GL_RGB,
@@ -174,9 +196,21 @@ void hw_surface::_setup_textures()
                    _pixel_format,
                    _pixel_type,
                    0 );
-
     glBindTexture ( GL_TEXTURE_2D, 0 );
 }
+
+void hw_surface::_setup_vao()
+{
+    glBindVertexArray ( _vao );
+    glActiveTexture ( GL_TEXTURE0 );
+    glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
+    glVertexAttribPointer ( _position_attrib, 3, GL_FLOAT, GL_FALSE, 5 * sizeof ( GLfloat ), ( GLvoid* ) 0 );
+    glVertexAttribPointer ( _texcoord_attrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof ( GLfloat ), ( GLvoid* ) ( 3 * sizeof ( GLfloat ) ) );
+    glEnableVertexAttribArray ( _position_attrib );
+    glEnableVertexAttribArray ( _texcoord_attrib );
+    glBindVertexArray ( 0 );
+}
+
 
 void hw_surface::_copy_source_to_texture()
 {
@@ -186,13 +220,12 @@ void hw_surface::_copy_source_to_texture()
     GLubyte* data_ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
     if(data_ptr) {
         if(_palette) {
-            //printf("target bpp: %u\n", _target->format->BitsPerPixel);
             for(int i = 0; i < _source->w * _source->h; i++) {
                 data_ptr[i] = _palette[((Uint8*)_source->pixels)[i]];
             }
         }
         else {
-            memcpy(data_ptr, _source->pixels, _source->w * _source->h * _source->format->BitsPerPixel * 0.125);
+            memcpy(data_ptr, _source->pixels, _source->w * _source->h * _source->format->BytesPerPixel);
         }
 
         glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
@@ -235,7 +268,6 @@ void hw_surface::_copy_source_to_texture(int numrects, SDL_Rect* rects)
             ymin = ymin < rects[i].y ? ymin : rects[i].y;
             ymax = ymax > rects[i].y + rects[i].h ? ymax : rects[i].y + rects[i].h;
         }
-        //printf("Final: (%u,%u) -> (%u,%u)\n", xmin, ymin, xmax, ymax);
 
         xmin -= xmin % 2;
         xmax += xmax % 2;
@@ -247,11 +279,10 @@ void hw_surface::_copy_source_to_texture(int numrects, SDL_Rect* rects)
         xmax = xmax < _source->w ? xmax : _source->w;
         ymax = ymax < _source->h ? ymax : _source->h;
 
-        GLint bytes = _source->format->BitsPerPixel * 0.125;
-        GLint range_width = (xmax - xmin) * bytes;
+        GLint range_width = (xmax - xmin) * _source->format->BytesPerPixel;
 
         for(int y = 0; y < (ymax - ymin); y++) {
-            memcpy(data_ptr + y * range_width, ((GLubyte*)_source->pixels) + ((ymin + y) * _source->w + xmin) * bytes, range_width);
+            memcpy(data_ptr + y * range_width, ((GLubyte*)_source->pixels) + ((ymin + y) * _source->w + xmin) * _source->format->BytesPerPixel, range_width);
         }
 
         glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
@@ -268,8 +299,6 @@ void hw_surface::_copy_source_to_texture(int numrects, SDL_Rect* rects)
                           0 );
 
         glBindTexture ( GL_TEXTURE_2D, 0 );
-
-        print_gl_error(__FILE__, __LINE__);
     }
     else {
         printf("Unable to map PBO buffer.\n");
@@ -277,27 +306,17 @@ void hw_surface::_copy_source_to_texture(int numrects, SDL_Rect* rects)
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 }
 
-void hw_surface::_copy_source_to_texture_original() {
-    glBindTexture ( GL_TEXTURE_2D, _texture );
-    glTexImage2D ( GL_TEXTURE_2D,
-                   0,
-                   GL_RGB,
-                   _source->w,
-                   _source->h,
-                   0,
-                   _source->format->BitsPerPixel == 32 ? GL_BGRA : GL_RGB,
-                   _source->format->BitsPerPixel == 32 ? GL_UNSIGNED_BYTE : GL_UNSIGNED_SHORT_5_6_5,
-                   _source->pixels );
-    glBindTexture ( GL_TEXTURE_2D, 0 );
-}
-
-void hw_surface::_compile_program()
+void hw_surface::_setup_program()
 {
     _vertex_shader = compile_shader ( "../shaders/default.vert", GL_VERTEX_SHADER );
     _fragment_shader = compile_shader ( "../shaders/default.frag", GL_FRAGMENT_SHADER );
-    _shader_program = link_program ( _vertex_shader, _fragment_shader );
+    link_program ( _shader_program, _vertex_shader, _fragment_shader );
     glDeleteShader ( _vertex_shader );
     glDeleteShader ( _fragment_shader );
+
+    _position_attrib = glGetAttribLocation ( _shader_program, "position" );
+    _texcoord_attrib = glGetAttribLocation ( _shader_program, "texcoord" );
+    _texunit_uniform = glGetUniformLocation ( _shader_program, "texture_unit" );
 }
 
 void hw_surface::_create_palette()

@@ -31,18 +31,19 @@ GLuint compile_shader ( const char* source, GLuint type )
     return shader;
 }
 
-GLuint link_program ( GLuint vs, GLuint fs )
+void link_program ( GLuint program, GLuint vs, GLuint fs )
 {
     static GLint SUCCESS;
     static GLchar LOG[GL_LOG_SIZE];
 
-    GLuint program = 0;
+    if(program == 0){
+        std::cout << "Program linking failed: Program has not been created." << std::endl;
+    }
     if ( vs == 0 ) {
         std::cout << "Program linking failed: No vertex shader." << std::endl;
     } else if ( fs == 0 ) {
         std::cout << "Program linking failed: No fragment shader." << std::endl;
     } else {
-        program = glCreateProgram();
         glAttachShader ( program, vs );
         glAttachShader ( program, fs );
         glLinkProgram ( program );
@@ -52,8 +53,6 @@ GLuint link_program ( GLuint vs, GLuint fs )
             std::cout << "Program linking failed: " << LOG << std::endl;
         }
     }
-
-    return program;
 }
 
 #define PRINT_GL_ERROR_ENUM(ENUM) printf("(%s:%u) GL Error: ENUM.\n", file, line)
