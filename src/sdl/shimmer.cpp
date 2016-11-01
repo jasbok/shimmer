@@ -74,17 +74,20 @@ void shimmer::setup_video()
 
 void shimmer::update_video()
 {
-        _video->update();
+        if ( _video )
+                _video->update();
 }
 
 void shimmer::update_video ( int numrects, SDL_Rect* rects )
 {
-        _video->update ( numrects, rects );
+        if ( _video )
+                _video->update ( numrects, rects );
 }
 
 void shimmer::refresh_video()
 {
-        _video->refresh();
+        if ( _video )
+                _video->refresh();
 }
 
 void shimmer::resize_video()
