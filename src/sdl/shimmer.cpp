@@ -13,7 +13,7 @@ shimmer::shimmer()
       _video ( nullptr ),
       _source ( nullptr ), _target ( nullptr ),
       _update_scheme ( UPDATE_SCHEME::SDL_FLIP ),
-
+      _keep_aspect_ratio(true),
       _warp_factor_x ( 1 ), _warp_factor_y ( 1 ),
 
       _user_mode ( false )
@@ -78,6 +78,11 @@ void shimmer::update_video()
 void shimmer::update_video(int numrects, SDL_Rect* rects)
 {
     _video->update(numrects, rects);
+}
+
+void shimmer::refresh_video()
+{
+    _video->refresh();
 }
 
 void shimmer::resize_video()

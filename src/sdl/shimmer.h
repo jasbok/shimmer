@@ -28,6 +28,7 @@ public:
         void setup_video();
         void update_video();
         void update_video(int numrects, SDL_Rect* rects);
+        void refresh_video();
         void resize_video();
 
         //

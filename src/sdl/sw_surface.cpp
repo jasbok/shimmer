@@ -43,6 +43,9 @@ void sw_surface::update(int numrects, SDL_Rect* rects)
         update();
 }
 
+void sw_surface::refresh()
+{
+}
 
 void sw_surface::resize()
 {}

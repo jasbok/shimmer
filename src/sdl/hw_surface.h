@@ -18,6 +18,7 @@ public:
         virtual SDL_Surface* target();
         virtual void update();
         virtual void update(int numrects, SDL_Rect* rects);
+        virtual void refresh();
         virtual void resize();
         virtual void filtering(unsigned int level);
         virtual void keep_aspect_ratio(bool keep);
@@ -30,9 +31,11 @@ private:
         GLenum _pixel_type;
         
         GLuint _vbo;
-        GLuint _pbo[2];
-        int _pbo_index;
         GLuint _vao;
+
+        GLint _pbo_count;
+        GLuint *_pbo;
+        int _pbo_index;
 
         GLuint _texture;
         GLuint _texture_filter;

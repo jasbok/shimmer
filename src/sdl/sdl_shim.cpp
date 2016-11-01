@@ -134,6 +134,7 @@ int SDL_PollEvent ( SDL_Event* event )
         SHIM_LOG();
         int result = sdl::SDL_PollEvent ( event );
         shimmer.process_event ( event );
+        shimmer.refresh_video();
         return result;
 }
 

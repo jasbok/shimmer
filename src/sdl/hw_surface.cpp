@@ -7,12 +7,15 @@
 #include <stdlib.h>
 
 hw_surface::hw_surface ( SDL_Surface* source, SDL_Surface* target )
-    : _source ( source ), _target( target ), _pbo_index(0),
+    : _source ( source ), _target( target ), _pbo_count(3), _pbo_index(0),
       _texture_filter(GL_NEAREST), _keep_aspect_ratio(true), _palette(nullptr),
       _update_ticks(0)
 {
+
+    _pbo = new GLuint[_pbo_count];
+
     glGenBuffers ( 1, &_vbo );
-    glGenBuffers (2, _pbo);
+    glGenBuffers (_pbo_count, _pbo);
     glGenTextures ( 1, &_texture );
     glGenVertexArrays ( 1, &_vao );
     _shader_program = glCreateProgram();
@@ -23,10 +26,12 @@ hw_surface::hw_surface ( SDL_Surface* source, SDL_Surface* target )
 hw_surface::~hw_surface()
 {
     glDeleteBuffers(1, &_vbo);
-    glDeleteBuffers(2, _pbo);
+    glDeleteBuffers(_pbo_count, _pbo);
     glDeleteTextures(1, &_texture );
     glDeleteVertexArrays(1, &_vao);
     glDeleteProgram ( _shader_program );
+
+    delete _pbo;
 
     if(_palette) {
         delete [] _palette;
@@ -62,6 +67,11 @@ void hw_surface::update()
 void hw_surface::update(int numrects, SDL_Rect* rects)
 {
     _copy_source_to_texture(numrects, rects);
+    _draw_quad();
+}
+
+void hw_surface::refresh()
+{
     _draw_quad();
 }
 
@@ -151,9 +161,6 @@ void hw_surface::_draw_quad()
         sdl::SDL_GL_SwapBuffers();
         _update_ticks = sdl::SDL_GetTicks();
     }
-    else{
-        printf("Skipping Draw...\n");
-    }
 }
 
 void hw_surface::_setup_buffers()
@@ -181,7 +188,7 @@ void hw_surface::_setup_buffers()
     glBufferData ( GL_ARRAY_BUFFER, sizeof ( screen_vertices ), screen_vertices, GL_STATIC_DRAW );
     glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 
-    for(int i = 0; i < 2; i++) {
+    for(int i = 0; i < _pbo_count; i++) {
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _pbo[i]);
         glBufferData(GL_PIXEL_UNPACK_BUFFER, _source->w * _source->h * _source->format->BytesPerPixel, 0, GL_STREAM_DRAW );
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
@@ -222,8 +229,9 @@ void hw_surface::_setup_vao()
 
 void hw_surface::_copy_source_to_texture()
 {
-    _pbo_index = !_pbo_index;
+    _pbo_index = ++_pbo_index < _pbo_count ? _pbo_index : 0;
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _pbo[_pbo_index]);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, _source->w * _source->h * _source->format->BytesPerPixel, 0, GL_STREAM_DRAW );
     GLubyte* data_ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
     if(data_ptr) {
         if(_palette) {
@@ -260,9 +268,9 @@ void hw_surface::_copy_source_to_texture()
 
 void hw_surface::_copy_source_to_texture(int numrects, SDL_Rect* rects)
 {
-    _pbo_index = !_pbo_index;
+    _pbo_index = ++_pbo_index < _pbo_count ? _pbo_index : 0;
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _pbo[_pbo_index]);
-
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, _source->w * _source->h * _source->format->BytesPerPixel, 0, GL_STREAM_DRAW );
     GLubyte* data_ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
     if(data_ptr) {
         GLint xmin = _source->w;
