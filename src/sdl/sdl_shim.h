@@ -35,4 +35,6 @@ SHIM ( SDL_Surface*, SDL_DisplayFormat, SDL_Surface *surface );
 SHIM ( SDL_Surface*, SDL_CreateRGBSurface, Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask );
 SHIM ( SDL_Surface*, SDL_CreateRGBSurfaceFrom, void *pixels, int width, int height, int depth, int pitch, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask );
 
+SHIM ( Uint32, SDL_GetTicks, void );
+
 #endif

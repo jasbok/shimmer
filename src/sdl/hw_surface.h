@@ -4,6 +4,7 @@
 #include "video_surface.h"
 #include <SDL.h>
 #include <GL/glew.h>
+#include <deque>
 
 class hw_surface : public video_surface
 {
@@ -44,9 +45,13 @@ private:
         GLuint _position_attrib;
         GLuint _texcoord_attrib;
         GLint _texunit_uniform;
+        GLfloat _scale_uniform;
             
         Uint32 *_palette;
         
+        std::deque<SDL_Rect> _queue;
+        Uint32 _update_ticks;
+
 private:
         void _init();
         void _gl_init();

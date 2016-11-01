@@ -2,6 +2,7 @@
     
 varying vec2 f_texcoord;
 uniform sampler2D texture_unit;
+uniform float scale;
 
 void main()                                         
 {                                                 

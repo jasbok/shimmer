@@ -88,7 +88,8 @@ void link_program ( GLuint program, GLuint vs, GLuint fs )
 // }
 
 int print_gl_error(const char* file, int line) {
-    switch(glGetError()) {
+    GLenum error = glGetError();
+    switch(error) {
     case GL_INVALID_ENUM:
         printf("(%s:%u) GL Error: GL_INVALID_ENUM.\n", file, line);
         break;

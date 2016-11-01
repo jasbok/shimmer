@@ -169,3 +169,9 @@ SDL_Surface * SDL_CreateRGBSurfaceFrom ( void* pixels, int width, int height, in
         return sdl::SDL_CreateRGBSurfaceFrom ( pixels, width, height, depth, pitch, Rmask, Gmask, Bmask, Amask );
 }
 
+Uint32 SDL_GetTicks()
+{
+        SHIM_LOG();
+        return sdl::SDL_GetTicks();
+}
+

@@ -8,7 +8,8 @@
 
 hw_surface::hw_surface ( SDL_Surface* source, SDL_Surface* target )
     : _source ( source ), _target( target ), _pbo_index(0),
-      _texture_filter(GL_NEAREST), _keep_aspect_ratio(true), _palette(nullptr)
+      _texture_filter(GL_NEAREST), _keep_aspect_ratio(true), _palette(nullptr),
+      _update_ticks(0)
 {
     glGenBuffers ( 1, &_vbo );
     glGenBuffers (2, _pbo);
@@ -63,7 +64,6 @@ void hw_surface::update(int numrects, SDL_Rect* rects)
     _copy_source_to_texture(numrects, rects);
     _draw_quad();
 }
-
 
 void hw_surface::resize()
 {
@@ -134,18 +134,26 @@ void hw_surface::_gl_init()
 
 void hw_surface::_draw_quad()
 {
-    glBindVertexArray ( _vao );
-    glBindTexture ( GL_TEXTURE_2D, _texture );
-    glUseProgram ( _shader_program );
-    glUniform1i ( _texunit_uniform, 0 );
+    auto now = sdl::SDL_GetTicks();
+    if((now - _update_ticks) > (1000/60)) {
+        glBindVertexArray ( _vao );
+        glBindTexture ( GL_TEXTURE_2D, _texture );
+        glUseProgram ( _shader_program );
+        glUniform1i ( _texunit_uniform, 0 );
+        glUniform1f ( _scale_uniform, _target->w / (float)_source->w );
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays ( GL_QUADS, 0, 4 );
+        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDrawArrays ( GL_QUADS, 0, 4 );
 
-    glUseProgram ( 0 );
-    glBindVertexArray ( 0 );
-    sdl::SDL_GL_SwapBuffers();
+        glUseProgram ( 0 );
+        glBindVertexArray ( 0 );
+        sdl::SDL_GL_SwapBuffers();
+        _update_ticks = sdl::SDL_GetTicks();
+    }
+    else{
+        printf("Skipping Draw...\n");
+    }
 }
 
 void hw_surface::_setup_buffers()
@@ -216,7 +224,6 @@ void hw_surface::_copy_source_to_texture()
 {
     _pbo_index = !_pbo_index;
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _pbo[_pbo_index]);
-
     GLubyte* data_ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
     if(data_ptr) {
         if(_palette) {
@@ -245,6 +252,7 @@ void hw_surface::_copy_source_to_texture()
     }
     else {
         printf("Unable to map PBO buffer.\n");
+        print_gl_error(__FILE__, __LINE__);
     }
 
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
@@ -302,6 +310,7 @@ void hw_surface::_copy_source_to_texture(int numrects, SDL_Rect* rects)
     }
     else {
         printf("Unable to map PBO buffer.\n");
+        print_gl_error(__FILE__, __LINE__);
     }
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 }
@@ -317,6 +326,7 @@ void hw_surface::_setup_program()
     _position_attrib = glGetAttribLocation ( _shader_program, "position" );
     _texcoord_attrib = glGetAttribLocation ( _shader_program, "texcoord" );
     _texunit_uniform = glGetUniformLocation ( _shader_program, "texture_unit" );
+    _scale_uniform = glGetUniformLocation ( _shader_program, "scale" );
 }
 
 void hw_surface::_create_palette()
@@ -331,4 +341,3 @@ void hw_surface::_create_palette()
                                 );
     }
 }
-
