@@ -6,6 +6,8 @@
 #include <GL/glew.h>
 #include <deque>
 
+namespace shimmer
+{
 class hw_surface : public video_surface
 {
 public:
@@ -17,19 +19,19 @@ public:
         virtual void target ( SDL_Surface* target );
         virtual SDL_Surface* target();
         virtual void update();
-        virtual void update(int numrects, SDL_Rect* rects);
+        virtual void update ( int numrects, SDL_Rect* rects );
         virtual void refresh();
         virtual void resize();
-        virtual void filtering(unsigned int level);
-        virtual void keep_aspect_ratio(bool keep);
-        
+        virtual void filtering ( unsigned int level );
+        virtual void keep_aspect_ratio ( bool keep );
+
 private:
         SDL_Surface *_source;
         SDL_Surface *_target;
 
         GLenum _pixel_format;
         GLenum _pixel_type;
-        
+
         GLuint _vbo;
         GLuint _vao;
 
@@ -40,7 +42,7 @@ private:
         GLuint _texture;
         GLuint _texture_filter;
         bool _keep_aspect_ratio;
-        
+
         GLuint _vertex_shader;
         GLuint _fragment_shader;
         GLuint _shader_program;
@@ -49,24 +51,25 @@ private:
         GLuint _texcoord_attrib;
         GLint _texunit_uniform;
         GLfloat _scale_uniform;
-            
+
         Uint32 *_palette;
-        
+
         std::deque<SDL_Rect> _queue;
         Uint32 _update_ticks;
 
 private:
         void _init();
         void _gl_init();
-        
+
         void _setup_buffers();
         void _setup_textures();
         void _setup_program();
         void _setup_vao();
         void _copy_source_to_texture();
-        void _copy_source_to_texture(int numrects, SDL_Rect* rects);
+        void _copy_source_to_texture ( int numrects, SDL_Rect* rects );
         void _draw_quad();
         void _create_palette();
 };
+}
 
 #endif

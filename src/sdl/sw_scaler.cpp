@@ -1,6 +1,8 @@
 #include "sw_scaler.h"
 #include <stdio.h>
 
+namespace shimmer
+{
 template < typename T >
 void sw_scaler_nn_t ( SDL_Surface * src, SDL_Surface * dest )
 {
@@ -62,4 +64,5 @@ void sw_scaler_nn ( SDL_Surface * src, SDL_Surface * dest )
                         break;
                 }
         }
+}
 }

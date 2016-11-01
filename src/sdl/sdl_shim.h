@@ -5,6 +5,8 @@
 #include <SDL.h>
 
 SHIM ( int, SDL_Init, Uint32 flags );
+SHIM ( void, SDL_Quit, void );
+
 SHIM ( SDL_Surface*, SDL_SetVideoMode, int width, int height, int bpp, Uint32 flags );
 SHIM ( SDL_Surface*, SDL_GetVideoSurface, void );
 SHIM ( int, SDL_Flip, SDL_Surface* screen );

@@ -5,6 +5,8 @@
 #include <SDL.h>
 #include <thread>
 
+namespace shimmer
+{
 class shimmer
 {
 public:
@@ -27,7 +29,7 @@ public:
         //
         void setup_video();
         void update_video();
-        void update_video(int numrects, SDL_Rect* rects);
+        void update_video ( int numrects, SDL_Rect* rects );
         void refresh_video();
         void resize_video();
 
@@ -65,7 +67,7 @@ private:
         UPDATE_SCHEME _update_scheme;
         unsigned int _filtering_level;
         bool _keep_aspect_ratio;
-        
+
         //
         //  INPUT
         //
@@ -82,19 +84,20 @@ private:
         //
         void _configure_video_from_source();
         void _create_video_surface();
-        
+
         //
         // INPUT
         //
         void _calculate_warp_factor();
-        void _process_mouse(SDL_Event* event);
-        void _process_keyboard(SDL_Event* event);
-        void _process_video_resize(SDL_Event* event);
-        
+        void _process_mouse ( SDL_Event* event );
+        void _process_keyboard ( SDL_Event* event );
+        void _process_video_resize ( SDL_Event* event );
+
         //
         //  DEBUG
         //
         void _print_out_configuration();
 };
+}
 
 #endif

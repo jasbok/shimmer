@@ -1,6 +1,9 @@
 #include "sw_surface.h"
 #include "sw_scaler.h"
 #include "sdl_shim.h"
+
+namespace shimmer
+{
 sw_surface::sw_surface ( SDL_Surface* source, SDL_Surface* target )
         : _source ( source ) , _target ( target )
 {}
@@ -38,7 +41,7 @@ void sw_surface::update()
         sdl::SDL_Flip ( _target );
 }
 
-void sw_surface::update(int numrects, SDL_Rect* rects)
+void sw_surface::update ( int numrects, SDL_Rect* rects )
 {
         update();
 }
@@ -50,11 +53,12 @@ void sw_surface::refresh()
 void sw_surface::resize()
 {}
 
-void sw_surface::filtering(unsigned int level)
+void sw_surface::filtering ( unsigned int level )
 {}
 
-void sw_surface::keep_aspect_ratio(bool keep)
+void sw_surface::keep_aspect_ratio ( bool keep )
 {}
+}
 
 
 
