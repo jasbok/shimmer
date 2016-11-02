@@ -27,6 +27,7 @@ public:
 private:
         SDL_Surface *_source;
         SDL_Surface *_target;
+        GLfloat _ratio_w, _ratio_h;
 
         GLenum _pixel_format;
         GLenum _pixel_type;
@@ -49,7 +50,7 @@ private:
         GLuint _position_attrib;
         GLuint _texcoord_attrib;
         GLint _texunit_uniform;
-        GLfloat _scale_uniform;
+        GLint _ratio_uniform;
 
         Uint32 *_palette;
 

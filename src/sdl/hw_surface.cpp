@@ -86,7 +86,7 @@ void hw_surface::resize()
 }
 
 void hw_surface::set_config ( config config )
-{s
+{
         switch ( config.filter_level ) {
         case 0:
                 _texture_filter = GL_NEAREST;
@@ -147,7 +147,7 @@ void hw_surface::_draw_quad()
                 glBindTexture ( GL_TEXTURE_2D, _texture );
                 glUseProgram ( _shader_program );
                 glUniform1i ( _texunit_uniform, 0 );
-                glUniform1f ( _scale_uniform, _target->w / ( float ) _source->w );
+                glUniform2f ( _ratio_uniform, _ratio_w, _ratio_h );
 
                 glClearColor ( 0.0, 0.0, 0.0, 0.0 );
                 glClear ( GL_COLOR_BUFFER_BIT );
@@ -180,6 +180,9 @@ void hw_surface::_setup_buffers()
                 -aspect_ratio_x,  -aspect_ratio_y,  0.0,        0.0, 1.0,
                 -aspect_ratio_x,  aspect_ratio_y,   0.0,        0.0, 0.0
         };
+
+        _ratio_w = _target->w * aspect_ratio_x / (float) _source->w;
+        _ratio_h = _target->h * aspect_ratio_y / (float) _source->h;
 
         glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
         glBufferData ( GL_ARRAY_BUFFER, sizeof ( screen_vertices ), screen_vertices, GL_STATIC_DRAW );
@@ -328,7 +331,7 @@ void hw_surface::_setup_program()
         _position_attrib = glGetAttribLocation ( _shader_program, "position" );
         _texcoord_attrib = glGetAttribLocation ( _shader_program, "texcoord" );
         _texunit_uniform = glGetUniformLocation ( _shader_program, "texture_unit" );
-        _scale_uniform = glGetUniformLocation ( _shader_program, "scale" );
+        _ratio_uniform = glGetUniformLocation ( _shader_program, "res_ratio" );
 }
 
 void hw_surface::_create_palette()
