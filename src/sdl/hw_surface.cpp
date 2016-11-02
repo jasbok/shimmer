@@ -85,9 +85,9 @@ void hw_surface::resize()
         update();
 }
 
-void hw_surface::filtering ( unsigned int level )
-{
-        switch ( level ) {
+void hw_surface::set_config ( config config )
+{s
+        switch ( config.filter_level ) {
         case 0:
                 _texture_filter = GL_NEAREST;
                 break;
@@ -98,17 +98,12 @@ void hw_surface::filtering ( unsigned int level )
                 _texture_filter = GL_NEAREST;
                 break;
         }
+        _keep_aspect_ratio = config.keep_aspect_ratio;
+
+        _setup_buffers();
         _setup_textures();
         update();
 }
-
-void hw_surface::keep_aspect_ratio ( bool keep )
-{
-        _keep_aspect_ratio = keep;
-        _setup_buffers();
-        update();
-}
-
 
 void hw_surface::_init()
 {

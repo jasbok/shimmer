@@ -9,13 +9,10 @@ namespace shimmer
 shimmer::shimmer()
         : _w ( 0 ), _h ( 0 ), _bpp ( 32 ),
           _video_flags ( 0 ),
-          _use_software ( false ),
-          _update_rate ( 60 ),
+          _config (),
 
           _video ( nullptr ),
           _source ( nullptr ), _target ( nullptr ),
-          _update_scheme ( UPDATE_SCHEME::SDL_FLIP ),
-          _keep_aspect_ratio ( true ),
           _warp_factor_x ( 1 ), _warp_factor_y ( 1 ),
 
           _user_mode ( false )
@@ -35,10 +32,6 @@ void shimmer::init()
 {
         DLOG ( "Initialising Shimmer..." );
         _print_out_configuration();
-
-        if ( !_use_software ) {
-
-        }
 }
 
 void shimmer::destroy()
@@ -64,12 +57,12 @@ void shimmer::setup_video()
 
         if ( _video ) delete _video;
 
-        if ( _use_software ) {
+        if ( _config.use_software ) {
                 _video = new sw_surface ( _source, _target );
         } else {
                 _video = new hw_surface ( _source, _target );
-                _video->filtering ( _filtering_level );
         }
+        _video->set_config(_config);
 }
 
 void shimmer::update_video()
@@ -158,18 +151,6 @@ SDL_Surface * shimmer::target()
         return _target;
 }
 
-shimmer::UPDATE_SCHEME shimmer::update_scheme()
-{
-        DLOG ( "Setting update scheme..." );
-        return _update_scheme;
-}
-
-void shimmer::update_scheme ( shimmer::UPDATE_SCHEME scheme )
-{
-        DLOG ( "Getting update scheme..." );
-        _update_scheme = scheme;
-}
-
 //
 //  PRIVATE: VIDEO
 //
@@ -180,7 +161,7 @@ void shimmer::_configure_video_from_source()
         if ( !_w ) _w = _source->w;
         if ( !_h ) _h = _source->h;
 
-        if ( _use_software ) {
+        if ( _config.use_software ) {
                 _bpp = _source->format->BitsPerPixel;
                 _video_flags = _source->flags | SDL_RESIZABLE;
         }
@@ -194,7 +175,7 @@ void shimmer::_create_video_surface()
         _w = _w > 50 ? _w : 50;
         _h = _h > 50 ? _h: 50;
 
-        if ( _use_software ) {
+        if ( _config.use_software ) {
                 DLOG ( "Created software surface." );
                 _target = sdl::SDL_SetVideoMode ( _w, _h, _bpp, _video_flags );
         } else {
@@ -237,12 +218,12 @@ void shimmer::_process_keyboard ( SDL_Event* event )
                 if ( event->active.type == SDL_KEYUP ) {
                         switch ( event->key.keysym.sym ) {
                         case SDLK_l:
-                                _filtering_level = !_filtering_level;
-                                _video->filtering ( _filtering_level );
+                                _config.next_filter_level();
+                                _video->set_config(_config);
                                 break;
                         case SDLK_a:
-                                _keep_aspect_ratio = !_keep_aspect_ratio;
-                                _video->keep_aspect_ratio ( _keep_aspect_ratio );
+                                _config.toggle_keep_aspect_ratio();
+                                _video->set_config(_config);
                                 break;
                         default:
                                 break;
@@ -286,8 +267,8 @@ void shimmer::_print_out_configuration()
 {
         printf ( "Shimmer Configuration:\n" );
         printf ( "======================\n" );
-        printf ( "Target Resolution: %ux%ux%u\n", _w, _h, _bpp );
-        printf ( "Use Software Scaler: %u\n", _use_software );
+        printf ( "Target Resolution: %ux%u\n", _config.width, _config.height );
+        printf ( "Use Software Scaler: %u\n", _config.use_software );
 }
 }
 

@@ -3,6 +3,8 @@
 
 #include <SDL.h>
 
+#include "config.h"
+
 namespace shimmer
 {
 class video_surface
@@ -18,8 +20,7 @@ public:
         virtual void update ( int numrects, SDL_Rect* rects ) = 0;
         virtual void refresh() = 0;
         virtual void resize() = 0;
-        virtual void filtering ( unsigned int level ) = 0;
-        virtual void keep_aspect_ratio ( bool keep ) = 0;
+        virtual void set_config ( config config ) = 0;
 };
 }
 

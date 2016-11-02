@@ -53,11 +53,8 @@ void sw_surface::refresh()
 void sw_surface::resize()
 {}
 
-void sw_surface::filtering ( unsigned int level )
-{}
+void sw_surface::set_config ( config config ){}
 
-void sw_surface::keep_aspect_ratio ( bool keep )
-{}
 }
 
 

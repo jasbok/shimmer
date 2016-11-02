@@ -1,6 +1,7 @@
 #ifndef SHIMMER_H
 #define SHIMMER_H
 
+#include "config.h"
 #include "video_surface.h"
 #include <SDL.h>
 #include <thread>
@@ -10,11 +11,6 @@ namespace shimmer
 class shimmer
 {
 public:
-        enum class UPDATE_SCHEME
-        {
-                SDL_FLIP, GL_SWAPBUFFERS, FIXED_RATE, ANY
-        };
-
         shimmer();
         ~shimmer();
 
@@ -46,8 +42,6 @@ public:
         SDL_Surface* source();
         void source ( SDL_Surface *source );
         SDL_Surface* target();
-        UPDATE_SCHEME update_scheme();
-        void update_scheme ( UPDATE_SCHEME scheme );
 
 
 private:
@@ -56,17 +50,13 @@ private:
         //
         int _w, _h, _bpp;
         Uint32 _video_flags;
-        bool _use_software;
-        int _update_rate;
+        config _config;
 
         //
         //  VIDEO
         //
         video_surface *_video;
         SDL_Surface *_source, *_target;
-        UPDATE_SCHEME _update_scheme;
-        unsigned int _filtering_level;
-        bool _keep_aspect_ratio;
 
         //
         //  INPUT
