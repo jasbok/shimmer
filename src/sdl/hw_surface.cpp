@@ -339,7 +339,7 @@ void hw_surface::_create_palette()
         SDL_Palette *pal = _source->format->palette;
         _palette = new Uint32[pal->ncolors];
         for ( int i = 0; i < pal->ncolors; i++ ) {
-                _palette[i] = SDL_MapRGB ( _target->format,
+                _palette[i] = sdl::SDL_MapRGB ( _target->format,
                                            pal->colors[i].r,
                                            pal->colors[i].g,
                                            pal->colors[i].b

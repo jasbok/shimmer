@@ -39,4 +39,6 @@ SHIM ( SDL_Surface*, SDL_CreateRGBSurfaceFrom, void *pixels, int width, int heig
 
 SHIM ( Uint32, SDL_GetTicks, void );
 
+SHIM ( Uint32, SDL_MapRGB, const SDL_PixelFormat* format, Uint8 r, Uint8 g, Uint8 b);
+
 #endif

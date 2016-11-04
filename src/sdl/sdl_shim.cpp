@@ -185,3 +185,10 @@ Uint32 SDL_GetTicks()
         return sdl::SDL_GetTicks();
 }
 
+Uint32 SDL_MapRGB(const SDL_PixelFormat* format,
+                  Uint8                  r,
+                  Uint8                  g,
+                  Uint8                  b){
+        SHIM_LOG();
+        return sdl::SDL_MapRGB(format, r, g, b);
+}

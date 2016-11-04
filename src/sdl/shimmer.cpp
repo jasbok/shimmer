@@ -141,7 +141,7 @@ SDL_Surface * shimmer::source()
 
 void shimmer::source ( SDL_Surface* source )
 {
-        DLOG ( "Setting source... %p", source );
+        //DLOG ( "Setting source... %p", source );
         _source = source;
 }
 
