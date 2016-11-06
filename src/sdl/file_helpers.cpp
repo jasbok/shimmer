@@ -1,13 +1,4 @@
-#ifndef STD_HELPERS_H
-#define STD_HELPERS_H
-
-#include <fstream>
-#include <string>
-#include <vector>
-#include <iostream>
-
-#include <sys/types.h>
-#include <dirent.h>
+#include "file_helpers.h"
 
 namespace shimmer
 {
@@ -31,8 +22,12 @@ std::vector<std::string> list_directory ( const char* dir )
 
         if ( dp ) {
                 struct dirent *ep;
-                while ( (ep = readdir ( dp )) )
-                        results.push_back ( std::string(ep->d_name) );
+                while ( ( ep = readdir ( dp ) ) ){
+                    std::string entry(ep->d_name);
+                    if(entry.compare(".") != 0 && entry.compare("..") != 0){
+                        results.push_back ( entry );
+                    }
+                }
                 closedir ( dp );
         } else {
                 printf ( "Unable to open directory: %s\n", dir );
@@ -41,6 +36,8 @@ std::vector<std::string> list_directory ( const char* dir )
         return results;
 }
 
+std::vector<std::string> list_directory ( const std::string& dir )
+{
+        return list_directory ( dir.c_str() );
 }
-
-#endif
+}

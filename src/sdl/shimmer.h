@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "hw_surface.h"
+#include "shader_manager.h"
 #include <SDL.h>
 #include <thread>
 
@@ -13,12 +14,6 @@ class shimmer
 public:
         shimmer();
         ~shimmer();
-
-        //
-        //  CONFIGURATION AND RESOURCE MANAGEMENT
-        //
-        void init();
-        void destroy();
 
         //
         //  VIDEO
@@ -50,12 +45,12 @@ private:
         //
         int _w, _h, _bpp;
         Uint32 _video_flags;
-        config _config;
 
         //
         //  VIDEO
         //
         hw_surface *_video;
+        shader_manager *_shader_manager;
         SDL_Surface *_source, *_target;
 
         //
@@ -66,13 +61,13 @@ private:
         //
         //  PROCESS FLOW
         //
+        bool _video_initialised;
         bool _user_mode;
 
 private:
         //
         //  VIDEO
         //
-        void _configure_video_from_source();
         void _create_video_surface();
 
         //

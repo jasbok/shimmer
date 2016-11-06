@@ -3,34 +3,30 @@
 
 #include <stdio.h>
 
-
-shimmer::shimmer *shim;
+shimmer::shimmer *shim = nullptr;
 
 int SDL_Init ( Uint32 flags )
 {
         SHIM_LOG();
-        shim = new shimmer::shimmer();
+        if ( !shim ) shim = new shimmer::shimmer();
         return sdl::SDL_Init ( flags );
 }
 
 void SDL_Quit()
 {
         SHIM_LOG();
-        delete shim;
+        if(shim) delete shim;
 }
 
 
 SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
 {
         SHIM_LOG();
+
         if ( shim->source() ) {
                 sdl::SDL_FreeSurface ( shim->source() );
         }
         shim->source ( sdl::SDL_CreateRGBSurface ( flags, width, height, bpp, 0,0,0,0 ) );
-
-        if ( flags & SDL_OPENGL ) {
-                printf ( "==> Application requested an OpenGL context.\n" );
-        }
 
         shim->setup_video();
         return shim->source();
@@ -185,10 +181,11 @@ Uint32 SDL_GetTicks()
         return sdl::SDL_GetTicks();
 }
 
-Uint32 SDL_MapRGB(const SDL_PixelFormat* format,
-                  Uint8                  r,
-                  Uint8                  g,
-                  Uint8                  b){
+Uint32 SDL_MapRGB ( const SDL_PixelFormat* format,
+                    Uint8                  r,
+                    Uint8                  g,
+                    Uint8                  b )
+{
         SHIM_LOG();
-        return sdl::SDL_MapRGB(format, r, g, b);
+        return sdl::SDL_MapRGB ( format, r, g, b );
 }

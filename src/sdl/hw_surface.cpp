@@ -1,5 +1,6 @@
 #include "hw_surface.h"
 
+#include "config.h"
 #include "sdl_shim.h"
 #include "opengl_helpers.h"
 #include <SDL/SDL_image.h>
@@ -8,9 +9,10 @@
 
 namespace shimmer
 {
-hw_surface::hw_surface ( SDL_Surface* source, SDL_Surface* target )
-        : _source ( source ), _target ( target ), _pbo_count ( 3 ), _pbo_index ( 0 ),
-          _texture_filter ( GL_NEAREST ), _keep_aspect_ratio ( true ), _palette ( nullptr ),
+hw_surface::hw_surface ( SDL_Surface* source, SDL_Surface* target, GLuint shader_program )
+        : _source ( source ), _target ( target ), _shader_program ( shader_program ),
+          _pbo_count ( 3 ), _pbo_index ( 0 ),
+          _texture_filter ( GL_NEAREST ), _palette ( nullptr ),
           _update_ticks ( 0 )
 {
 
@@ -20,9 +22,9 @@ hw_surface::hw_surface ( SDL_Surface* source, SDL_Surface* target )
         glGenBuffers ( _pbo_count, _pbo );
         glGenTextures ( 1, &_texture );
         glGenVertexArrays ( 1, &_vao );
-        _shader_program = glCreateProgram();
 
         _init();
+        update_config();
 }
 
 hw_surface::~hw_surface()
@@ -60,6 +62,17 @@ void hw_surface::target ( SDL_Surface* target )
         _target = target;
 }
 
+GLuint hw_surface::shader_program()
+{
+        return _shader_program;
+}
+
+void hw_surface::shader_program ( GLuint shader_program )
+{
+        glDeleteProgram ( _shader_program );
+        _shader_program = shader_program;
+}
+
 void hw_surface::update()
 {
         _copy_source_to_texture();
@@ -85,9 +98,9 @@ void hw_surface::resize()
         update();
 }
 
-void hw_surface::set_config ( config config )
+void hw_surface::update_config ()
 {
-        switch ( config.filter_level ) {
+        switch ( config::instance().filter_level ) {
         case 0:
                 _texture_filter = GL_NEAREST;
                 break;
@@ -98,7 +111,6 @@ void hw_surface::set_config ( config config )
                 _texture_filter = GL_NEAREST;
                 break;
         }
-        _keep_aspect_ratio = config.keep_aspect_ratio;
 
         _setup_buffers();
         _setup_textures();
@@ -165,7 +177,7 @@ void hw_surface::_setup_buffers()
         GLfloat aspect_ratio_x = 1.0f;
         GLfloat aspect_ratio_y = 1.0f;
 
-        if ( _keep_aspect_ratio ) {
+        if ( config::instance().keep_aspect_ratio ) {
                 GLfloat ar_source = _source->w / ( float ) _source->h;
                 GLfloat ar_target = _target->w / ( float ) _target->h;
                 GLfloat ar_factor = ar_source / ar_target;
@@ -181,8 +193,8 @@ void hw_surface::_setup_buffers()
                 -aspect_ratio_x,  aspect_ratio_y,   0.0,        0.0, 0.0
         };
 
-        _ratio_w = _target->w * aspect_ratio_x / (float) _source->w;
-        _ratio_h = _target->h * aspect_ratio_y / (float) _source->h;
+        _ratio_w = _target->w * aspect_ratio_x / ( float ) _source->w;
+        _ratio_h = _target->h * aspect_ratio_y / ( float ) _source->h;
 
         glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
         glBufferData ( GL_ARRAY_BUFFER, sizeof ( screen_vertices ), screen_vertices, GL_STATIC_DRAW );
@@ -257,8 +269,8 @@ void hw_surface::_copy_source_to_texture()
 
                 glBindTexture ( GL_TEXTURE_2D, 0 );
         } else {
-                printf ( "Unable to map PBO buffer.\n" );
-                print_gl_error ( __FILE__, __LINE__ );
+                //printf ( "Unable to map PBO buffer.\n" );
+                //print_gl_error ( __FILE__, __LINE__ );
         }
 
         glBindBuffer ( GL_PIXEL_UNPACK_BUFFER, 0 );
@@ -314,22 +326,16 @@ void hw_surface::_copy_source_to_texture ( int numrects, SDL_Rect* rects )
 
                 glBindTexture ( GL_TEXTURE_2D, 0 );
         } else {
-                printf ( "Unable to map PBO buffer.\n" );
-                print_gl_error ( __FILE__, __LINE__ );
+                //printf ( "Unable to map PBO buffer.\n" );
+                //print_gl_error ( __FILE__, __LINE__ );
         }
         glBindBuffer ( GL_PIXEL_UNPACK_BUFFER, 0 );
 }
 
 void hw_surface::_setup_program()
 {
-        _vertex_shader = compile_shader ( "../shaders/default.vert", GL_VERTEX_SHADER );
-        _fragment_shader = compile_shader ( "../shaders/default.frag", GL_FRAGMENT_SHADER );
-        link_program ( _shader_program, _vertex_shader, _fragment_shader );
-        glDeleteShader ( _vertex_shader );
-        glDeleteShader ( _fragment_shader );
-
         _position_attrib = glGetAttribLocation ( _shader_program, "position" );
-        _texcoord_attrib = glGetAttribLocation ( _shader_program, "texcoord" );
+        _texcoord_attrib = glGetAttribLocation ( _shader_program, "vs_texcoord" );
         _texunit_uniform = glGetUniformLocation ( _shader_program, "texture_unit" );
         _ratio_uniform = glGetUniformLocation ( _shader_program, "res_ratio" );
 }
@@ -340,10 +346,10 @@ void hw_surface::_create_palette()
         _palette = new Uint32[pal->ncolors];
         for ( int i = 0; i < pal->ncolors; i++ ) {
                 _palette[i] = sdl::SDL_MapRGB ( _target->format,
-                                           pal->colors[i].r,
-                                           pal->colors[i].g,
-                                           pal->colors[i].b
-                                         );
+                                                pal->colors[i].r,
+                                                pal->colors[i].g,
+                                                pal->colors[i].b
+                                              );
         }
 }
 }

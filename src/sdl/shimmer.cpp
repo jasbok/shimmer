@@ -6,36 +6,19 @@ namespace shimmer
 shimmer::shimmer()
         : _w ( 0 ), _h ( 0 ), _bpp ( 32 ),
           _video_flags ( 0 ),
-          _config (),
-
           _video ( nullptr ),
           _source ( nullptr ), _target ( nullptr ),
           _warp_factor_x ( 1 ), _warp_factor_y ( 1 ),
-
-          _user_mode ( false )
+          _video_initialised ( false ), _user_mode ( false )
 {
-        init();
+        glewExperimental = true;
+        _shader_manager = new shader_manager ();
 }
 
 shimmer::~shimmer()
 {
-        destroy();
-}
-
-//
-//  CONFIGURATION AND RESOURCE MANAGEMENT
-//
-void shimmer::init()
-{
-        DLOG ( "Initialising Shimmer..." );
-}
-
-void shimmer::destroy()
-{
-        DLOG ( "Destroying Shimmer..." );
-        if ( _video ) {
-                delete _video;
-        }
+        if ( _video ) delete _video;
+        if ( _shader_manager ) delete _shader_manager;
 }
 
 //
@@ -43,18 +26,16 @@ void shimmer::destroy()
 //
 void shimmer::setup_video()
 {
-        DLOG ( "Setting video..." );
-
-        if ( _source->flags & SDL_OPENGL ) {
-                printf ( "==> Application requested an OpenGL context." );
-        }
-        _configure_video_from_source();
         _create_video_surface();
 
-        if ( _video ) delete _video;
+        if ( !_video_initialised ) {
+                glewInit();
+                _shader_manager->init();
+                _video_initialised = true;
+        }
 
-        _video = new hw_surface ( _source, _target );
-        _video->set_config ( _config );
+        if ( _video ) delete _video;
+        _video = new hw_surface ( _source, _target,  _shader_manager->create_program ( {}, {} ) );
 }
 
 void shimmer::update_video()
@@ -79,7 +60,8 @@ void shimmer::resize_video()
 {
         DLOG ( "Resizing video..." );
         _create_video_surface();
-        _video->resize();
+        if ( _video )
+                _video->resize();
 }
 
 
@@ -125,7 +107,7 @@ void shimmer::warp_coord ( Uint16* x, Uint16* y )
 //
 // FIELD ACCESS
 //
-SDL_Surface * shimmer::source()
+SDL_Surface *shimmer::source()
 {
         //DLOG ( "Getting source... %p", _source );
         return _source;
@@ -137,7 +119,7 @@ void shimmer::source ( SDL_Surface* source )
         _source = source;
 }
 
-SDL_Surface * shimmer::target()
+SDL_Surface *shimmer::target()
 {
         //DLOG ( "Getting target... %p", _target );
         return _target;
@@ -146,26 +128,20 @@ SDL_Surface * shimmer::target()
 //
 //  PRIVATE: VIDEO
 //
-void shimmer::_configure_video_from_source()
-{
-        DLOG ( "Configure video from source..." );
-
-        if ( !_w ) _w = _source->w;
-        if ( !_h ) _h = _source->h;
-}
-
 void shimmer::_create_video_surface()
 {
         DLOG ( "Create video surface..." );
 
-        // Do not allow the window to resize into nothing.
-        _w = _w > 50 ? _w : 50;
-        _h = _h > 50 ? _h: 50;
+        if ( _w == 0 && _h == 0 ) {
+                _w = _source->w;
+                _h = _source->h;
+        } else {
+                // Do not allow the window to resize into nothing.
+                _w = _w > 50 ? _w : 50;
+                _h = _h > 50 ? _h: 50;
+        }
 
         _target = sdl::SDL_SetVideoMode ( _w, _h, _bpp, _video_flags | SDL_RESIZABLE | SDL_OPENGL );
-        glewExperimental = true;
-        glewInit();
-
         _calculate_warp_factor();
 }
 
@@ -175,8 +151,10 @@ void shimmer::_create_video_surface()
 void shimmer::_calculate_warp_factor()
 {
         DLOG ( "Calculate warp factor..." );
-        _warp_factor_x = _source->w / ( float ) ( _target->w );
-        _warp_factor_y = _source->h / ( float ) ( _target->h );
+        if ( _source && _target ) {
+                _warp_factor_x = _source->w / ( float ) ( _target->w );
+                _warp_factor_y = _source->h / ( float ) ( _target->h );
+        }
 }
 
 void shimmer::_process_keyboard ( SDL_Event* event )
@@ -198,12 +176,16 @@ void shimmer::_process_keyboard ( SDL_Event* event )
                 if ( event->active.type == SDL_KEYUP ) {
                         switch ( event->key.keysym.sym ) {
                         case SDLK_l:
-                                _config.next_filter_level();
-                                _video->set_config ( _config );
+                                config::instance().next_filter_level();
+                                _video->update_config();
                                 break;
                         case SDLK_a:
-                                _config.toggle_keep_aspect_ratio();
-                                _video->set_config ( _config );
+                                config::instance().toggle_keep_aspect_ratio();
+                                _video->update_config();
+                                break;
+                        case SDLK_s:
+                                config::instance().toggle_keep_aspect_ratio();
+                                _video->update_config();
                                 break;
                         default:
                                 break;
@@ -243,4 +225,7 @@ void shimmer::_process_video_resize ( SDL_Event* event )
         }
 }
 }
+
+
+
 

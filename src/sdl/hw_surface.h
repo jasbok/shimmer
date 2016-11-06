@@ -1,7 +1,6 @@
 #ifndef HW_SURFACE_H
 #define HW_SURFACE_H
 
-#include "config.h"
 #include <SDL.h>
 #include <GL/glew.h>
 #include <deque>
@@ -11,22 +10,27 @@ namespace shimmer
 class hw_surface
 {
 public:
-        hw_surface ( SDL_Surface* source, SDL_Surface* target );
+        hw_surface ( SDL_Surface* source, SDL_Surface* target, GLuint shader_program );
         virtual ~hw_surface();
 
         virtual void source ( SDL_Surface* source );
         virtual SDL_Surface* source();
         virtual void target ( SDL_Surface* target );
         virtual SDL_Surface* target();
+        virtual void shader_program ( GLuint shader_program );
+        virtual GLuint shader_program();
+
         virtual void update();
         virtual void update ( int numrects, SDL_Rect* rects );
         virtual void refresh();
         virtual void resize();
-        virtual void set_config ( config config );
+        virtual void update_config ();
 
 private:
         SDL_Surface *_source;
         SDL_Surface *_target;
+        GLuint _shader_program;
+
         GLfloat _ratio_w, _ratio_h;
 
         GLenum _pixel_format;
@@ -41,11 +45,6 @@ private:
 
         GLuint _texture;
         GLuint _texture_filter;
-        bool _keep_aspect_ratio;
-
-        GLuint _vertex_shader;
-        GLuint _fragment_shader;
-        GLuint _shader_program;
 
         GLuint _position_attrib;
         GLuint _texcoord_attrib;
