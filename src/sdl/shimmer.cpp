@@ -1,9 +1,6 @@
 #include "shimmer.h"
 #include "sdl_shim.h"
 
-#include "sw_surface.h"
-#include "hw_surface.h"
-
 namespace shimmer
 {
 shimmer::shimmer()
@@ -31,7 +28,6 @@ shimmer::~shimmer()
 void shimmer::init()
 {
         DLOG ( "Initialising Shimmer..." );
-        _print_out_configuration();
 }
 
 void shimmer::destroy()
@@ -57,12 +53,8 @@ void shimmer::setup_video()
 
         if ( _video ) delete _video;
 
-        if ( _config.use_software ) {
-                _video = new sw_surface ( _source, _target );
-        } else {
-                _video = new hw_surface ( _source, _target );
-        }
-        _video->set_config(_config);
+        _video = new hw_surface ( _source, _target );
+        _video->set_config ( _config );
 }
 
 void shimmer::update_video()
@@ -160,11 +152,6 @@ void shimmer::_configure_video_from_source()
 
         if ( !_w ) _w = _source->w;
         if ( !_h ) _h = _source->h;
-
-        if ( _config.use_software ) {
-                _bpp = _source->format->BitsPerPixel;
-                _video_flags = _source->flags | SDL_RESIZABLE;
-        }
 }
 
 void shimmer::_create_video_surface()
@@ -175,16 +162,9 @@ void shimmer::_create_video_surface()
         _w = _w > 50 ? _w : 50;
         _h = _h > 50 ? _h: 50;
 
-        if ( _config.use_software ) {
-                DLOG ( "Created software surface." );
-                _target = sdl::SDL_SetVideoMode ( _w, _h, _bpp, _video_flags );
-        } else {
-                DLOG ( "Created hardware surface." );
-                _target = sdl::SDL_SetVideoMode ( _w, _h, _bpp, _video_flags | SDL_RESIZABLE | SDL_OPENGL );
-
-                glewExperimental = true;
-                glewInit();
-        }
+        _target = sdl::SDL_SetVideoMode ( _w, _h, _bpp, _video_flags | SDL_RESIZABLE | SDL_OPENGL );
+        glewExperimental = true;
+        glewInit();
 
         _calculate_warp_factor();
 }
@@ -219,11 +199,11 @@ void shimmer::_process_keyboard ( SDL_Event* event )
                         switch ( event->key.keysym.sym ) {
                         case SDLK_l:
                                 _config.next_filter_level();
-                                _video->set_config(_config);
+                                _video->set_config ( _config );
                                 break;
                         case SDLK_a:
                                 _config.toggle_keep_aspect_ratio();
-                                _video->set_config(_config);
+                                _video->set_config ( _config );
                                 break;
                         default:
                                 break;
@@ -261,14 +241,6 @@ void shimmer::_process_video_resize ( SDL_Event* event )
         if ( do_resize ) {
                 resize_video();
         }
-}
-
-void shimmer::_print_out_configuration()
-{
-        printf ( "Shimmer Configuration:\n" );
-        printf ( "======================\n" );
-        printf ( "Target Resolution: %ux%u\n", _config.width, _config.height );
-        printf ( "Use Software Scaler: %u\n", _config.use_software );
 }
 }
 

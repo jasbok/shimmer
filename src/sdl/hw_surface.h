@@ -1,14 +1,14 @@
 #ifndef HW_SURFACE_H
 #define HW_SURFACE_H
 
-#include "video_surface.h"
+#include "config.h"
 #include <SDL.h>
 #include <GL/glew.h>
 #include <deque>
 
 namespace shimmer
 {
-class hw_surface : public video_surface
+class hw_surface
 {
 public:
         hw_surface ( SDL_Surface* source, SDL_Surface* target );

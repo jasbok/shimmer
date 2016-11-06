@@ -2,7 +2,7 @@
 #define SHIMMER_H
 
 #include "config.h"
-#include "video_surface.h"
+#include "hw_surface.h"
 #include <SDL.h>
 #include <thread>
 
@@ -55,7 +55,7 @@ private:
         //
         //  VIDEO
         //
-        video_surface *_video;
+        hw_surface *_video;
         SDL_Surface *_source, *_target;
 
         //
@@ -82,11 +82,6 @@ private:
         void _process_mouse ( SDL_Event* event );
         void _process_keyboard ( SDL_Event* event );
         void _process_video_resize ( SDL_Event* event );
-
-        //
-        //  DEBUG
-        //
-        void _print_out_configuration();
 };
 }
 

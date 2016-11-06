@@ -7,7 +7,6 @@ struct config_t {
         config_t()
                 : width ( 0 ),
                   height ( 0 ),
-                  use_software ( false ),
                   update_rate ( 60 ),
                   filter_level ( 0 ),
                   keep_aspect_ratio ( true )
@@ -27,7 +26,6 @@ struct config_t {
 
         // VIDEO
         unsigned int width, height;
-        bool use_software;
         unsigned int update_rate;
         unsigned int filter_level;
         bool keep_aspect_ratio;
