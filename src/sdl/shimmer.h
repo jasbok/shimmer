@@ -18,6 +18,7 @@ public:
         //
         //  VIDEO
         //
+        void init_opengl();
         void setup_video();
         void update_video();
         void update_video ( int numrects, SDL_Rect* rects );
@@ -40,11 +41,6 @@ public:
 
 
 private:
-        //
-        //  CONFIGURATIONS
-        //
-        int _w, _h, _bpp;
-        Uint32 _video_flags;
 
         //
         //  VIDEO
@@ -61,7 +57,7 @@ private:
         //
         //  PROCESS FLOW
         //
-        bool _video_initialised;
+        bool _opengl_initialised;
         bool _user_mode;
 
 private:

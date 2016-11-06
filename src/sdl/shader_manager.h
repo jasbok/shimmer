@@ -13,7 +13,6 @@ public:
         shader_manager();
         virtual ~shader_manager();
 
-        void init();
         std::vector<std::string> vs_shaders();
         std::vector<std::string> fs_shaders();
 
