@@ -30,6 +30,7 @@ void shimmer::init_opengl()
         glewInit();
         _shader_manager = new shader_manager ();
         _opengl_initialised = true;
+        _setup_menus();
 }
 
 void shimmer::setup_video()
@@ -37,7 +38,7 @@ void shimmer::setup_video()
         _create_video_surface();
 
         if ( !_opengl_initialised ) {
-            init_opengl();
+                init_opengl();
         }
 
         if ( _video ) delete _video;
@@ -179,8 +180,7 @@ void shimmer::_process_keyboard ( SDL_Event* event )
                                 _video->update_config();
                                 break;
                         case SDLK_s:
-                                config::instance().toggle_keep_aspect_ratio();
-                                _video->update_config();
+                                _menu_system.get(MENUS::FRAGMENT_SHADER_SELECTION).next()();
                                 break;
                         default:
                                 break;
@@ -217,6 +217,20 @@ void shimmer::_process_video_resize ( SDL_Event* event )
                 resize_video();
         }
 }
+
+void shimmer::shimmer::_setup_menus()
+{
+        menu<std::string, menu_item<std::string, std::string>> fs_menu;
+        for ( auto fs : _shader_manager->fs_shaders() ) {
+                fs_menu.push_back ( menu_item<std::string, std::string> ( fs, fs, [this] ( menu_item<std::string, std::string>& item ) {
+                        config::instance().fragment_shader = item.value();
+                        setup_video();
+                        return true;
+                } ) );
+        }
+        _menu_system.insert ( MENUS::FRAGMENT_SHADER_SELECTION, fs_menu );
+}
+
 }
 
 

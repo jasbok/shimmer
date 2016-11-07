@@ -77,8 +77,7 @@ void shimmer::shader_manager::_compile_common_shaders()
         for ( auto fs : _common_fs_shaders ) {
                 GLuint fs_compiled = compile_shader ( config::instance().shaders_prefix + COMMON_FS_DIR + "/" + fs, GL_FRAGMENT_SHADER );
                 if ( fs_compiled ) {
-                        _common_vs_compiled.push_back ( fs_compiled );
+                        _common_fs_compiled.push_back ( fs_compiled );
                 }
         }
 }
-

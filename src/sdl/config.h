@@ -31,40 +31,19 @@ public:
         std::string fragment_shader;
 
 public:
-        static config &instance()
-        {
-                static config *instance = new config;
-                return *instance;
-        }
+        static config &instance();
 
-        bool toggle_keep_aspect_ratio()
-        {
-                keep_aspect_ratio = !keep_aspect_ratio;
-                return keep_aspect_ratio;
-        }
+        bool toggle_keep_aspect_ratio();
 
-        unsigned int next_filter_level()
-        {
-                filter_level = ++filter_level <= 1 ? filter_level : 0;
-                return filter_level;
-        }
+        unsigned int next_filter_level();
 
 private:
-        config()
-                : width ( 0 ), height ( 0 ),
-                  update_rate ( 59 ),
-                  filter_level ( 0 ),
-                  keep_aspect_ratio ( true ),
-                  data_prefix ( DATA_PREFIX ),
-                  shaders_prefix ( SHADERS_PREFIX ),
-                  vertex_shader ( "default.vert" ),
-                  fragment_shader ( "hsv.frag" )
-        {}
+        config();
 
         config ( const config &conf );
         const config &operator= ( const config &conf );
 
-        ~config() {}
+        virtual ~config() {}
 };
 }
 

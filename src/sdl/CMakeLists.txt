@@ -3,6 +3,7 @@ find_package(SDL)
 include_directories(${SDL_INCLUDE_DIR} )
 
 set(SRCS 
+    "config.cpp"
     "sdl_shim.cpp"
     "shimmer.cpp"
     "hw_surface.cpp"

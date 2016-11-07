@@ -3,12 +3,18 @@
 
 #include "config.h"
 #include "hw_surface.h"
+#include "menu.hpp"
 #include "shader_manager.h"
 #include <SDL.h>
 #include <thread>
 
 namespace shimmer
 {
+enum class MENUS
+{
+        FRAGMENT_SHADER_SELECTION
+};
+
 class shimmer
 {
 public:
@@ -60,6 +66,11 @@ private:
         bool _opengl_initialised;
         bool _user_mode;
 
+        //
+        // MENU SYSTEM
+        //
+        menu_system<MENUS, menu<std::string, menu_item<std::string, std::string>>> _menu_system;
+
 private:
         //
         //  VIDEO
@@ -73,6 +84,11 @@ private:
         void _process_mouse ( SDL_Event* event );
         void _process_keyboard ( SDL_Event* event );
         void _process_video_resize ( SDL_Event* event );
+
+        //
+        // MENU SYSTEM
+        //
+        void _setup_menus();
 };
 }
 
