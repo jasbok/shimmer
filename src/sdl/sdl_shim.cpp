@@ -8,14 +8,17 @@ shimmer::shimmer *shim = nullptr;
 int SDL_Init ( Uint32 flags )
 {
         SHIM_LOG();
-        if ( !shim ) shim = new shimmer::shimmer();
-        return sdl::SDL_Init ( flags );
+        auto result = sdl::SDL_Init ( flags );
+        if ( shim )
+                delete shim;
+        shim = new shimmer::shimmer();
+        return result;
 }
 
 void SDL_Quit()
 {
         SHIM_LOG();
-        if(shim) delete shim;
+        if ( shim ) delete shim;
 }
 
 
@@ -58,7 +61,10 @@ void SDL_UpdateRect ( SDL_Surface* screen, Sint32 x, Sint32 y, Sint32 w, Sint32 
         SHIM_LOG();
         sdl::SDL_UpdateRect ( screen, x, y, w, h );
         if ( screen == shim->source() ) {
-                SDL_Rect rect = { ( Sint16 ) x, ( Sint16 ) y, ( Sint16 ) w, ( Sint16 ) h};
+                SDL_Rect rect = {
+                        static_cast<Sint16> ( x ), static_cast<Sint16> ( y ),
+                        static_cast<Uint16> ( w ), static_cast<Uint16> ( h )
+                };
                 shim->update_video ( 1, &rect );
         }
 }
@@ -82,6 +88,12 @@ int SDL_UpperBlit ( SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_R
         }
         return result;
 
+}
+
+int SDL_FillRect ( SDL_Surface* dst, SDL_Rect* dstrect, Uint32 color )
+{
+        SHIM_LOG();
+        return sdl::SDL_FillRect ( dst, dstrect, color );
 }
 
 int SDL_LockSurface ( SDL_Surface* surface )
@@ -165,8 +177,7 @@ SDL_Surface * SDL_DisplayFormat ( SDL_Surface* surface )
 SDL_Surface * SDL_CreateRGBSurface ( Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask )
 {
         SHIM_LOG();
-        SDL_Surface *surface = sdl::SDL_CreateRGBSurface ( flags, width, height, depth, Rmask, Gmask, Bmask, Amask );
-        return surface;
+        return sdl::SDL_CreateRGBSurface ( flags, width, height, depth, Rmask, Gmask, Bmask, Amask );
 }
 
 SDL_Surface * SDL_CreateRGBSurfaceFrom ( void* pixels, int width, int height, int depth, int pitch, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask )

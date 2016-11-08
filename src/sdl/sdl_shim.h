@@ -13,7 +13,7 @@ SHIM ( int, SDL_Flip, SDL_Surface* screen );
 SHIM ( void, SDL_UpdateRect, SDL_Surface *screen, Sint32 x, Sint32 y, Sint32 w, Sint32 h );
 SHIM ( void, SDL_UpdateRects, SDL_Surface *screen, int numrects, SDL_Rect *rects );
 SHIM ( int, SDL_UpperBlit, SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect );
-
+SHIM ( int, SDL_FillRect, SDL_Surface *dst, SDL_Rect *dstrect, Uint32 color);
 SHIM ( int, SDL_LockSurface, SDL_Surface *surface );
 SHIM ( void, SDL_UnlockSurface, SDL_Surface *surface );
 

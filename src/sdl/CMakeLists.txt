@@ -9,7 +9,8 @@ set(SRCS
     "hw_surface.cpp"
     "shader_manager.cpp"
     "opengl_helpers.cpp"
-    "file_helpers.cpp")
+    "file_helpers.cpp"
+    "regex_helpers.cpp")
 
 add_library(shimmer SHARED ${SRCS})
 target_link_libraries(shimmer ${ALL_OPENGL_LIBRARIES})

@@ -28,6 +28,8 @@ private:
         std::vector<GLuint> _common_fs_compiled;
 private:
         void _list_shaders();
+        GLuint _compile_shader(const std::string& shader_path, GLuint type);
+        std::string _remove_prepocessor_version(const std::string& target);
         void _compile_common_shaders();
 };
 }

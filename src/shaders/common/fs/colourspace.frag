@@ -1,6 +1,10 @@
 #version 130
 
-vec4 shimmer_hsv(vec4 col){
+struct hsv_t{
+    float h; float s; float v; float delta;
+};
+
+hsv_t shimmer_hsv(vec4 col){
     float cmin = min(min(col.r, col.g), col.b);
     float H = 0;
     float S = 0;
@@ -22,6 +26,6 @@ vec4 shimmer_hsv(vec4 col){
             H = (col.r - col.g) / delta + 4;
         }
     }
-    H = H / 6.28319;
-    return vec4(H, S, V, delta);
+    H = H / 6.28319 * 360;
+    return hsv_t(H, S, V, delta);
 }

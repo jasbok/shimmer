@@ -24,7 +24,6 @@ shimmer::~shimmer()
 //
 // VIDEO
 //
-
 void shimmer::init_opengl()
 {
         glewInit();
@@ -42,7 +41,7 @@ void shimmer::setup_video()
         }
 
         if ( _video ) delete _video;
-        _video = new hw_surface ( _source, _target,  _shader_manager->create_program ( {}, {} ) );
+        _video = new hw_surface ( _source, _target,  _shader_manager->create_program ( {config::instance().vertex_shader}, {config::instance().fragment_shader} ) );
 }
 
 void shimmer::update_video()
@@ -224,7 +223,7 @@ void shimmer::shimmer::_setup_menus()
         for ( auto fs : _shader_manager->fs_shaders() ) {
                 fs_menu.push_back ( menu_item<std::string, std::string> ( fs, fs, [this] ( menu_item<std::string, std::string>& item ) {
                         config::instance().fragment_shader = item.value();
-                        setup_video();
+                        if(_video) _video->shader_program(_shader_manager->create_program ( {config::instance().vertex_shader}, {config::instance().fragment_shader} ));
                         return true;
                 } ) );
         }

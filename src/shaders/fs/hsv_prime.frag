@@ -13,7 +13,8 @@ vec2 voffset = vec2(mod(gl_FragCoord.x, res_ratio.x) / res_ratio.x ,mod(gl_FragC
     float delta_color = hsv.v - hsv.delta * 0.5;
     vec4 color = vec4(delta_color, delta_color, delta_color, 1.0);
 
-    if((hsv.h < 15.0 || hsv.h > 345.0) && hsv.s > 0.85){
+    float prime_deg = mod(hsv.h, 60);
+    if((prime_deg < 15.0 || prime_deg > 45.0) && hsv.s > 0.85){
         color = sample;
     }
 

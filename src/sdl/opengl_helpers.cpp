@@ -19,7 +19,7 @@ GLuint compile_shader ( const char* source, GLuint type )
                 glGetShaderiv ( shader, GL_COMPILE_STATUS, &SUCCESS );
                 if ( !SUCCESS ) {
                         glGetShaderInfoLog ( shader, GL_LOG_SIZE, nullptr, LOG );
-                        std::cerr << "Shader Compilation Failed: " << LOG << std::endl;
+                        std::cerr << "Shader Compilation Failed (" << source << "): " << LOG << std::endl;
                 }
         } else {
                 std::cerr << "Could not read shader source: " << source << std::endl;
@@ -31,6 +31,37 @@ GLuint compile_shader ( const char* source, GLuint type )
 GLuint compile_shader ( const std::string& source, GLuint type )
 {
         return compile_shader ( source.c_str(), type );
+}
+
+GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type )
+{
+        static GLint SUCCESS;
+        static GLchar LOG[GL_LOG_SIZE];
+
+        GLuint shader = 0;
+
+        if ( !sources.empty() ) {
+                const GLchar** gl_sources = new const GLchar*[sources.size()];
+                for(unsigned int i = 0; i < sources.size(); i++){
+                        gl_sources[i] = sources[i].c_str();
+                }
+                shader = glCreateShader ( type );
+                glShaderSource ( shader, sources.size(), gl_sources, nullptr );
+                glCompileShader ( shader );
+                glGetShaderiv ( shader, GL_COMPILE_STATUS, &SUCCESS );
+                if ( !SUCCESS ) {
+                        glGetShaderInfoLog ( shader, GL_LOG_SIZE, nullptr, LOG );
+                        std::cerr << "Shader Compilation Failed: " << LOG << std::endl;
+                        for(auto source : sources){
+                                std::cerr << source << std::endl;
+                        }
+                }
+                delete [] gl_sources;
+        } else {
+                std::cerr << "No shader sources provided." << std::endl;
+        }
+
+        return shader;
 }
 
 void link_program ( GLuint program, GLuint vs, GLuint fs )
@@ -82,6 +113,20 @@ void link_program ( GLuint program, const std::vector<GLuint> &vs_list, const st
                         glGetProgramInfoLog ( program, GL_LOG_SIZE, nullptr, LOG );
                         std::cout << "Program linking failed: " << LOG << std::endl;
                 }
+        }
+}
+
+void detachShaders ( GLuint program, const std::vector<GLuint>& shaders )
+{
+        for ( auto s : shaders ) {
+                glDetachShader ( program, s );
+        }
+}
+
+void deleteShaders ( const std::vector<GLuint>& shaders )
+{
+        for ( auto s : shaders ) {
+                glDeleteShader ( s );
         }
 }
 

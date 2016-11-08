@@ -26,5 +26,5 @@ shimmer::config::config()
           data_prefix ( DATA_PREFIX ),
           shaders_prefix ( SHADERS_PREFIX ),
           vertex_shader ( "default.vert" ),
-          fragment_shader ( "hsv.frag" )
+          fragment_shader ( "default.frag" )
 {}

@@ -12,10 +12,14 @@
 
 namespace shimmer
 {
-    GLuint compile_shader ( const char* source, GLuint type );
-    GLuint compile_shader ( const std::string& source, GLuint type );
-    void link_program ( GLuint program, GLuint vs, GLuint fs );
-    void link_program ( GLuint program, const std::vector<GLuint> &vs_list, const std::vector<GLuint> &fs_list );
-    int print_gl_error ( const char* file, int line );
+GLuint compile_shader ( const char* source, GLuint type );
+GLuint compile_shader ( const std::string& source, GLuint type );
+GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type );
+
+void link_program ( GLuint program, GLuint vs, GLuint fs );
+void link_program ( GLuint program, const std::vector<GLuint> &vs_list, const std::vector<GLuint> &fs_list );
+int print_gl_error ( const char* file, int line );
+void detachShaders ( GLuint program, const std::vector<GLuint>& shaders );
+void deleteShaders ( const std::vector<GLuint>& shaders );
 }
 #endif

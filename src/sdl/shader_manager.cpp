@@ -2,6 +2,7 @@
 #include "config.h"
 #include "file_helpers.h"
 #include "opengl_helpers.h"
+#include "regex_helpers.h"
 
 #define VS_DIR "/vs"
 #define FS_DIR "/fs"
@@ -27,32 +28,32 @@ std::vector<std::string> shimmer::shader_manager::fs_shaders()
         return _fs_shaders;
 }
 
-GLuint shimmer::shader_manager::create_program ( const std::vector<std::string>& vs_shaders, const std::vector<std::string>& fs_shaders )
+GLuint shimmer::shader_manager::create_program ( const std::vector<std::string>& vs_in, const std::vector<std::string>& fs_in )
 {
         GLuint shader_program = glCreateProgram();
-        GLuint vs = compile_shader ( config::instance().shaders_prefix + "/vs/" + config::instance().vertex_shader, GL_VERTEX_SHADER );
-        GLuint fs = compile_shader ( config::instance().shaders_prefix + "/fs/"  + config::instance().fragment_shader, GL_FRAGMENT_SHADER );
+        std::vector<GLuint> vs_list = {};
+        std::vector<GLuint> fs_list = {};
 
-        if ( vs && fs ) {
-                std::vector<GLuint> vs_list = {vs};
-                std::vector<GLuint> fs_list = {fs};
-
-                for ( auto vs : _common_vs_compiled ) {
-                        vs_list.push_back ( vs );
-                }
-                for ( auto fs : _common_fs_compiled ) {
-                        fs_list.push_back ( fs );
-                }
-                link_program ( shader_program, vs_list, fs_list );
-
-                glDetachShader ( shader_program, vs );
-                glDetachShader ( shader_program, fs );
-        } else {
-                printf ( "==> Could not compile vs and/or fs shader.\n" );
+        for ( auto vs : vs_in ) {
+                GLuint compiled = _compile_shader ( config::instance().shaders_prefix + "/vs/" + vs, GL_VERTEX_SHADER );
+                if ( compiled ) vs_list.push_back ( compiled );
+        }
+        for ( auto fs : fs_in ) {
+                GLuint compiled = _compile_shader ( config::instance().shaders_prefix + "/fs/"  + fs, GL_FRAGMENT_SHADER );
+                if ( compiled ) fs_list.push_back ( compiled );
         }
 
-        if ( vs ) glDeleteShader ( vs );
-        if ( fs ) glDeleteShader ( fs );
+        if ( !vs_list.empty() && !fs_list.empty() ) {
+                link_program ( shader_program, vs_list, fs_list );
+                detachShaders ( shader_program, vs_list );
+                detachShaders ( shader_program, fs_list );
+        } else {
+                printf ( "==> Could not compile vs and/or fs shader(s).\n" );
+        }
+
+        deleteShaders ( vs_list );
+        deleteShaders ( fs_list );
+
         return shader_program;
 }
 
@@ -63,6 +64,25 @@ void shimmer::shader_manager::_list_shaders()
         _fs_shaders = list_directory ( config::instance().shaders_prefix + FS_DIR );
         _common_vs_shaders = list_directory ( config::instance().shaders_prefix + COMMON_VS_DIR );
         _common_fs_shaders = list_directory ( config::instance().shaders_prefix + COMMON_FS_DIR );
+}
+
+GLuint shimmer::shader_manager::_compile_shader ( const std::string& shader_path , GLuint type)
+{
+        std::string shader_source = _remove_prepocessor_version(read_contents ( shader_path ));
+        std::vector<std::string> sources;
+        if ( !shader_source.empty() ) {
+                sources.push_back("#version 130\n");
+                for(auto include : find_all ( shader_source, std::regex ( "\\s*\\/{2}\\s*#include\\s+([\\w.\\/\\\\]*)\\s*" ), 1 )){
+                        sources.push_back(_remove_prepocessor_version(read_contents(config::instance().shaders_prefix + "/" + include)));
+                }
+                sources.push_back ( shader_source );
+        }
+        return compile_shader(sources, type);
+}
+
+std::string shimmer::shader_manager::_remove_prepocessor_version(const std::string& target)
+{
+        return std::regex_replace(target, std::regex("\\s*#version\\s\\d{3}\\s*"), "");
 }
 
 void shimmer::shader_manager::_compile_common_shaders()
