@@ -7,6 +7,16 @@
 
 namespace shimmer
 {
+
+struct variable_t
+{
+        std::string type;
+        int size;
+        std::string name;
+};
+
+typedef struct variable_t variable;
+
 class shader_manager
 {
 public:
@@ -28,9 +38,10 @@ private:
         std::vector<GLuint> _common_fs_compiled;
 private:
         void _list_shaders();
-        GLuint _compile_shader(const std::string& shader_path, GLuint type);
-        std::string _remove_prepocessor_version(const std::string& target);
+        GLuint _compile_shader ( const std::string& shader_path, GLuint type );
+        std::string _remove_prepocessor_version ( const std::string& target );
         void _compile_common_shaders();
+        std::vector<variable> _get_uniforms ( const std::string& source );
 };
 }
 

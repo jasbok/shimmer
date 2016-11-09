@@ -66,23 +66,26 @@ void shimmer::shader_manager::_list_shaders()
         _common_fs_shaders = list_directory ( config::instance().shaders_prefix + COMMON_FS_DIR );
 }
 
-GLuint shimmer::shader_manager::_compile_shader ( const std::string& shader_path , GLuint type)
+GLuint shimmer::shader_manager::_compile_shader ( const std::string& shader_path , GLuint type )
 {
-        std::string shader_source = _remove_prepocessor_version(read_contents ( shader_path ));
+        std::string shader_source = _remove_prepocessor_version ( read_contents ( shader_path ) );
         std::vector<std::string> sources;
         if ( !shader_source.empty() ) {
-                sources.push_back("#version 130\n");
-                for(auto include : find_all ( shader_source, std::regex ( "\\s*\\/{2}\\s*#include\\s+([\\w.\\/\\\\]*)\\s*" ), 1 )){
-                        sources.push_back(_remove_prepocessor_version(read_contents(config::instance().shaders_prefix + "/" + include)));
+                sources.push_back ( "#version 130\n" );
+                for ( auto include : find_all ( shader_source, std::regex ( "\\s*\\/{2}\\s*#include\\s+([\\w.\\/\\\\]*)\\s*" ), 1 ) ) {
+                        sources.push_back ( _remove_prepocessor_version ( read_contents ( config::instance().shaders_prefix + "/" + include ) ) );
                 }
                 sources.push_back ( shader_source );
         }
-        return compile_shader(sources, type);
+        for ( auto uniform : _get_uniforms(shader_source) ) {
+                printf ( "==> Active Uniforms: %s[%i] %s\n", uniform.type.c_str(), uniform.size, uniform.name.c_str() );
+        }
+        return compile_shader ( sources, type );
 }
 
-std::string shimmer::shader_manager::_remove_prepocessor_version(const std::string& target)
+std::string shimmer::shader_manager::_remove_prepocessor_version ( const std::string& target )
 {
-        return std::regex_replace(target, std::regex("\\s*#version\\s\\d{3}\\s*"), "");
+        return std::regex_replace ( target, std::regex ( "\\s*#version\\s\\d{3}\\s*" ), "" );
 }
 
 void shimmer::shader_manager::_compile_common_shaders()
@@ -100,4 +103,13 @@ void shimmer::shader_manager::_compile_common_shaders()
                         _common_fs_compiled.push_back ( fs_compiled );
                 }
         }
+}
+
+std::vector<shimmer::variable> shimmer::shader_manager::_get_uniforms ( const std::string& source )
+{
+        std::vector<variable> results;
+        for ( auto uniform : find_all ( source, std::regex ( "uniform\\s+(\\w*)\\s*(\\[(\\d)+\\])?\\s+([\\w]+).*?;" ), {1, 3, 4} ) ) {
+                results.push_back ( variable {uniform[0], uniform[1].empty() ? 0 : std::stoi ( uniform[1] ), uniform[2]} );
+        }
+        return results;
 }

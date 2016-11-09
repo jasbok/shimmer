@@ -1,12 +1,14 @@
 #include "opengl_helpers.h"
 #include "file_helpers.h"
 
+#define BUFFER_SIZE 512
+
 namespace shimmer
 {
 GLuint compile_shader ( const char* source, GLuint type )
 {
         static GLint SUCCESS;
-        static GLchar LOG[GL_LOG_SIZE];
+        static GLchar LOG[BUFFER_SIZE];
 
         GLuint shader = 0;
         std::string shader_source = read_contents ( source );
@@ -18,7 +20,7 @@ GLuint compile_shader ( const char* source, GLuint type )
                 glCompileShader ( shader );
                 glGetShaderiv ( shader, GL_COMPILE_STATUS, &SUCCESS );
                 if ( !SUCCESS ) {
-                        glGetShaderInfoLog ( shader, GL_LOG_SIZE, nullptr, LOG );
+                        glGetShaderInfoLog ( shader, BUFFER_SIZE, nullptr, LOG );
                         std::cerr << "Shader Compilation Failed (" << source << "): " << LOG << std::endl;
                 }
         } else {
@@ -36,7 +38,7 @@ GLuint compile_shader ( const std::string& source, GLuint type )
 GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type )
 {
         static GLint SUCCESS;
-        static GLchar LOG[GL_LOG_SIZE];
+        static GLchar LOG[BUFFER_SIZE];
 
         GLuint shader = 0;
 
@@ -50,7 +52,7 @@ GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type )
                 glCompileShader ( shader );
                 glGetShaderiv ( shader, GL_COMPILE_STATUS, &SUCCESS );
                 if ( !SUCCESS ) {
-                        glGetShaderInfoLog ( shader, GL_LOG_SIZE, nullptr, LOG );
+                        glGetShaderInfoLog ( shader, BUFFER_SIZE, nullptr, LOG );
                         std::cerr << "Shader Compilation Failed: " << LOG << std::endl;
                         for(auto source : sources){
                                 std::cerr << source << std::endl;
@@ -67,7 +69,7 @@ GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type )
 void link_program ( GLuint program, GLuint vs, GLuint fs )
 {
         static GLint SUCCESS;
-        static GLchar LOG[GL_LOG_SIZE];
+        static GLchar LOG[BUFFER_SIZE];
 
         if ( program == 0 ) {
                 std::cout << "Program linking failed: Program has not been created." << std::endl;
@@ -82,7 +84,7 @@ void link_program ( GLuint program, GLuint vs, GLuint fs )
                 glLinkProgram ( program );
                 glGetProgramiv ( program, GL_LINK_STATUS, &SUCCESS );
                 if ( !SUCCESS ) {
-                        glGetProgramInfoLog ( program, GL_LOG_SIZE, nullptr, LOG );
+                        glGetProgramInfoLog ( program, BUFFER_SIZE, nullptr, LOG );
                         std::cout << "Program linking failed: " << LOG << std::endl;
                 }
         }
@@ -91,7 +93,7 @@ void link_program ( GLuint program, GLuint vs, GLuint fs )
 void link_program ( GLuint program, const std::vector<GLuint> &vs_list, const std::vector<GLuint> &fs_list )
 {
         static GLint SUCCESS;
-        static GLchar LOG[GL_LOG_SIZE];
+        static GLchar LOG[BUFFER_SIZE];
 
         if ( program == 0 ) {
                 std::cout << "Program linking failed: Program has not been created." << std::endl;
@@ -110,7 +112,7 @@ void link_program ( GLuint program, const std::vector<GLuint> &vs_list, const st
                 glLinkProgram ( program );
                 glGetProgramiv ( program, GL_LINK_STATUS, &SUCCESS );
                 if ( !SUCCESS ) {
-                        glGetProgramInfoLog ( program, GL_LOG_SIZE, nullptr, LOG );
+                        glGetProgramInfoLog ( program, BUFFER_SIZE, nullptr, LOG );
                         std::cout << "Program linking failed: " << LOG << std::endl;
                 }
         }

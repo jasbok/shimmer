@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#define GL_LOG_SIZE 512
-
 #define PRINT_GL_ERROR_ENUM(ENUM) printf("(%s:%u) GL Error: ENUM.\n", file, line)
 #define PRINT_GL_ERROR() print_gl_error(__FILE__, __LINE__)
 
