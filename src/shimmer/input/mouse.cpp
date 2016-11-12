@@ -22,7 +22,7 @@ void shimmer::mouse::target ( const dimensions<>& dims )
 void shimmer::mouse::_calculate_warp_factors()
 {
         if ( _source_dims.w != 0 && _source_dims.h != 0 ) {
-                _warp_factor_x = _target_dims.w / ( float ) _source_dims.w;
-                _warp_factor_y = _target_dims.h / ( float ) _source_dims.h;
+                _warp_factor_x = _source_dims.w / ( float ) _target_dims.w;
+                _warp_factor_y = _source_dims.h / ( float ) _target_dims.h;
         }
 }

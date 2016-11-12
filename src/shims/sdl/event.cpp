@@ -7,8 +7,7 @@ int SDL_PollEvent ( SDL_Event* event )
 {
         SHIM_LOG();
         int result = sym::SDL_PollEvent ( event );
-        //shimmer_->process_event ( event );
-        //shimmer_->video_api()->update();
+        shims_sdl::process_event (event);
         return result;
 }
 
