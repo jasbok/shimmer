@@ -13,7 +13,6 @@ public:
         virtual ~mouse_system();
 private:
         event_system* _es;
-        void _bind_events();
 };
 }
 

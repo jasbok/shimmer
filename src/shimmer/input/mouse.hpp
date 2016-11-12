@@ -9,10 +9,10 @@ class mouse
 {
 public:
         template<typename T>
-        void transform ( T&x, T&y )
+        void transform ( T*x, T*y )
         {
-                x *= _warp_factor_x;
-                y *= _warp_factor_y;
+                *x = *x * _warp_factor_x;
+                *y = *y * _warp_factor_y;
         }
 
 protected:

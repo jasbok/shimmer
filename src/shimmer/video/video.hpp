@@ -8,13 +8,17 @@ namespace shimmer
 class video
 {
 public:
-        void source(const dimensions<>& dims);
-        void setup(const dimensions<>& dims);
-        void update();
-        void update ( const coordinates<>& coords, const dimensions<>& dims );
+        virtual void source ( const dimensions<>& dims );
+        virtual void target ( const dimensions<>& dims );
+        virtual void setup ( const dimensions<>& dims );
+        virtual void update();
+        virtual void update ( const coordinates<>& coords, const dimensions<>& dims );
 protected:
         video();
         virtual ~video();
+
+private:
+        dimensions<> _source_dims, _target_dims;
 };
 }
 

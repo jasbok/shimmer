@@ -16,10 +16,10 @@ public:
         shimmer();
         virtual ~shimmer();
 
-        keyboard* keyboard_api();
-        mouse* mouse_api();
-        video* video_api();
-        window* window_api();
+        keyboard_system* keyboard_api();
+        mouse_system* mouse_api();
+        video_system* video_api();
+        window_system* window_api();
 private:
         event_system _es;
         keyboard_system _ks;

@@ -11,6 +11,8 @@ class window_system : public window
 public:
         window_system ( event_system* es );
         virtual ~window_system();
+
+        virtual void resize ( const dimensions<>& dims );
 private:
         event_system* _es;
 };

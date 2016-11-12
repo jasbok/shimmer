@@ -11,6 +11,9 @@ class video_system : public video
 public:
         video_system(event_system* es);
         virtual ~video_system();
+
+        virtual void source(const dimensions<>& dims);
+        virtual void target(const dimensions<>& dims);
 private:
         event_system* _es;
 };
