@@ -12,6 +12,6 @@ set(SRCS
     "file_helpers.cpp"
     "regex_helpers.cpp")
 
-add_library(shimmer SHARED ${SRCS})
-target_link_libraries(shimmer ${ALL_OPENGL_LIBRARIES})
-install (TARGETS shimmer DESTINATION libshimmer)
+add_library(shimmer_old SHARED ${SRCS})
+target_link_libraries(shimmer_old ${ALL_OPENGL_LIBRARIES})
+install (TARGETS shimmer_old DESTINATION libshimmer_old)

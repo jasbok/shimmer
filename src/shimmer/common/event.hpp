@@ -1,5 +1,5 @@
-#ifndef SHIMMER_COMMON_EVENT_H
-#define SHIMMER_COMMON_EVENT_H
+#ifndef SHIMMER_COMMON_EVENT_HPP
+#define SHIMMER_COMMON_EVENT_HPP
 
 #include "types.hpp"
 

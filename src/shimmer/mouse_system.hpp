@@ -1,18 +1,18 @@
-#ifndef MOUSE_SYSTEM_H
-#define MOUSE_SYSTEM_H
+#ifndef SHIMMER_MOUSE_SYSTEM_HPP
+#define SHIMMER_MOUSE_SYSTEM_HPP
 
-#include "./input/mouse.h"
-#include "./event_system.hpp"
+#include "event_system.hpp"
+#include "input/mouse.hpp"
 
 namespace shimmer
 {
 class mouse_system : public mouse
 {
 public:
-        mouse_system ( event_system<>* es );
+        mouse_system ( event_system* es );
         virtual ~mouse_system();
 private:
-        event_system<>* _es;
+        event_system* _es;
         void _bind_events();
 };
 }

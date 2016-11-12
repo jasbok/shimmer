@@ -1,5 +1,5 @@
-#ifndef SHIMMER_COMMON_TYPES_H
-#define SHIMMER_COMMON_TYPES_H
+#ifndef SHIMMER_COMMON_TYPES_HPP
+#define SHIMMER_COMMON_TYPES_HPP
 
 namespace shimmer
 {

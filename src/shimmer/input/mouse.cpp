@@ -1,4 +1,4 @@
-#include "mouse.h"
+#include "mouse.hpp"
 
 shimmer::mouse::mouse()
         : _warp_factor_x ( 1.0f ), _warp_factor_y ( 1.0f )

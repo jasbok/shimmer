@@ -1,5 +1,5 @@
-#ifndef SHIMMER_INPUT_MOUSE_H
-#define SHIMMER_INPUT_MOUSE_H
+#ifndef SHIMMER_INPUT_MOUSE_HPP
+#define SHIMMER_INPUT_MOUSE_HPP
 
 #include "../common/types.hpp"
 

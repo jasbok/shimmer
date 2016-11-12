@@ -1,19 +1,18 @@
-#ifndef SHIMMER_WINDOW_SYSTEM
-#define SHIMMER_WINDOW_SYSTEM
+#ifndef SHIMMER_WINDOW_SYSTEM_HPP
+#define SHIMMER_WINDOW_SYSTEM_HPP
 
-#include "./video/window.hpp"
 #include "event_system.hpp"
+#include "video/window.hpp"
 
 namespace shimmer
 {
-class window_system : window
+class window_system : public window
 {
 public:
-        window_system ( event_system<>* es );
+        window_system ( event_system* es );
         virtual ~window_system();
-        void resize ( const dimensions<>& dims );
 private:
-        event_system<> *_es;
+        event_system* _es;
 };
 }
 
