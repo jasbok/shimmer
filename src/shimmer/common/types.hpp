@@ -58,6 +58,33 @@ public:
         }
 };
 
+template<typename C = coordinates<>, typename D = dimensions<>>
+class rectangle
+{
+public:
+        C coords;
+        D dims;
+
+        rectangle ()
+                : coords(), dims()
+        {}
+
+        rectangle ( C coords, D dims )
+                : coords ( coords ), dims ( dims )
+        {}
+
+        bool operator== ( const rectangle<C,D>& op )
+        {
+                return this->coords == op.coords && this->dims == op.dims;
+        }
+
+        friend std::ostream &operator<< ( std::ostream &os, const rectangle<C,D> &rect )
+        {
+                os << "[ coords = " << rect.coords << ", dims = " << rect.dims << " ]";
+                return os;
+        }
+};
+
 }
 
 #endif

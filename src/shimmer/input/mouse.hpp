@@ -11,8 +11,10 @@ public:
         template<typename T>
         void transform ( T*x, T*y )
         {
-                *x = *x * _warp_factor_x;
-                *y = *y * _warp_factor_y;
+                if ( x && y ) {
+                        *x = *x * _warp_factor_x;
+                        *y = *y * _warp_factor_y;
+                }
         }
 
 protected:

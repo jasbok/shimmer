@@ -1,4 +1,4 @@
-#include "../shim_macros.h"
+#include "../shims/shim_macros.h"
 #include "scaled_window.h"
 
 #include <SDL.h>

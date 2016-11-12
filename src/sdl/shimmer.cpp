@@ -138,7 +138,7 @@ void shimmer::_create_video_surface()
                 config::instance().height = config::instance().height > 50 ? config::instance().height: 50;
         }
 
-        _target = sdl::SDL_SetVideoMode ( config::instance().width, config::instance().height, 32, SDL_RESIZABLE | SDL_OPENGL );
+        _target = sym::SDL_SetVideoMode ( config::instance().width, config::instance().height, 32, SDL_RESIZABLE | SDL_OPENGL );
         _calculate_warp_factor();
 }
 
@@ -150,70 +150,6 @@ void shimmer::_calculate_warp_factor()
         if ( _source && _target ) {
                 _warp_factor_x = _source->w / ( float ) ( _target->w );
                 _warp_factor_y = _source->h / ( float ) ( _target->h );
-        }
-}
-
-void shimmer::_process_keyboard ( SDL_Event* event )
-{
-        switch ( event->key.keysym.sym ) {
-        case SDLK_LSUPER:
-        case SDLK_RSUPER:
-                _user_mode = event->active.type == SDL_KEYDOWN;
-                if ( _user_mode ) {
-                        sdl::SDL_WM_GrabInput ( SDL_GRAB_OFF );
-                }
-                break;
-        default:
-                break;
-        }
-
-        if ( _user_mode ) {
-                if ( event->active.type == SDL_KEYUP ) {
-                        switch ( event->key.keysym.sym ) {
-                        case SDLK_l:
-                                config::instance().next_filter_level();
-                                _video->update_config();
-                                break;
-                        case SDLK_a:
-                                config::instance().toggle_keep_aspect_ratio();
-                                _video->update_config();
-                                break;
-                        case SDLK_s:
-                                _menu_system.get(MENUS::FRAGMENT_SHADER_SELECTION).next()();
-                                break;
-                        default:
-                                break;
-                        }
-                }
-
-                // Never pass a user mode key to the application (KEYDOWN or KEYUP).
-                event->active.type = SDL_NOEVENT;
-        }
-}
-
-void shimmer::_process_mouse ( SDL_Event* event )
-{
-        event->motion.x *= _warp_factor_x;
-        event->motion.y *= _warp_factor_y;
-        event->motion.xrel *= _warp_factor_x;
-        event->motion.yrel *= _warp_factor_y;
-}
-
-void shimmer::_process_video_resize ( SDL_Event* event )
-{
-        event->active.type = SDL_NOEVENT;
-        bool do_resize = false;
-        if ( _target->w != event->resize.w && event->resize.w >= 50 && event->resize.w <= 1920 ) {
-                config::instance().width = event->resize.w;
-                do_resize = true;
-        }
-        if ( _target->h != event->resize.h &&  event->resize.h >= 50 && event->resize.h <= 1080 ) {
-                config::instance().height = event->resize.h;
-                do_resize = true;
-        }
-
-        if ( do_resize ) {
-                resize_video();
         }
 }
 

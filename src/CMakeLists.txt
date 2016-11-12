@@ -1,5 +1,6 @@
 add_subdirectory(sdl)
 add_subdirectory(sdl2)
 add_subdirectory(shimmer)
+add_subdirectory(shims)
 file(COPY shaders DESTINATION .)
 install(DIRECTORY shaders DESTINATION libshimmer)

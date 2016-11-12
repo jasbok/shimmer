@@ -1,8 +1,11 @@
-#ifndef SDL_SHIM_H
-#define SDL_SHIM_H
+#ifndef SHIMS_SDL_SHIM_H
+#define SHIMS_SDL_SHIM_H
 
-#include "../shims/shim_macros.h"
+#include "shimmer.hpp"
+#include "../shim_macros.h"
 #include <SDL.h>
+
+extern class::shimmer::shimmer *shimmer_;
 
 SHIM ( int, SDL_Init, Uint32 flags );
 SHIM ( void, SDL_Quit, void );
@@ -19,14 +22,7 @@ SHIM ( void, SDL_UnlockSurface, SDL_Surface *surface );
 
 SHIM ( void, SDL_FreeSurface, SDL_Surface *surface );
 
-
 SHIM ( SDL_GrabMode, SDL_WM_GrabInput, SDL_GrabMode mode );
-
-SHIM ( Uint8, SDL_GetMouseState, int* x, int* y );
-SHIM ( Uint8, SDL_GetRelativeMouseState, int* x, int* y );
-SHIM ( void, SDL_WarpMouse, Uint16 x, Uint16 y );
-
-SHIM ( int, SDL_PollEvent, SDL_Event* event );
 
 SHIM ( void, SDL_GL_SwapBuffers, void );
 

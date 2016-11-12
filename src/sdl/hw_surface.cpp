@@ -153,7 +153,7 @@ void hw_surface::_gl_init()
 
 void hw_surface::_draw_quad()
 {
-        auto now = sdl::SDL_GetTicks();
+        auto now = sym::SDL_GetTicks();
         if ( ( now - _update_ticks ) > ( 1000/60 ) ) {
                 glBindVertexArray ( _vao );
                 glBindTexture ( GL_TEXTURE_2D, _texture );
@@ -167,8 +167,8 @@ void hw_surface::_draw_quad()
 
                 glUseProgram ( 0 );
                 glBindVertexArray ( 0 );
-                sdl::SDL_GL_SwapBuffers();
-                _update_ticks = sdl::SDL_GetTicks();
+                sym::SDL_GL_SwapBuffers();
+                _update_ticks = sym::SDL_GetTicks();
         }
 }
 
@@ -345,7 +345,7 @@ void hw_surface::_create_palette()
         SDL_Palette *pal = _source->format->palette;
         _palette = new Uint32[pal->ncolors];
         for ( int i = 0; i < pal->ncolors; i++ ) {
-                _palette[i] = sdl::SDL_MapRGB ( _target->format,
+                _palette[i] = sym::SDL_MapRGB ( _target->format,
                                                 pal->colors[i].r,
                                                 pal->colors[i].g,
                                                 pal->colors[i].b

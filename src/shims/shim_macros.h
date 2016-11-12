@@ -3,7 +3,7 @@
 
 #include <dlfcn.h>
 
-#define DLSYM(FUNC) namespace sdl { static auto FUNC = (FUNC##_Handle)(dlsym(RTLD_NEXT, #FUNC)); }
+#define DLSYM(FUNC) namespace sym { static auto FUNC = (FUNC##_Handle)(dlsym(RTLD_NEXT, #FUNC)); }
 #define HANDLE_TYPEDEF(RET, FUNC, ARGS...) typedef RET (*FUNC##_Handle)(ARGS)
 #define SHIM(RET, FUNC, ARGS...) HANDLE_TYPEDEF(RET, FUNC, ARGS); DLSYM(FUNC); RET FUNC (ARGS)
 #define HANDLE (*__handle)
