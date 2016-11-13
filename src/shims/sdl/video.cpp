@@ -10,12 +10,17 @@ SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
         if ( source ) {
                 sym::SDL_FreeSurface ( source );
         }
-        //source = sdl::SDL_CreateRGBSurface ( flags, width, height, bpp, 0,0,0,0 );
-        //target = sdl::SDL_SetVideoMode ( width, height, 32, SDL_RESIZABLE | SDL_OPENGL );
-        source = sym::SDL_SetVideoMode ( width, height, bpp, flags | SDL_RESIZABLE );
-        shimmer_->video_api()->source ( {static_cast<unsigned int> ( width ), static_cast<unsigned int> ( height ) } );
-        shimmer_->video_api()->target ( {static_cast<unsigned int> ( width ), static_cast<unsigned int> ( height ) } );
-        shimmer_->video_api()->setup();
+        source = SDL_CreateRGBSurface ( flags, width, height, bpp, 0,0,0,0 );
+        target = sym::SDL_SetVideoMode ( width, height, 32, SDL_RESIZABLE | SDL_OPENGL );
+
+        shimmer_->video()
+        ->source_dims ( {static_cast<unsigned int> ( width ), static_cast<unsigned int> ( height ) } )
+        .target_dims ( {static_cast<unsigned int> ( width ), static_cast<unsigned int> ( height ) } )
+        .bpp ( bpp )
+        .pixel_format ( shimmer::video::pixel_format::BGRA )
+        .pixel_type ( shimmer::video::pixel_type::UNSIGNED_BYTE )
+        .setup();
+
         return source;
 }
 
@@ -29,14 +34,16 @@ SDL_Surface * SDL_GetVideoSurface()
 int SDL_Flip ( SDL_Surface* screen )
 {
         SHIM_LOG();
-        shimmer_->video_api()->update();
+        shimmer_->video()->update();
+        sym::SDL_GL_SwapBuffers();
         return 0;
 }
 
 void SDL_GL_SwapBuffers()
 {
         SHIM_LOG();
-        shimmer_->video_api()->update();
+        shimmer_->video()->update();
+        sym::SDL_GL_SwapBuffers();
 }
 
 
@@ -45,7 +52,8 @@ void SDL_UpdateRect ( SDL_Surface* screen, Sint32 x, Sint32 y, Sint32 w, Sint32 
         SHIM_LOG();
         sym::SDL_UpdateRect ( screen, x, y, w, h );
         if ( screen == source ) {
-                shimmer_->video_api()->update ( {{x, y},{ static_cast<unsigned int> ( w ) , static_cast<unsigned int> ( h ) }} );
+                shimmer_->video()->update ( {{x, y},{ static_cast<unsigned int> ( w ) , static_cast<unsigned int> ( h ) }} );
+                sym::SDL_GL_SwapBuffers();
         }
 }
 
@@ -59,7 +67,8 @@ void SDL_UpdateRects ( SDL_Surface* screen, int numrects, SDL_Rect* rects )
                 for ( int i = 0; i < numrects; i++ ) {
                         srects.push_back ( { { rects[i].x, rects[i].y }, { rects[i].w, rects[i].h } } );
                 }
-                shimmer_->video_api()->update ( srects );
+                shimmer_->video()->update ( srects );
+                sym::SDL_GL_SwapBuffers();
         }
 }
 
@@ -68,7 +77,8 @@ int SDL_UpperBlit ( SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_R
         SHIM_LOG();
         int result = sym::SDL_UpperBlit ( src, srcrect, dst, dstrect );
         if ( dst == source ) {
-                shimmer_->video_api()->update ( { { dstrect->x, dstrect->y }, { dstrect->w, dstrect->h } } );
+                shimmer_->video()->update ( { { dstrect->x, dstrect->y }, { dstrect->w, dstrect->h } } );
+                sym::SDL_GL_SwapBuffers();
         }
         return result;
 }

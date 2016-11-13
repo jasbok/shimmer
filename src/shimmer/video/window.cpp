@@ -12,11 +12,6 @@ void shimmer::window::resize ( const dimensions<>& dims )
         _dims.h = dims.h < 50 ? 50 : dims.h > 1080 ? 1080 : dims.h;
 }
 
-void shimmer::window::dims ( const dimensions<>& dims )
-{
-        _dims = dims;
-}
-
 shimmer::dimensions<> shimmer::window::dims() const
 {
         return _dims;

@@ -5,15 +5,17 @@ namespace shimmer
 class keyboard
 {
 public:
-        enum class shimmer_keys{
+        enum class shimmer_keys
+        {
                 UP, DOWN, LEFT, RIGHT, SELECT, BACK, GRAB_INPUT
         };
-        bool capture();
-        void key_press(shimmer_keys key);
-        void key_release(shimmer_keys key);
-protected:
+
         keyboard();
         virtual ~keyboard();
+
+        bool capture();
+        void key_press ( shimmer_keys key );
+        void key_release ( shimmer_keys key );
 };
 }
 #endif

@@ -8,6 +8,9 @@ namespace shimmer
 class mouse
 {
 public:
+        mouse();
+        virtual ~mouse();
+
         template<typename T>
         void transform ( T*x, T*y )
         {
@@ -16,10 +19,6 @@ public:
                         *y = *y * _warp_factor_y;
                 }
         }
-
-protected:
-        mouse();
-        virtual ~mouse();
 
         void source ( const dimensions<>& dims );
         void target ( const dimensions<>& dims );

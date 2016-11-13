@@ -7,22 +7,22 @@ shimmer::shimmer::shimmer()
 shimmer::shimmer::~shimmer()
 {}
 
-shimmer::keyboard_system * shimmer::shimmer::keyboard_api()
+shimmer::keyboard_api * shimmer::shimmer::keyboard()
 {
         return &_ks;
 }
 
-shimmer::mouse_system * shimmer::shimmer::mouse_api()
+shimmer::mouse_api * shimmer::shimmer::mouse()
 {
         return &_ms;
 }
 
-shimmer::video_system * shimmer::shimmer::video_api()
+shimmer::video_api * shimmer::shimmer::video()
 {
         return &_vs;
 }
 
-shimmer::window_system * shimmer::shimmer::window_api()
+shimmer::window_api * shimmer::shimmer::window()
 {
         return &_ws;
 }

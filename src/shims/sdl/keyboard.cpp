@@ -35,7 +35,7 @@ void shims_sdl::process_keyboard(SDL_Event* event)
 //         }
 
         // Check if keyboard events should be captured
-        if(shimmer_->keyboard_api()->capture()){
+        if(shimmer_->keyboard()->capture()){
                 event->active.type = SDL_NOEVENT;
         }
 }
