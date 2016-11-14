@@ -23,24 +23,44 @@ shimmer::quad::~quad()
 void shimmer::quad::shape ( const dimensions<GLfloat>& ratio )
 {
         GLfloat screen_vertices[] = {
-                // Vertices               // Texcoord
-                ratio.w,   ratio.h,   0.0,        1.0, 0.0,
-                ratio.w,   -ratio.h,  0.0,        1.0, 1.0,
-                -ratio.w,  -ratio.h,  0.0,        0.0, 1.0,
-                -ratio.w,  ratio.h,   0.0,        0.0, 0.0
+                // Position                             // Texcoord
+                ratio.w,   ratio.h,   0.0,              1.0, 0.0,
+                ratio.w,   -ratio.h,  0.0,              1.0, 1.0,
+                -ratio.w,  -ratio.h,  0.0,              0.0, 1.0,
+                -ratio.w,  ratio.h,   0.0,              0.0, 0.0
         };
 
         glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
         glBufferData ( GL_ARRAY_BUFFER, sizeof ( screen_vertices ), screen_vertices, GL_STATIC_DRAW );
         glBindBuffer ( GL_ARRAY_BUFFER, 0 );
-
-        glBindVertexArray ( _vao );
-        glActiveTexture ( GL_TEXTURE0 );
-        glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
 }
 
-void shimmer::quad::render ( const shimmer::shader& shader )
+void shimmer::quad::bind ( const shimmer::shader* shader )
 {
-        shader.use_program();
+        _shader = shader;
+        _setup_vertex_attribs();
+}
+
+void shimmer::quad::render ()
+{
+        glBindVertexArray ( _vao );
         glDrawArrays ( GL_QUADS, 0, 4 );
+        glBindVertexArray ( 0 );
+}
+
+void shimmer::quad::_setup_vertex_attribs()
+{
+        if ( _shader->has_attribute ( "position" ) && _shader->has_attribute ( "texcoord" ) ) {
+                GLint position = _shader->attributes ( "position" ).location();
+                GLint texcoord = _shader->attributes ( "texcoord" ).location();
+                glBindVertexArray ( _vao );
+                glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
+                glVertexAttribPointer ( position, 3, GL_FLOAT, GL_FALSE, 5 * sizeof ( GLfloat ), ( GLvoid* ) 0 );
+                glVertexAttribPointer ( texcoord, 2, GL_FLOAT, GL_FALSE, 5 * sizeof ( GLfloat ), ( GLvoid* ) ( 3 * sizeof ( GLfloat ) ) );
+                glEnableVertexAttribArray ( position );
+                glEnableVertexAttribArray ( texcoord );
+                glBindVertexArray ( 0 );
+        } else {
+                std::cerr << "Expected position and/or texcoord attributes in vertex shader." << std::endl;
+        }
 }

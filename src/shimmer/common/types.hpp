@@ -85,6 +85,51 @@ public:
         }
 };
 
+template<typename T = std::string>
+class variable
+{
+public:
+        T type;
+        int size;
+        std::string name;
+
+        variable() {}
+
+        variable ( T type,
+                   int size,
+                   const std::string& name )
+                : type ( type ), size ( size ), name ( name )
+        {}
+
+        variable ( const variable& copy )
+                : type ( copy.type ), size ( copy.size ), name ( copy.name )
+        {}
+
+        variable ( variable&& move )
+                : type ( std::move ( move.type ) ), size ( move.size ), name ( std::move ( move.name ) )
+        {}
+
+        void operator= ( const variable& copy )
+        {
+                type = copy.type;
+                size = copy.size;
+                name = copy.name;
+        }
+
+        void operator= ( variable&& move )
+        {
+                type = std::move ( move.type );
+                size = move.size;
+                name = std::move ( move.name );
+        }
+
+        friend std::ostream &operator<< ( std::ostream &os, const variable& var )
+        {
+                os << "[ type = " << var.type << ", name = " << var.name << ", size = " << var.size << " ]";
+                return os;
+        }
+};
+
 }
 
 #endif

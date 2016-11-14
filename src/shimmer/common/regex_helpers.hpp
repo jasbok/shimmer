@@ -1,5 +1,5 @@
-#ifndef REGEX_HELPERS_H
-#define REGEX_HELPERS_H
+#ifndef REGEX_HELPERS_HPP
+#define REGEX_HELPERS_HPP
 
 #include <regex>
 #include <string>

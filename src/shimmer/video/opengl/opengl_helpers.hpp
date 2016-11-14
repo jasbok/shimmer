@@ -1,8 +1,10 @@
-#ifndef OPENGL_HELPERS_H
-#define OPENGL_HELPERS_H
+#ifndef OPENGL_HELPERS_HPP
+#define OPENGL_HELPERS_HPP
 
+#include "common/types.hpp"
 #include <GL/glew.h>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #define PRINT_GL_ERROR_ENUM(ENUM) printf("(%s:%u) GL Error: ENUM.\n", file, line)
@@ -16,8 +18,12 @@ GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type );
 
 void link_program ( GLuint program, GLuint vs, GLuint fs );
 void link_program ( GLuint program, const std::vector<GLuint> &vs_list, const std::vector<GLuint> &fs_list );
+void detachShaders ( GLuint program, const std::vector<std::vector<GLuint>>& shaders_vec );
+void deleteShaders ( const std::vector<std::vector<GLuint>>& shaders_vec );
+
+std::unordered_map<std::string, variable<>> read_variables ( const std::string var_keyword, const std::vector<std::string>& sources );
+std::unordered_map<std::string, std::unordered_map<std::string, variable<>>> read_variables ( const std::vector<std::vector<std::string>>& sources_vec );
+
 int print_gl_error ( const char* file, int line );
-void detachShaders ( GLuint program, const std::vector<GLuint>& shaders );
-void deleteShaders ( const std::vector<GLuint>& shaders );
 }
 #endif

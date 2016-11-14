@@ -1,5 +1,6 @@
-#include "opengl_helpers.h"
-#include "common/file_helpers.h"
+#include "opengl_helpers.hpp"
+#include "common/file_helpers.hpp"
+#include "common/regex_helpers.hpp"
 
 #define BUFFER_SIZE 512
 
@@ -44,7 +45,7 @@ GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type )
 
         if ( !sources.empty() ) {
                 const GLchar** gl_sources = new const GLchar*[sources.size()];
-                for(unsigned int i = 0; i < sources.size(); i++){
+                for ( unsigned int i = 0; i < sources.size(); i++ ) {
                         gl_sources[i] = sources[i].c_str();
                 }
                 shader = glCreateShader ( type );
@@ -54,7 +55,7 @@ GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type )
                 if ( !SUCCESS ) {
                         glGetShaderInfoLog ( shader, BUFFER_SIZE, nullptr, LOG );
                         std::cerr << "Shader Compilation Failed: " << LOG << std::endl;
-                        for(auto source : sources){
+                        for ( auto source : sources ) {
                                 std::cerr << source << std::endl;
                         }
                 }
@@ -118,47 +119,49 @@ void link_program ( GLuint program, const std::vector<GLuint> &vs_list, const st
         }
 }
 
-void detachShaders ( GLuint program, const std::vector<GLuint>& shaders )
+void detachShaders ( GLuint program, const std::vector<std::vector<GLuint>>& shaders_vec )
 {
-        for ( auto s : shaders ) {
-                glDetachShader ( program, s );
+        for ( auto shaders : shaders_vec ) {
+                for ( auto s : shaders ) {
+                        glDetachShader ( program, s );
+                }
         }
 }
 
-void deleteShaders ( const std::vector<GLuint>& shaders )
+void deleteShaders ( const std::vector<std::vector<GLuint>>& shaders_vec )
 {
-        for ( auto s : shaders ) {
-                glDeleteShader ( s );
+        for ( auto shaders : shaders_vec ) {
+                for ( auto s : shaders ) {
+                        glDeleteShader ( s );
+                }
         }
 }
 
-// void print_gl_error(const char* file, int line) {
-//     switch(glGetError()) {
-//     case GL_INVALID_ENUM:
-//         PRINT_GL_ERROR_ENUM(GL_INVALID_ENUM);
-//         break;
-//     case GL_INVALID_VALUE:
-//         PRINT_GL_ERROR_ENUM(GL_INVALID_VALUE);
-//         break;
-//     case GL_INVALID_OPERATION:
-//         PRINT_GL_ERROR_ENUM(GL_INVALID_OPERATION);
-//         break;
-//     case GL_INVALID_FRAMEBUFFER_OPERATION:
-//         PRINT_GL_ERROR_ENUM(GL_INVALID_FRAMEBUFFER_OPERATION);
-//         break;
-//     case GL_OUT_OF_MEMORY:
-//         PRINT_GL_ERROR_ENUM(GL_OUT_OF_MEMORY);
-//         break;
-//     case GL_STACK_UNDERFLOW:
-//         PRINT_GL_ERROR_ENUM(GL_STACK_UNDERFLOW);
-//         break;
-//     case GL_STACK_OVERFLOW:
-//         PRINT_GL_ERROR_ENUM(GL_STACK_OVERFLOaW);
-//         break;
-//     default:
-//         break;
-//     }
-// }
+std::unordered_map<std::string, variable<>> read_variables ( const std::string var_keyword, const std::vector<std::string>& sources )
+{
+        std::unordered_map<std::string, variable<>> results;
+        std::regex regex ( var_keyword + "\\s+(\\w*)\\s*(\\[(\\d)+\\])?\\s+([\\w]+).*?;" );
+        for ( auto source : sources ) {
+                for ( auto uniform : find_all ( source, regex, {1, 3, 4} ) ) {
+                        results[uniform[0]] = variable<> ( uniform[0], uniform[1].empty() ? 0 : std::stoi ( uniform[1] ), uniform[2] );
+                }
+        }
+        return results;
+}
+
+std::unordered_map<std::string, std::unordered_map<std::string, variable<>>> read_variables ( const std::vector<std::vector<std::string>>& sources_vec )
+{
+        std::unordered_map<std::string, std::unordered_map<std::string, variable<>>> results;
+        std::regex regex ( "\\s+(\\w*)\\s+(\\w*)\\s*(\\[(\\d)+\\])?\\s+([\\w]+).*?;" );
+        for ( auto sources : sources_vec ) {
+                for ( auto source : sources ) {
+                        for ( auto uniform : find_all ( source, regex, {1, 3, 4} ) ) {
+                                results[uniform[0]][uniform[1]] = variable<> ( uniform[1], uniform[2].empty() ? 0 : std::stoi ( uniform[2] ), uniform[3] );
+                        }
+                }
+        }
+        return results;
+}
 
 int print_gl_error ( const char* file, int line )
 {

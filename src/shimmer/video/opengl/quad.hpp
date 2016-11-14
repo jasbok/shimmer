@@ -16,10 +16,14 @@ public:
         virtual ~quad();
 
         void shape ( const dimensions<GLfloat>& ratio );
-        void render ( const shader& shader );
+        void render ();
+        void bind (const shader* shader);
 private:
         GLuint _vbo;
         GLuint _vao;
+        const shader* _shader;
+private:
+        void _setup_vertex_attribs();
 };
 }
 
