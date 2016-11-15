@@ -77,7 +77,11 @@ int SDL_UpperBlit ( SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_R
         SHIM_LOG();
         int result = sym::SDL_UpperBlit ( src, srcrect, dst, dstrect );
         if ( dst == source ) {
-                shimmer_->video()->update ( { { dstrect->x, dstrect->y }, { dstrect->w, dstrect->h } } );
+                if ( dstrect ) {
+                        shimmer_->video()->update ( { { dstrect->x, dstrect->y }, { dstrect->w, dstrect->h } } );
+                } else {
+                        shimmer_->video()->update();
+                }
                 sym::SDL_GL_SwapBuffers();
         }
         return result;

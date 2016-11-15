@@ -25,9 +25,10 @@ private:
         std::vector<std::string> _fs_shaders;
 private:
         void _list_shaders();
-        std::vector<std::string> _read_sources(const std::string& base, const std::vector<std::string>& paths);
-        std::vector<GLuint> _compile_sources(const std::vector<std::string>& sources, GLuint type);
-        GLuint _link_compiled(const std::vector<GLuint>& vs, const std::vector<GLuint>& fs);
+        std::vector<std::string> _read_sources ( const std::string& base, const std::vector<std::string>& paths );
+        std::vector<GLuint> _compile_sources ( const std::vector<std::string>& sources, GLuint type );
+        GLuint _link_compiled ( const std::vector<GLuint>& vs, const std::vector<GLuint>& fs );
+        std::vector<glsl_variable> _read_variables ( const std::vector<std::vector<std::string>>& sources_vec );
 };
 }
 

@@ -137,32 +137,6 @@ void deleteShaders ( const std::vector<std::vector<GLuint>>& shaders_vec )
         }
 }
 
-std::unordered_map<std::string, variable<>> read_variables ( const std::string var_keyword, const std::vector<std::string>& sources )
-{
-        std::unordered_map<std::string, variable<>> results;
-        std::regex regex ( var_keyword + "\\s+(\\w*)\\s*(\\[(\\d)+\\])?\\s+([\\w]+).*?;" );
-        for ( auto source : sources ) {
-                for ( auto uniform : find_all ( source, regex, {1, 3, 4} ) ) {
-                        results[uniform[0]] = variable<> ( uniform[0], uniform[1].empty() ? 0 : std::stoi ( uniform[1] ), uniform[2] );
-                }
-        }
-        return results;
-}
-
-std::unordered_map<std::string, std::unordered_map<std::string, variable<>>> read_variables ( const std::vector<std::vector<std::string>>& sources_vec )
-{
-        std::unordered_map<std::string, std::unordered_map<std::string, variable<>>> results;
-        std::regex regex ( "\\s+(\\w*)\\s+(\\w*)\\s*(\\[(\\d)+\\])?\\s+([\\w]+).*?;" );
-        for ( auto sources : sources_vec ) {
-                for ( auto source : sources ) {
-                        for ( auto uniform : find_all ( source, regex, {1, 3, 4} ) ) {
-                                results[uniform[0]][uniform[1]] = variable<> ( uniform[1], uniform[2].empty() ? 0 : std::stoi ( uniform[2] ), uniform[3] );
-                        }
-                }
-        }
-        return results;
-}
-
 int print_gl_error ( const char* file, int line )
 {
         GLenum error = glGetError();

@@ -1,4 +1,3 @@
-add_subdirectory(api)
 add_subdirectory(catch)
 
 set(SRCS 
@@ -12,7 +11,7 @@ set(SRCS
     "common/regex_helpers.cpp"
     "input/keyboard.cpp"
     "input/mouse.cpp"
-    "video/opengl/attribute.cpp"
+    "video/opengl/glsl_variable.cpp"
     "video/opengl/opengl_helpers.cpp"
     "video/opengl/quad.cpp"
     "video/opengl/shader.cpp"
