@@ -5,6 +5,7 @@
 #include "texture.hpp"
 #include "../../common/types.hpp"
 #include <GL/glew.h>
+#include <memory>
 
 namespace shimmer
 {
@@ -17,11 +18,11 @@ public:
 
         void shape ( const dimensions<GLfloat>& ratio );
         void render ();
-        void bind (const shader* shader);
+        void bind (std::shared_ptr<shader>& shader);
 private:
         GLuint _vbo;
         GLuint _vao;
-        const shader* _shader;
+        std::shared_ptr<shader> _shader;
 private:
         void _setup_vertex_attribs();
 };

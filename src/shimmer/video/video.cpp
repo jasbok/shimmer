@@ -14,6 +14,7 @@ void shimmer::video::setup ()
         if ( !_renderer ) {
                 _renderer = std::unique_ptr<renderer>(opengl_renderer::create());
         }
+        _renderer->source_format(source_dims(), bpp(), pixel_format(), pixel_type());
 }
 
 void shimmer::video::update()

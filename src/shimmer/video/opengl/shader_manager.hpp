@@ -18,7 +18,7 @@ public:
         std::vector<std::string> vs_shaders();
         std::vector<std::string> fs_shaders();
 
-        shader create_shader ( const std::vector<std::string> &vs_shaders, const std::vector<std::string> &fs_shaders );
+        shader* create( const std::vector<std::string> &vs_shaders, const std::vector<std::string> &fs_shaders );
 private:
         std::string _shader_dir;
         std::vector<std::string> _vs_shaders;

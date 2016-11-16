@@ -22,7 +22,7 @@ std::vector<std::string> shimmer::shader_manager::fs_shaders()
         return _fs_shaders;
 }
 
-shimmer::shader shimmer::shader_manager::create_shader ( const std::vector<std::string>& vs_in, const std::vector<std::string>& fs_in )
+shimmer::shader* shimmer::shader_manager::create ( const std::vector<std::string>& vs_in, const std::vector<std::string>& fs_in )
 {
         auto vs_sources = _read_sources ( config::instance().shaders_prefix + "/vs/", vs_in );
         auto fs_sources = _read_sources ( config::instance().shaders_prefix + "/fs/", fs_in );
@@ -32,8 +32,8 @@ shimmer::shader shimmer::shader_manager::create_shader ( const std::vector<std::
         auto variables = _read_variables ( {vs_sources, fs_sources} );
         deleteShaders ( {{vs_compiled}, {fs_compiled}} );
 
-        shader shader ( program );
-        shader.add ( variables );
+        shader *shader = new class shader( program );
+        shader->add ( variables );
         return shader;
 }
 

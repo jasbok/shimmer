@@ -13,12 +13,15 @@ SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
         source = SDL_CreateRGBSurface ( flags, width, height, bpp, 0,0,0,0 );
         target = sym::SDL_SetVideoMode ( width, height, 32, SDL_RESIZABLE | SDL_OPENGL );
 
+        auto pixel_format = bpp == 16 ? shimmer::pixel_format::RGB : shimmer::pixel_format::BGRA;
+        auto pixel_type = bpp == 16 ? shimmer::pixel_type::UNSIGNED_SHORT_5_6_5 : shimmer::pixel_type::UNSIGNED_BYTE;
+
         shimmer_->video()
         ->source_dims ( {static_cast<unsigned int> ( width ), static_cast<unsigned int> ( height ) } )
         .target_dims ( {static_cast<unsigned int> ( width ), static_cast<unsigned int> ( height ) } )
         .bpp ( bpp )
-        .pixel_format ( shimmer::video::pixel_format::BGRA )
-        .pixel_type ( shimmer::video::pixel_type::UNSIGNED_BYTE )
+        .pixel_format ( pixel_format )
+        .pixel_type ( pixel_type )
         .setup();
 
         return source;

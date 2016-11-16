@@ -2,6 +2,7 @@
 #define SHIMMER_VIDEO_VIDEO_HPP
 
 #include "renderer.hpp"
+#include "common/enums.hpp"
 #include "common/macros.hpp"
 #include "common/types.hpp"
 #include <memory>
@@ -12,15 +13,6 @@ namespace shimmer
 class video
 {
 public:
-        enum class pixel_format
-        {
-                RGB, BGR, RGBA, BGRA
-        };
-        enum class pixel_type
-        {
-                UNSIGNED_BYTE, BYTE, UNSIGNED_SHORT_5_6_5, UNSIGNED_SHORT_5_6_5_REV
-        };
-
         video();
         virtual ~video();
 

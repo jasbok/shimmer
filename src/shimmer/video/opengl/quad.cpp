@@ -24,10 +24,10 @@ void shimmer::quad::shape ( const dimensions<GLfloat>& ratio )
 {
         GLfloat screen_vertices[] = {
                 // Position                             // Texcoord
-                ratio.w,   ratio.h,   0.0,              1.0, 0.0,
-                ratio.w,   -ratio.h,  0.0,              1.0, 1.0,
-                -ratio.w,  -ratio.h,  0.0,              0.0, 1.0,
-                -ratio.w,  ratio.h,   0.0,              0.0, 0.0
+                ratio.w * 0.5f,   ratio.h * 0.5f,   0.0,              1.0, 0.0,
+                ratio.w * 0.5f,   -ratio.h * 0.5f,  0.0,              1.0, 1.0,
+                -ratio.w * 0.5f,  -ratio.h * 0.5f,  0.0,              0.0, 1.0,
+                -ratio.w * 0.5f,  ratio.h * 0.5f,   0.0,              0.0, 0.0
         };
 
         glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
@@ -35,7 +35,7 @@ void shimmer::quad::shape ( const dimensions<GLfloat>& ratio )
         glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 }
 
-void shimmer::quad::bind ( const shimmer::shader* shader )
+void shimmer::quad::bind ( std::shared_ptr<shader>& shader )
 {
         _shader = shader;
         _setup_vertex_attribs();
@@ -44,6 +44,7 @@ void shimmer::quad::bind ( const shimmer::shader* shader )
 void shimmer::quad::render ()
 {
         glBindVertexArray ( _vao );
+        _shader->use_program();
         glDrawArrays ( GL_QUADS, 0, 4 );
         glBindVertexArray ( 0 );
 }
