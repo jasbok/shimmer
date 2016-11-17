@@ -11,7 +11,7 @@ public:
         window();
         virtual ~window();
 
-        void resize ( const dimensions<>& dims );
+        dimensions<> resize ( const dimensions<>& dims );
         dimensions<> dims() const;
 private:
         dimensions<> _dims;

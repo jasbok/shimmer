@@ -12,9 +12,9 @@ void shimmer::video::setup ()
 {
         _calculate_aspect_ratio();
         if ( !_renderer ) {
-                _renderer = std::unique_ptr<renderer>(opengl_renderer::create());
+                _renderer = std::unique_ptr<renderer> ( opengl_renderer::create() );
         }
-        _renderer->source_format(source_dims(), bpp(), pixel_format(), pixel_type());
+        _renderer->source_format ( source_dims(), bpp(), pixel_format(), pixel_type() );
 }
 
 void shimmer::video::update()
@@ -37,7 +37,20 @@ void shimmer::video::update ( const std::vector<rectangle<> >& rects )
         _renderer->render();
 }
 
-void * shimmer::video::texture_surface()
+void shimmer::video::resize ( const dimensions<>& dims )
+{
+        if(_renderer){
+                _renderer->resize ( dims );
+        }
+}
+
+
+void shimmer::video::pixels ( void* pixels )
+{
+        _renderer->pixels ( pixels );
+}
+
+void * shimmer::video::pixels()
 {
         return nullptr;
 }

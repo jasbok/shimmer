@@ -14,7 +14,9 @@ class opengl_renderer : public renderer
 public:
         static opengl_renderer* create();
         virtual ~opengl_renderer();
+        void resize(const dimensions<> & dims) override;
         void pixels(void * pixels) override;
+        void* pixels() override;
         void source_format(const dimensions<>& dims, unsigned int bpp, pixel_format format, pixel_type type) override;
         void render() override;
 private:

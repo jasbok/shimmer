@@ -1,3 +1,4 @@
+#include "video.hpp"
 #include "window.hpp"
 
 void shims_sdl::process_window_resize ( SDL_Event* event )

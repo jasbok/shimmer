@@ -25,6 +25,11 @@ public:
                 return this->w == op.w && this->h == op.h;
         }
 
+        bool operator!= ( const dimensions<T>& op )
+        {
+                return this->w != op.w || this->h != op.h;
+        }
+        
         friend std::ostream &operator<< ( std::ostream &os, const dimensions<T> &dims )
         {
                 os << "( w = " << dims.w << ", h = " << dims.h << " )";

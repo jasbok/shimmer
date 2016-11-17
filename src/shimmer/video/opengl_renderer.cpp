@@ -19,6 +19,11 @@ shimmer::opengl_renderer::opengl_renderer()
 shimmer::opengl_renderer::~opengl_renderer()
 {}
 
+void shimmer::opengl_renderer::resize ( const dimensions<>& dims )
+{
+        glViewport ( 0, 0, dims.w, dims.h );
+}
+
 void shimmer::opengl_renderer::source_format ( const dimensions<>& dims, unsigned int bpp, shimmer::pixel_format format, shimmer::pixel_type type )
 {
         GLenum pixel_format = GL_BGRA;
@@ -54,8 +59,8 @@ void shimmer::opengl_renderer::source_format ( const dimensions<>& dims, unsigne
         .pixel_format ( pixel_format )
         .pixel_type ( pixel_type )
         .filter ( GL_NEAREST )
-        .texunit(GL_TEXTURE0)
-        .location(_foreground_shader->uniforms("texture_unit").location())
+        .texunit ( GL_TEXTURE0 )
+        .location ( _foreground_shader->uniforms ( "texture_unit" ).location() )
         .setup();
 }
 
@@ -63,10 +68,17 @@ void shimmer::opengl_renderer::render()
 {
         glClearColor ( 1.0f, 0.0f, 0.0f, 1.0f );
         glClear ( GL_COLOR_BUFFER_BIT );
+        _foreground_shader->use_program();
         _source_texture.bind();
         _foreground.render();
 }
 
 void shimmer::opengl_renderer::pixels ( void* pixels )
-{}
+{
+        _source_texture.pixels ( pixels );
+}
 
+void * shimmer::opengl_renderer::pixels()
+{
+        return nullptr;
+}

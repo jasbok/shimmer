@@ -14,7 +14,7 @@ public:
         virtual ~texture();
 
         void setup();
-        void data ( void* pixels, unsigned int w, unsigned int h, unsigned int bpp );
+        void pixels ( void* pixels );
         void bind();
         void unbind();
 private:

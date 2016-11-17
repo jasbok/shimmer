@@ -14,10 +14,11 @@ public:
         window_api ( event_system* es );
         virtual ~window_api();
 
-        virtual void resize ( const dimensions<>& dims )
+        virtual shimmer::dimensions<> resize ( const dimensions<>& dims )
         {
-                window::resize ( dims );
-                _es->target_dims_change.emit ( dims );
+                auto result = window::resize ( dims );
+                _es->target_dims_change.emit ( result );
+                return result;
         }
 
 private:

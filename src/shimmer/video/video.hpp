@@ -21,7 +21,9 @@ public:
         virtual void update ( const coordinates<>& coords, const dimensions<>& dims );
         virtual void update ( const rectangle<>& rect );
         virtual void update ( const std::vector<rectangle<>>& rects );
-        virtual void* texture_surface ();
+        virtual void resize( const dimensions<>& dims);
+        virtual void pixels(void* pixels);
+        virtual void* pixels();
 
 private:
         std::unique_ptr<renderer> _renderer;

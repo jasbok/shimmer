@@ -1,7 +1,6 @@
 #include "texture.hpp"
 
 #include <cstring>
-#include <../sdl/opengl_helpers.h>
 
 shimmer::texture::texture()
 {
@@ -17,8 +16,6 @@ shimmer::texture::~texture()
 
 void shimmer::texture::setup()
 {
-        printf ( "Setting up texture...\n" );
-        print_gl_error ( __FILE__, __LINE__ );
         glBindTexture ( GL_TEXTURE_2D, _texture );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filter );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _filter );
@@ -34,11 +31,9 @@ void shimmer::texture::setup()
                        _pixel_type,
                        0 );
         glBindTexture ( GL_TEXTURE_2D, 0 );
-        printf ( "Finished setting up texture.\n" );
-        print_gl_error ( __FILE__, __LINE__ );
 }
 
-void shimmer::texture::data ( void* pixels, unsigned int w, unsigned int h, unsigned int bpp )
+void shimmer::texture::pixels ( void* pixels )
 {
         unsigned int buffer_size = _dims.w * _dims.h * _bpp * 0.125;
         _pbo_index = !_pbo_index;
@@ -66,7 +61,6 @@ void shimmer::texture::data ( void* pixels, unsigned int w, unsigned int h, unsi
                 printf ( "Unable to map PBO buffer.\n" );
                 //print_gl_error ( __FILE__, __LINE__ );
         }
-
         glBindBuffer ( GL_PIXEL_UNPACK_BUFFER, 0 );
 }
 
