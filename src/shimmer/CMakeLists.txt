@@ -1,10 +1,6 @@
 add_subdirectory(catch)
 
 set(SRCS 
-    "api/keyboard_api.cpp"
-    "api/mouse_api.cpp"
-    "api/video_api.cpp"
-    "api/window_api.cpp"
     "common/config.cpp"
     "common/event_system.cpp"
     "common/file_helpers.cpp"
@@ -19,7 +15,6 @@ set(SRCS
     "video/opengl/texture.cpp"
     "video/opengl_renderer.cpp"
     "video/video.cpp"
-    "video/window.cpp"
     "shimmer.cpp")
 
 add_library(shimmer SHARED ${SRCS})

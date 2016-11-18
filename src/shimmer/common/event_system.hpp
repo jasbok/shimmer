@@ -9,8 +9,7 @@ namespace shimmer
 class event_system
 {
 public:
-        Nano::Signal<void(const dimensions<>& dims)> source_dims_change;
-        Nano::Signal<void(const dimensions<>& dims)> target_dims_change;
+        Nano::Signal<void(const dimensions<>& application, const dimensions<>& video)> resolution_change;
 private:
 
 };

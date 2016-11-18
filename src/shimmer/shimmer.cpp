@@ -1,28 +1,26 @@
 #include "shimmer.hpp"
 
 shimmer::shimmer::shimmer()
-        : _es(), _ks ( &_es ), _ms ( &_es ), _vs ( &_es ), _ws ( &_es )
+        : _event_system(),
+          _keyboard ( &_event_system ),
+          _mouse ( &_event_system ),
+          _video ( &_event_system )
 {}
 
 shimmer::shimmer::~shimmer()
 {}
 
-shimmer::keyboard_api * shimmer::shimmer::keyboard()
+class shimmer::keyboard* shimmer::shimmer::keyboard()
 {
-        return &_ks;
+        return &_keyboard;
 }
 
-shimmer::mouse_api * shimmer::shimmer::mouse()
+class shimmer::mouse * shimmer::shimmer::mouse()
 {
-        return &_ms;
+        return &_mouse;
 }
 
-shimmer::video_api * shimmer::shimmer::video()
+class shimmer::video * shimmer::shimmer::video()
 {
-        return &_vs;
-}
-
-shimmer::window_api * shimmer::shimmer::window()
-{
-        return &_ws;
+        return &_video;
 }

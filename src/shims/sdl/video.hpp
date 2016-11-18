@@ -3,6 +3,11 @@
 
 #include "shim.hpp"
 
+namespace shims_sdl{
+        void process_window_resize ( SDL_Event* event );
+        void update_video();
+}
+
 SHIM ( SDL_Surface*, SDL_SetVideoMode, int width, int height, int bpp, Uint32 flags );
 SHIM ( SDL_Surface*, SDL_GetVideoSurface, void );
 SHIM ( int, SDL_Flip, SDL_Surface* screen );

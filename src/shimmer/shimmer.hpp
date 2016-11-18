@@ -3,10 +3,9 @@
 
 #include "common/config.hpp"
 #include "common/event_system.hpp"
-#include "api/keyboard_api.hpp"
-#include "api/mouse_api.hpp"
-#include "api/video_api.hpp"
-#include "api/window_api.hpp"
+#include "input/keyboard.hpp"
+#include "input/mouse.hpp"
+#include "video/video.hpp"
 
 namespace shimmer
 {
@@ -16,16 +15,14 @@ public:
         shimmer();
         virtual ~shimmer();
 
-        keyboard_api* keyboard();
-        mouse_api* mouse();
-        video_api* video();
-        window_api* window();
+        class keyboard* keyboard();
+        class mouse* mouse();
+        class video* video();
 private:
-        event_system _es;
-        keyboard_api _ks;
-        mouse_api _ms;
-        video_api _vs;
-        window_api _ws;
+        event_system _event_system;
+        class keyboard _keyboard;
+        class mouse _mouse;
+        class video _video;
 };
 }
 

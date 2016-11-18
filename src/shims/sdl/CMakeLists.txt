@@ -7,8 +7,7 @@ set(SRCS
     "keyboard.cpp"
     "mouse.cpp"
     "shim.cpp"
-    "video.cpp"
-    "window.cpp")
+    "video.cpp")
 
 add_library(shimmer_sdl SHARED ${SRCS})
 target_link_libraries(shimmer_sdl shimmer ${ALL_OPENGL_LIBRARIES})

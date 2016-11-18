@@ -1,6 +1,7 @@
 #include "keyboard.hpp"
 
-shimmer::keyboard::keyboard()
+shimmer::keyboard::keyboard(class event_system* event_system)
+: _event_system(event_system)
 {}
 
 shimmer::keyboard::~keyboard()

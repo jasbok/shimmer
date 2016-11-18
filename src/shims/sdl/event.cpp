@@ -1,7 +1,7 @@
 #include "event.hpp"
 #include "keyboard.hpp"
 #include "mouse.hpp"
-#include "window.hpp"
+#include "video.hpp"
 
 int SDL_PollEvent ( SDL_Event* event )
 {
