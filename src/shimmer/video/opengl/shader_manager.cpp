@@ -3,6 +3,9 @@
 #include "common/config.hpp"
 #include "common/file_helpers.hpp"
 #include "common/regex_helpers.hpp"
+#include "uniforms/application_output.hpp"
+#include "uniforms/random_output.hpp"
+#include "uniforms/ticks_output.hpp"
 
 shimmer::shader_manager::shader_manager ()
 {
@@ -12,15 +15,11 @@ shimmer::shader_manager::shader_manager ()
 shimmer::shader_manager::~shader_manager()
 {}
 
-std::vector<std::string> shimmer::shader_manager::vs_shaders()
-{
-        return _vs_shaders;
-}
-
-std::vector<std::string> shimmer::shader_manager::fs_shaders()
-{
-        return _fs_shaders;
-}
+std::unordered_map<std::string, enum shimmer::shader_manager::shimmer_uniforms> shimmer::shader_manager::_uniform_map = {
+        {"shimmer_application", shimmer_uniforms::APPLICATION_OUTPUT},
+        {"shimmer_random", shimmer_uniforms::RANDOM},
+        {"shimmer_ticks", shimmer_uniforms::TICKS}
+};
 
 shimmer::shader* shimmer::shader_manager::create ( const std::vector<std::string>& vs_in, const std::vector<std::string>& fs_in )
 {
@@ -29,11 +28,13 @@ shimmer::shader* shimmer::shader_manager::create ( const std::vector<std::string
         auto vs_compiled = compile_shader ( vs_sources, GL_VERTEX_SHADER );
         auto fs_compiled = compile_shader ( fs_sources, GL_FRAGMENT_SHADER );
         auto program = _link_compiled ( {vs_compiled}, {fs_compiled} );
-        auto variables = _read_variables ( {vs_sources, fs_sources} );
+        auto variables = _read_variables ( {vs_sources, fs_sources}, program );
+        auto uniform_outputs = _create_uniform_outputs ( variables );
         deleteShaders ( {{vs_compiled}, {fs_compiled}} );
 
-        shader *shader = new class shader( program );
+        shader *shader = new class shader ( program );
         shader->add ( variables );
+        shader->uniform_outputs ( uniform_outputs );
         return shader;
 }
 
@@ -85,7 +86,7 @@ GLuint shimmer::shader_manager::_link_compiled ( const std::vector<GLuint>& vs, 
         return program;
 }
 
-std::vector<shimmer::glsl_variable> shimmer::shader_manager::_read_variables ( const std::vector<std::vector<std::string>>& sources_vec )
+std::vector<shimmer::glsl_variable> shimmer::shader_manager::_read_variables ( const std::vector<std::vector<std::string>>& sources_vec, GLuint program )
 {
         // 0:qualifier 1:type 2:size 3:name
         std::regex regex ( "\\s*(\\w+)\\s+(\\w+)\\s*(\\[(\\d)+\\])?\\s+([\\w]+).*?;" );
@@ -93,12 +94,56 @@ std::vector<shimmer::glsl_variable> shimmer::shader_manager::_read_variables ( c
         for ( auto sources : sources_vec ) {
                 for ( auto source : sources ) {
                         for ( auto var : find_all ( source, regex, {1, 2, 4, 5} ) ) {
-                                results.push_back (
-                                        glsl_variable (
-                                                glsl_variable::qualifier_from ( var[0] ),
-                                                glsl_variable::type_from ( var[1] ),
-                                                var[2].empty() ? 1 : std::stoi ( var[2] ),
-                                                var[3] ) );
+                                auto variable = glsl_variable (
+                                                        glsl_variable::qualifier_from ( var[0] ),
+                                                        glsl_variable::type_from ( var[1] ),
+                                                        var[2].empty() ? 1 : std::stoi ( var[2] ),
+                                                        var[3] );
+                                if ( variable.qualifier() == glsl_variable::qualifier::ATTRIBUTE ) {
+                                        variable.location(glGetAttribLocation ( program, variable.name().c_str() ));
+                                } else if ( variable.qualifier() == glsl_variable::qualifier::UNIFORM ) {
+                                        variable.location(glGetUniformLocation ( program, variable.name().c_str() ));
+                                }
+                                results.push_back ( variable );
+                        }
+                }
+        }
+        return results;
+}
+
+std::shared_ptr<shimmer::uniform_output> shimmer::shader_manager::_uniform_output_from ( const shimmer::glsl_variable& variable )
+{
+        if ( _uniform_map.find ( variable.name() ) != _uniform_map.end() ) {
+                switch ( _uniform_map[variable.name()] ) {
+                case shimmer_uniforms::APPLICATION_OUTPUT:
+                        if ( variable.type() == glsl_variable::type::SAMPLER2D ) {
+                                return std::make_shared<application_output> ( variable.location(), _application_texture->gl_texture() );
+                        }
+                        break;
+                case shimmer_uniforms::RANDOM:
+                        if ( variable.type() == glsl_variable::type::FLOAT ) {
+                                return std::make_shared<random_output> ( variable.location(), variable.size() );
+                        }
+                        break;
+                case shimmer_uniforms::TICKS:
+                        if ( variable.type() == glsl_variable::type::UINT ) {
+                                std::cout << "var = " << variable << std::endl;
+                                return std::make_shared<ticks_output> ( variable.location() );
+                        }
+                        break;
+                }
+        }
+        return nullptr;
+}
+
+std::vector<std::shared_ptr<shimmer::uniform_output> > shimmer::shader_manager::_create_uniform_outputs ( const std::vector<glsl_variable>& uniforms )
+{
+        std::vector<std::shared_ptr<uniform_output>> results;
+        for ( auto uniform : uniforms ) {
+                if ( uniform.qualifier() == glsl_variable::qualifier::UNIFORM ) {
+                        auto output = _uniform_output_from ( uniform );
+                        if ( output ) {
+                                results.push_back ( output );
                         }
                 }
         }

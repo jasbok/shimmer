@@ -11,27 +11,22 @@ class texture
 {
 public:
         texture();
+        texture(dimensions<GLint> dims, unsigned int bpp, GLenum pixel_format, GLenum pixel_type);
         virtual ~texture();
 
         void setup();
         void pixels ( void* pixels );
-        void bind();
-        void unbind();
 private:
-        GLuint _texture;
         GLuint _pbo[2];
         int _pbo_index;
-        GLenum _unit;
 
+        SHIMMER_GETTER ( texture, GLuint, gl_texture);
         SHIMMER_MEMBER ( texture, dimensions<GLint>, dims );
         SHIMMER_MEMBER ( texture, unsigned int, bpp );
         SHIMMER_MEMBER ( texture, GLenum, filter );
+        SHIMMER_MEMBER ( texture, GLenum, internal_format );
         SHIMMER_MEMBER ( texture, GLenum, pixel_format );
         SHIMMER_MEMBER ( texture, GLenum, pixel_type );
-        SHIMMER_MEMBER ( texture, GLenum, texunit );
-        SHIMMER_MEMBER ( texture, GLint, location );
-private:
-        GLint _uniform_value_from_unit();
 };
 }
 

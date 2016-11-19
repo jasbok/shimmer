@@ -3,7 +3,9 @@
 
 #include "glsl_variable.hpp"
 #include "common/macros.hpp"
+#include "uniforms/uniform_output.hpp"
 #include <GL/glew.h>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -44,6 +46,7 @@ private:
         SHIMMER_MEMBER ( shader, GLuint, program );
         SHIMMER_MEMBER ( shader, variable_map, attributes );
         SHIMMER_MEMBER ( shader, variable_map, uniforms );
+        SHIMMER_MEMBER ( shader, std::vector<std::shared_ptr<uniform_output>>, uniform_outputs);
 };
 }
 

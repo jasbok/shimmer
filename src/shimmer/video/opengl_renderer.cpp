@@ -1,4 +1,6 @@
 #include "opengl_renderer.hpp"
+#include "opengl/formats.hpp"
+#include "opengl/quad.hpp"
 #include "common/config.hpp"
 #include <GL/glew.h>
 
@@ -10,9 +12,17 @@ shimmer::opengl_renderer * shimmer::opengl_renderer::create()
 }
 
 shimmer::opengl_renderer::opengl_renderer()
+        : _aspect_ratio ( {1.0, 1.0} )
 {
-        _foreground_shader = std::shared_ptr<shader> ( _shader_manager.create (
-        {config::instance().vertex_shader}, {config::instance().fragment_shader} ) );
+        //_foreground.model ( std::make_shared<quad> ( _aspect_ratio ) );
+        //_foreground.shader ( std::make_shared<shader> ( _shader_manager.create ({config::instance().vertex_shader}, {config::instance().fragment_shader} ) ) );
+        //_foreground.texture ( std::make_shared<texture> () );
+
+        _source_texture = std::make_shared<texture>();
+        _shader_manager.application_texture ( _source_texture );
+
+        _foreground = quad ( _aspect_ratio );
+        _foreground_shader = std::shared_ptr<shader> ( _shader_manager.create ( {config::instance().vertex_shader}, {config::instance().fragment_shader} ) );
         _foreground.bind ( _foreground_shader );
 }
 
@@ -26,41 +36,12 @@ void shimmer::opengl_renderer::resize ( const dimensions<>& dims )
 
 void shimmer::opengl_renderer::source_format ( const dimensions<>& dims, unsigned int bpp, shimmer::pixel_format format, shimmer::pixel_type type )
 {
-        GLenum pixel_format = GL_BGRA;
-        GLenum pixel_type = GL_UNSIGNED_BYTE;
-        switch ( format ) {
-        case pixel_format::RGB:
-                pixel_format = GL_RGB;
-                break;
-        case pixel_format::BGR:
-                pixel_format = GL_BGR;
-                break;
-        case pixel_format::BGRA:
-                pixel_format = GL_BGRA;
-                break;
-        default:
-                break;
-        }
-
-        switch ( type ) {
-        case pixel_type::UNSIGNED_SHORT_5_6_5:
-                pixel_type = GL_UNSIGNED_SHORT_5_6_5;
-                break;
-        case pixel_type::UNSIGNED_BYTE:
-                pixel_type = GL_UNSIGNED_BYTE;
-                break;
-        default:
-                break;
-        }
-
         _source_texture
-        .dims ( { static_cast<GLint> ( dims.w ), static_cast<GLint> ( dims.h ) } )
+        ->dims ( { static_cast<GLint> ( dims.w ), static_cast<GLint> ( dims.h ) } )
         .bpp ( bpp )
-        .pixel_format ( pixel_format )
-        .pixel_type ( pixel_type )
+        .pixel_format ( gl_formats::pixel_format_from ( format ) )
+        .pixel_type ( gl_formats::pixel_type_from ( type ) )
         .filter ( GL_NEAREST )
-        .texunit ( GL_TEXTURE0 )
-        .location ( _foreground_shader->uniforms ( "texture_unit" ).location() )
         .setup();
 }
 
@@ -68,14 +49,18 @@ void shimmer::opengl_renderer::render()
 {
         glClearColor ( 1.0f, 0.0f, 0.0f, 1.0f );
         glClear ( GL_COLOR_BUFFER_BIT );
+
+        _secondary.render();
+        _main.render();
+        _menu.render();
+
         _foreground_shader->use_program();
-        _source_texture.bind();
         _foreground.render();
 }
 
 void shimmer::opengl_renderer::pixels ( void* pixels )
 {
-        _source_texture.pixels ( pixels );
+        _source_texture->pixels ( pixels );
 }
 
 void * shimmer::opengl_renderer::pixels()

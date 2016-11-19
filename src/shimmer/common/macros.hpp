@@ -8,6 +8,11 @@
                         TYPE NAME() { return _##NAME; }                                         \
                 private: TYPE _##NAME
 
+#define SHIMMER_PTR_MEMBER(CLASS, TYPE, NAME)                                                   \
+                public: CLASS& NAME (TYPE&& NAME){ _##NAME = NAME; return *this; }              \
+                        TYPE NAME() { return _##NAME; }                                         \
+                private: TYPE _##NAME
+
 #define SHIMMER_GETTER(CLASS, TYPE, NAME)                                                       \
                 public: const TYPE NAME() const { return _##NAME; }                             \
                         TYPE NAME() { return _##NAME; }                                         \

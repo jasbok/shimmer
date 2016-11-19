@@ -3,6 +3,7 @@
 
 #include "renderer.hpp"
 #include "opengl/quad.hpp"
+#include "opengl/render_object.hpp"
 #include "opengl/shader_manager.hpp"
 #include "opengl/texture.hpp"
 #include <memory>
@@ -20,10 +21,12 @@ public:
         void source_format(const dimensions<>& dims, unsigned int bpp, pixel_format format, pixel_type type) override;
         void render() override;
 private:
+        SHIMMER_MEMBER(opengl_renderer, dimensions<float>, aspect_ratio);
+        render_object _main, _secondary, _menu;
         quad _foreground, _background;
         std::shared_ptr<shader> _foreground_shader, _background_shader;
         shader_manager _shader_manager;
-        texture _source_texture;
+        std::shared_ptr<texture> _source_texture;
 private:
         opengl_renderer();
 };

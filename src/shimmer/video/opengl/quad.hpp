@@ -1,6 +1,7 @@
 #ifndef SHIMMER_VIDEO_OPENGL_QUAD_HPP
 #define SHIMMER_VIDEO_OPENGL_QUAD_HPP
 
+#include "model.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
 #include "../../common/types.hpp"
@@ -9,22 +10,24 @@
 
 namespace shimmer
 {
-class quad
+class quad : public model
 {
 public:
         quad ();
         quad ( const dimensions<GLfloat>& ratio );
+        quad ( quad&& quad );
         virtual ~quad();
 
-        void shape ( const dimensions<GLfloat>& ratio );
-        void render ();
+        void operator=(quad&& move);
+
+        void aspect_ratio ( const dimensions<GLfloat>& ratio );
+        void render () override;
         void bind (std::shared_ptr<shader>& shader);
 private:
         GLuint _vbo;
         GLuint _vao;
-        std::shared_ptr<shader> _shader;
-private:
-        void _setup_vertex_attribs();
+
+        void operator=(const quad& copy);
 };
 }
 

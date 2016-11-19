@@ -12,6 +12,9 @@ shimmer::shader::~shader()
 void shimmer::shader::use_program() const
 {
         glUseProgram ( _program );
+        for(auto uniform_output : _uniform_outputs){
+                uniform_output->process();
+        }
 }
 
 void shimmer::shader::reset_program() const
@@ -41,19 +44,12 @@ bool shimmer::shader::has_uniform ( const std::string& attr ) const
 
 shimmer::shader& shimmer::shader::add ( const shimmer::glsl_variable& var )
 {
-        GLint location = -1;
         switch ( var.qualifier() ) {
         case glsl_variable::qualifier::ATTRIBUTE:
-                location = glGetAttribLocation ( _program, var.name().c_str() );
-                if ( location > -1 ) {
-                        ( _attributes[var.name()] = var ).location ( location );
-                }
+                _attributes[var.name()] = var;
                 break;
         case glsl_variable::qualifier::UNIFORM:
-                location = glGetUniformLocation ( _program, var.name().c_str() );
-                if ( location > -1 ) {
-                        ( _uniforms[var.name()] = var ).location ( location );
-                }
+                _uniforms[var.name()] = var;
                 break;
         default:
                 break;

@@ -3,27 +3,49 @@
 #include <cstring>
 
 shimmer::texture::texture()
+        : _bpp ( 32 ),
+          _internal_format ( GL_RGB ),
+          _pixel_format ( GL_BGRA ),
+          _pixel_type ( GL_UNSIGNED_BYTE )
 {
-        glGenTextures ( 1, &_texture );
+        glGenTextures ( 1, &_gl_texture );
         glGenBuffers ( 2, _pbo );
+        setup();
 }
+
+shimmer::texture::texture (
+        dimensions<GLint> dims,
+        unsigned int bpp, GLenum
+        pixel_format,
+        GLenum pixel_type )
+        : _dims ( dims ),
+          _bpp ( bpp ),
+          _internal_format ( GL_RGB ),
+          _pixel_format ( pixel_format ),
+          _pixel_type ( pixel_type )
+{
+        glGenTextures ( 1, &_gl_texture );
+        glGenBuffers ( 2, _pbo );
+        setup();
+}
+
 
 shimmer::texture::~texture()
 {
-        glDeleteTextures ( 1, &_texture );
+        glDeleteTextures ( 1, &_gl_texture );
         glDeleteBuffers ( 2, _pbo );
 }
 
 void shimmer::texture::setup()
 {
-        glBindTexture ( GL_TEXTURE_2D, _texture );
+        glBindTexture ( GL_TEXTURE_2D, _gl_texture );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filter );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _filter );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
         glTexImage2D ( GL_TEXTURE_2D,
                        0,
-                       GL_RGB,
+                       _internal_format,
                        _dims.w,
                        _dims.h,
                        0,
@@ -45,7 +67,7 @@ void shimmer::texture::pixels ( void* pixels )
 
                 glUnmapBuffer ( GL_PIXEL_UNPACK_BUFFER );
 
-                glBindTexture ( GL_TEXTURE_2D, _texture );
+                glBindTexture ( GL_TEXTURE_2D, _gl_texture );
                 glTexSubImage2D ( GL_TEXTURE_2D,
                                   0,
                                   0,
@@ -59,31 +81,6 @@ void shimmer::texture::pixels ( void* pixels )
                 glBindTexture ( GL_TEXTURE_2D, 0 );
         } else {
                 printf ( "Unable to map PBO buffer.\n" );
-                //print_gl_error ( __FILE__, __LINE__ );
         }
         glBindBuffer ( GL_PIXEL_UNPACK_BUFFER, 0 );
-}
-
-void shimmer::texture::bind()
-{
-        glActiveTexture ( _texunit );
-        glBindTexture ( GL_TEXTURE_2D, _texture );
-        glUniform1i ( _location, _uniform_value_from_unit() );
-}
-
-void shimmer::texture::unbind()
-{
-        glBindTexture ( GL_TEXTURE_2D, 0 );
-}
-
-GLint shimmer::texture::_uniform_value_from_unit ()
-{
-        switch ( _texunit ) {
-        case GL_TEXTURE0:
-                return 0;
-        case GL_TEXTURE1:
-                return 1;
-        default:
-                return 0;
-        }
 }
