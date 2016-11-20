@@ -16,9 +16,14 @@ public:
 
         void setup();
         void pixels ( void* pixels );
+
+        void* map_buffer();
+        void unmap_buffer();
 private:
         GLuint _pbo[2];
         int _pbo_index;
+        unsigned int _buffer_size;
+        void* _data;
 
         SHIMMER_GETTER ( texture, GLuint, gl_texture);
         SHIMMER_MEMBER ( texture, dimensions<GLint>, dims );

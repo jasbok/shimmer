@@ -21,7 +21,7 @@ std::unordered_map<std::string, enum shimmer::shader_manager::shimmer_uniforms> 
         {"shimmer_ticks", shimmer_uniforms::TICKS}
 };
 
-shimmer::shader* shimmer::shader_manager::create ( const std::vector<std::string>& vs_in, const std::vector<std::string>& fs_in )
+std::shared_ptr<shimmer::shader> shimmer::shader_manager::create ( const std::vector<std::string>& vs_in, const std::vector<std::string>& fs_in )
 {
         auto vs_sources = _read_sources ( config::instance().shaders_prefix + "/vs/", vs_in );
         auto fs_sources = _read_sources ( config::instance().shaders_prefix + "/fs/", fs_in );
@@ -32,10 +32,10 @@ shimmer::shader* shimmer::shader_manager::create ( const std::vector<std::string
         auto uniform_outputs = _create_uniform_outputs ( variables );
         deleteShaders ( {{vs_compiled}, {fs_compiled}} );
 
-        shader *shader = new class shader ( program );
-        shader->add ( variables );
-        shader->uniform_outputs ( uniform_outputs );
-        return shader;
+        std::shared_ptr<shader> result = std::make_shared<shader>(program);
+        result->add ( variables );
+        result->uniform_outputs ( uniform_outputs );
+        return result;
 }
 
 
@@ -52,7 +52,6 @@ std::vector<std::string> shimmer::shader_manager::_read_sources ( const std::str
         sources.push_back ( "#version 130\n" );
         for ( auto path : paths ) {
                 std::string source = std::regex_replace ( read_contents ( base + path ), version_regex , "" );
-                sources.push_back ( source );
                 if ( !source.empty() ) {
                         std::regex include_regex ( "\\s*\\/{2}\\s*#include\\s+([\\w.\\/\\\\]*)\\s*" );
                         for ( auto include : find_all ( source, include_regex, 1 ) ) {
@@ -60,6 +59,7 @@ std::vector<std::string> shimmer::shader_manager::_read_sources ( const std::str
                                 sources.push_back ( std::regex_replace ( include_source, version_regex , "" ) );
                         }
                 }
+                sources.push_back ( source );
         }
         return sources;
 }

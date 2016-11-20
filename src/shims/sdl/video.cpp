@@ -2,15 +2,16 @@
 
 SDL_Surface *source = nullptr;
 SDL_Surface *target = nullptr;
+void* sdl_pixels = nullptr;
+void* shimmer_pixels = nullptr;
+bool use_map_buffer = false;
 
 void shims_sdl::process_window_resize ( SDL_Event* event )
 {
-        shimmer_->video()->resize ( 
-        {
+        shimmer_->video()->resize ( {
                 static_cast<unsigned int> ( source->w ),
                 static_cast<unsigned int> ( source->h )
-        },
-        {
+        }, {
                 static_cast<unsigned int> ( event->resize.w ),
                 static_cast<unsigned int> ( event->resize.h )
         } );
@@ -22,11 +23,42 @@ void shims_sdl::process_window_resize ( SDL_Event* event )
 void shims_sdl::update_video()
 {
         if ( shimmer_->video()->video_resolution() != shimmer::dimensions<> ( target->w, target->h ) ) {
+                shims_sdl::reset_sdl_pixels();
                 target = sym::SDL_SetVideoMode ( shimmer_->video()->video_resolution().w, shimmer_->video()->video_resolution().h, 32, SDL_RESIZABLE | SDL_OPENGL );
+                switch_sdl_pixels();
         }
-        shimmer_->video()->pixels ( source->pixels );
+
+        if ( sdl_pixels ) {
+                shimmer_->video()->unmap_buffer();
+                source->pixels = shimmer_->video()->map_buffer();
+        } else {
+                shimmer_->video()->pixels ( source->pixels );
+        }
 }
 
+void shims_sdl::switch_sdl_pixels()
+{
+        if ( use_map_buffer && !sdl_pixels ) {
+                shimmer_pixels = shimmer_->video()->map_buffer();
+                if ( shimmer_pixels ) {
+                        sdl_pixels = source->pixels;
+                        source->pixels = shimmer_pixels;
+                }
+                else{
+                        printf("Could not map buffer...\n");
+                }
+        }
+}
+
+void shims_sdl::reset_sdl_pixels()
+{
+        if ( sdl_pixels && source->pixels != sdl_pixels ) {
+                shimmer_->video()->unmap_buffer();
+                source->pixels = sdl_pixels;
+                sdl_pixels = nullptr;
+                shimmer_pixels = nullptr;
+        }
+}
 
 SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
 {
@@ -34,6 +66,8 @@ SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
 
         auto pixel_format = bpp == 16 ? shimmer::pixel_format::RGB : shimmer::pixel_format::BGRA;
         auto pixel_type = bpp == 16 ? shimmer::pixel_type::UNSIGNED_SHORT_5_6_5 : shimmer::pixel_type::UNSIGNED_BYTE;
+
+        shims_sdl::reset_sdl_pixels();
 
         if ( source ) {
                 sym::SDL_FreeSurface ( source );
@@ -46,12 +80,10 @@ SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
                 target = sym::SDL_SetVideoMode ( width, height, 32, SDL_RESIZABLE | SDL_OPENGL );
         }
 
-        shimmer_->video()->resize ( 
-        {
+        shimmer_->video()->resize ( {
                 static_cast<unsigned int> ( source->w ),
                 static_cast<unsigned int> ( source->h )
-        },
-        {
+        }, {
                 static_cast<unsigned int> ( target->w ),
                 static_cast<unsigned int> ( target->h )
         } );
@@ -61,6 +93,8 @@ SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
         .pixel_type ( pixel_type );
 
         shimmer_->video()->setup();
+
+        shims_sdl::switch_sdl_pixels();
 
         return source;
 }
@@ -143,6 +177,7 @@ void SDL_FreeSurface ( SDL_Surface* surface )
 {
         SHIM_LOG();
         if ( surface == source ) {
+                shims_sdl::reset_sdl_pixels();
                 source = nullptr;
         }
         sym::SDL_FreeSurface ( surface );

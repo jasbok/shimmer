@@ -12,18 +12,20 @@ shimmer::opengl_renderer * shimmer::opengl_renderer::create()
 }
 
 shimmer::opengl_renderer::opengl_renderer()
-        : _aspect_ratio ( {1.0, 1.0} )
+        : _aspect_ratio ( {1.0f, 1.0f} )
 {
-        //_foreground.model ( std::make_shared<quad> ( _aspect_ratio ) );
-        //_foreground.shader ( std::make_shared<shader> ( _shader_manager.create ({config::instance().vertex_shader}, {config::instance().fragment_shader} ) ) );
-        //_foreground.texture ( std::make_shared<texture> () );
-
         _source_texture = std::make_shared<texture>();
         _shader_manager.application_texture ( _source_texture );
 
-        _foreground = quad ( _aspect_ratio );
-        _foreground_shader = std::shared_ptr<shader> ( _shader_manager.create ( {config::instance().vertex_shader}, {config::instance().fragment_shader} ) );
-        _foreground.bind ( _foreground_shader );
+        _foreground = render_object (
+                              std::make_shared<quad> ( _aspect_ratio ),
+                              _shader_manager.create ( {config::instance().vertex_shader}, {config::instance().fragment_shader} )
+                      );
+
+        _background = render_object (
+                              std::make_shared<quad> ( dimensions<float>(1.0f, 1.0f) ),
+                              _shader_manager.create ( {config::instance().vertex_shader}, {"hsv.frag"} )
+                      );
 }
 
 shimmer::opengl_renderer::~opengl_renderer()
@@ -49,13 +51,14 @@ void shimmer::opengl_renderer::render()
 {
         glClearColor ( 1.0f, 0.0f, 0.0f, 1.0f );
         glClear ( GL_COLOR_BUFFER_BIT );
-
-        _secondary.render();
-        _main.render();
-        _menu.render();
-
-        _foreground_shader->use_program();
+        _background.render();
         _foreground.render();
+}
+
+void shimmer::opengl_renderer::aspect_ratio(const dimensions<float>& dims)
+{
+        _aspect_ratio = dims;
+        std::static_pointer_cast<quad>(_foreground.render_model())->aspect_ratio(_aspect_ratio);
 }
 
 void shimmer::opengl_renderer::pixels ( void* pixels )
@@ -63,7 +66,12 @@ void shimmer::opengl_renderer::pixels ( void* pixels )
         _source_texture->pixels ( pixels );
 }
 
-void * shimmer::opengl_renderer::pixels()
+void * shimmer::opengl_renderer::map_buffer()
 {
-        return nullptr;
+        return _source_texture->map_buffer();
+}
+
+void shimmer::opengl_renderer::unmap_buffer()
+{
+        _source_texture->unmap_buffer();
 }

@@ -23,7 +23,8 @@ public:
         void update ( const rectangle<>& rect );
         void update ( const std::vector<rectangle<>>& rects );
         void pixels ( void* pixels );
-        void* pixels();
+        void* map_buffer();
+        void unmap_buffer();
 
         void resize ( const dimensions<>& application, const dimensions<>& video );
         void resize_application ( const dimensions<>& application );

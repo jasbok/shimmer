@@ -54,7 +54,7 @@ void shimmer::quad::aspect_ratio ( const dimensions<GLfloat>& ratio )
 
 }
 
-void shimmer::quad::bind ( std::shared_ptr<shader>& shader )
+void shimmer::quad::bind ( const std::shared_ptr<shader>& shader )
 {
         glBindVertexArray ( _vao );
         glBindBuffer ( GL_ARRAY_BUFFER, _vbo );

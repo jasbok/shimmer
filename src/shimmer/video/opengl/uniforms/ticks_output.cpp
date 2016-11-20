@@ -17,5 +17,4 @@ void shimmer::ticks_output::process()
                              system_clock::now().time_since_epoch()
                      ).count();
         glUniform1ui(uniform_output::location(), ticks);
-        printf("location = %u, ticks = %ld\n", uniform_output::location(), ticks);
 }

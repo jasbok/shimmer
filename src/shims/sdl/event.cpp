@@ -14,7 +14,7 @@ int SDL_PollEvent ( SDL_Event* event )
 void shims_sdl::process_event(SDL_Event* event)
 {
         if ( event ) {
-                switch ( event->active.type ) {
+                switch ( event->type ) {
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:
                         process_keyboard ( event );

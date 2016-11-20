@@ -22,7 +22,7 @@ public:
 
         void aspect_ratio ( const dimensions<GLfloat>& ratio );
         void render () override;
-        void bind (std::shared_ptr<shader>& shader);
+        void bind (const std::shared_ptr<shader>& shader) override;
 private:
         GLuint _vbo;
         GLuint _vao;
