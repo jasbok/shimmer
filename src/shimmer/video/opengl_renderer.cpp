@@ -8,6 +8,7 @@ shimmer::opengl_renderer * shimmer::opengl_renderer::create()
 {
         glewExperimental = true;
         glewInit();
+        glPixelStorei ( GL_UNPACK_ALIGNMENT, 4 );
         return new opengl_renderer();
 }
 
@@ -39,7 +40,7 @@ void shimmer::opengl_renderer::resize ( const dimensions<>& dims )
 void shimmer::opengl_renderer::source_format ( const dimensions<>& dims, unsigned int bpp, shimmer::pixel_format format, shimmer::pixel_type type )
 {
         _source_texture
-        ->dims ( { static_cast<GLint> ( dims.w ), static_cast<GLint> ( dims.h ) } )
+        ->dims ( { static_cast<GLuint> ( dims.w ), static_cast<GLuint> ( dims.h ) } )
         .bpp ( bpp )
         .pixel_format ( gl_formats::pixel_format_from ( format ) )
         .pixel_type ( gl_formats::pixel_type_from ( type ) )
@@ -64,6 +65,11 @@ void shimmer::opengl_renderer::aspect_ratio(const dimensions<float>& dims)
 void shimmer::opengl_renderer::pixels ( void* pixels )
 {
         _source_texture->pixels ( pixels );
+}
+
+void shimmer::opengl_renderer::pixels(void* pixels, const rectangle<coordinates<unsigned int>, dimensions<unsigned int> >& rect)
+{
+        _source_texture->pixels ( pixels, rect );
 }
 
 void * shimmer::opengl_renderer::map_buffer()

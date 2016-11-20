@@ -17,6 +17,7 @@ public:
         virtual ~opengl_renderer();
         void resize ( const dimensions<> & dims ) override;
         void pixels ( void * pixels ) override;
+        void pixels ( void* pixels, const rectangle<coordinates<unsigned int>, dimensions<unsigned int>>& rect ) override;
         void * map_buffer() override;
         void unmap_buffer() override;
         void source_format ( const dimensions<>& dims, unsigned int bpp, pixel_format format, pixel_type type ) override;

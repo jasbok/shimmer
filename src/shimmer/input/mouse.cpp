@@ -1,7 +1,7 @@
 #include "mouse.hpp"
 
 shimmer::mouse::mouse(class event_system* event_system)
-        : _warp_factor_x ( 1.0f ), _warp_factor_y ( 1.0f ), _event_system(event_system)
+        : _event_system(event_system), _warp_factor_x ( 1.0f ), _warp_factor_y ( 1.0f )
 {
         _event_system->resolution_change.connect<mouse, &mouse::_calculate_warp_factors>(this);
 }

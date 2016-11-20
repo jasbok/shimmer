@@ -17,7 +17,6 @@ int SDL_Init ( Uint32 flags )
 void SDL_Quit()
 {
         SHIM_LOG();
-        shims_sdl::reset_sdl_pixels();
         if ( shimmer_ ) delete shimmer_;
 }
 

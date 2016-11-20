@@ -5,6 +5,7 @@
 shimmer::texture::texture()
         : _pbo(),
           _pbo_index ( 0 ),
+          _data(nullptr),
           _dims (),
           _bpp ( 32 ),
           _filter ( GL_LINEAR ),
@@ -18,12 +19,13 @@ shimmer::texture::texture()
 }
 
 shimmer::texture::texture (
-        dimensions<GLint> dims,
+        dimensions<GLuint> dims,
         unsigned int bpp, GLenum
         pixel_format,
         GLenum pixel_type )
         :_pbo(),
          _pbo_index ( 0 ),
+         _data(nullptr),
          _dims ( dims ),
          _bpp ( bpp ),
          _filter ( GL_LINEAR ),
@@ -60,15 +62,34 @@ void shimmer::texture::setup()
                        _pixel_type,
                        0 );
         glBindTexture ( GL_TEXTURE_2D, 0 );
-        _buffer_size = _dims.w * _dims.h * _bpp * 0.125;
+
+        _buffer_stride = _dims.w * _bpp * 0.125;
+        _buffer_size = _dims.h * _buffer_stride;
 }
 
 void shimmer::texture::pixels ( void* pixels )
 {
-        GLubyte* data_ptr = ( GLubyte* ) map_buffer();
-        if ( data_ptr ) {
-                std::memcpy ( data_ptr, pixels, _buffer_size );
+        _data = ( GLubyte* ) map_buffer();
+        if ( _data ) {
+                std::memcpy ( _data, pixels, _buffer_size );
                 unmap_buffer();
+        } else {
+                printf ( "Unable to map PBO buffer.\n" );
+        }
+}
+
+void shimmer::texture::pixels ( void* pixels, const rectangle<coordinates<GLuint>, dimensions<GLuint> >& rect )
+{
+        _data = ( GLubyte* ) map_buffer();
+        if ( _data ) {
+                unsigned int bytes_per_pixel = _bpp * 0.125;
+                unsigned int x_offset = rect.coords.x * bytes_per_pixel;
+                unsigned int range_width = rect.dims.w * bytes_per_pixel;
+                unsigned int width = _dims.w * bytes_per_pixel;
+                for ( unsigned int y = 0; y < rect.dims.h; y++ ) {
+                        std::memcpy ( _data + y * range_width, ( GLubyte* ) pixels + ( y + rect.coords.y ) * width + x_offset, range_width );
+                }
+                _unmap_buffer ( rect );
         } else {
                 printf ( "Unable to map PBO buffer.\n" );
         }
@@ -84,14 +105,19 @@ void * shimmer::texture::map_buffer()
 
 void shimmer::texture::unmap_buffer()
 {
+        _unmap_buffer ( {{0, 0}, _dims} );
+}
+
+void shimmer::texture::_unmap_buffer ( const rectangle<coordinates<GLuint>, dimensions<GLuint>>& rect )
+{
         glUnmapBuffer ( GL_PIXEL_UNPACK_BUFFER );
         glBindTexture ( GL_TEXTURE_2D, _gl_texture );
         glTexSubImage2D ( GL_TEXTURE_2D,
                           0,
-                          0,
-                          0,
-                          _dims.w,
-                          _dims.h,
+                          rect.coords.x,
+                          rect.coords.y,
+                          rect.dims.w,
+                          rect.dims.h,
                           _pixel_format,
                           _pixel_type,
                           0 );

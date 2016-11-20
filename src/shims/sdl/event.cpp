@@ -30,5 +30,6 @@ void shims_sdl::process_event(SDL_Event* event)
                 default:
                         break;
                 }
+                SDL_GL_SwapBuffers();
         }
 }

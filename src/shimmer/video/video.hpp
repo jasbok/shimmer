@@ -18,11 +18,9 @@ public:
         virtual ~video();
 
         void setup ();
-        void update ();
-        void update ( const coordinates<>& coords, const dimensions<>& dims );
-        void update ( const rectangle<>& rect );
-        void update ( const std::vector<rectangle<>>& rects );
-        void pixels ( void* pixels );
+        void update ( void* pixels );
+        void update ( void* pixels, const std::vector<rectangle<>>& rects );
+        void render();
         void* map_buffer();
         void unmap_buffer();
 
@@ -32,7 +30,6 @@ public:
 private:
         class event_system* _event_system;
         std::unique_ptr<renderer> _renderer;
-
         SHIMMER_GETTER ( video, dimensions<>, application_resolution );
         SHIMMER_GETTER ( video, dimensions<>, video_resolution );
         SHIMMER_MEMBER ( video, dimensions<>, max_resolution );
@@ -40,6 +37,7 @@ private:
         SHIMMER_MEMBER ( video, unsigned int, bpp );
         SHIMMER_MEMBER ( video, enum pixel_format, pixel_format );
         SHIMMER_MEMBER ( video, enum pixel_type, pixel_type );
+
 private:
         void _calculate_aspect_ratio();
 };

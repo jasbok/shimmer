@@ -5,9 +5,7 @@
 
 namespace shims_sdl{
         void process_window_resize ( SDL_Event* event );
-        void update_video();
-        void switch_sdl_pixels();
-        void reset_sdl_pixels();
+        bool do_update();
 }
 
 SHIM ( SDL_Surface*, SDL_SetVideoMode, int width, int height, int bpp, Uint32 flags );

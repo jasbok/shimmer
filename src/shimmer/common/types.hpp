@@ -20,6 +20,29 @@ public:
                 : w ( w ), h ( h )
         {}
 
+        dimensions ( const dimensions& copy )
+                : w ( copy.w ), h ( copy.h )
+        {}
+
+        dimensions ( dimensions&& move )
+                : w ( move.w ), h ( move.h )
+        {}
+
+
+        dimensions& operator= ( const dimensions& copy )
+        {
+                this->w = copy.w;
+                this->h = copy.h;
+                return *this;
+        }
+
+        dimensions& operator= ( dimensions&& move )
+        {
+                this->w = move.w;
+                this->h = move.h;
+                return *this;
+        }
+
         bool operator== ( const dimensions<T>& op )
         {
                 return this->w == op.w && this->h == op.h;
@@ -29,7 +52,7 @@ public:
         {
                 return this->w != op.w || this->h != op.h;
         }
-        
+
         friend std::ostream &operator<< ( std::ostream &os, const dimensions<T> &dims )
         {
                 os << "( w = " << dims.w << ", h = " << dims.h << " )";
@@ -51,9 +74,36 @@ public:
                 : x ( x ), y ( y )
         {}
 
+        coordinates ( const coordinates<T>& copy )
+                : x ( copy.x ), y ( copy.y )
+        {}
+
+        coordinates ( coordinates<T>&& move )
+                : x ( move.x ), y ( move.y )
+        {}
+
+        coordinates& operator= ( const coordinates& copy )
+        {
+                this->x = copy.x;
+                this->y = copy.y;
+                return *this;
+        }
+
+        coordinates& operator= ( coordinates&& move )
+        {
+                this->x = move.x;
+                this->y = move.y;
+                return *this;
+        }
+
         bool operator== ( const coordinates<T>& op )
         {
                 return this->x == op.x && this->y == op.y;
+        }
+
+        bool operator!= ( const coordinates<T>& op )
+        {
+                return this->x != op.x || this->y != op.y;
         }
 
         friend std::ostream &operator<< ( std::ostream &os, const coordinates<T> &coords )
@@ -74,13 +124,26 @@ public:
                 : coords(), dims()
         {}
 
-        rectangle ( C coords, D dims )
+        rectangle ( const C& coords, const D& dims )
                 : coords ( coords ), dims ( dims )
         {}
 
-        bool operator== ( const rectangle<C,D>& op )
+        rectangle ( const rectangle<C,D>& copy )
+                : coords ( copy.coords ), dims ( copy.dims )
+        {}
+
+        rectangle ( rectangle<C,D>&& move )
+                : coords ( move.coords ), dims ( move.dims )
+        {}
+
+        bool operator== ( const rectangle<C,D>& copy )
         {
-                return this->coords == op.coords && this->dims == op.dims;
+                return this->coords == copy.coords && this->dims == copy.dims;
+        }
+
+        bool operator== ( rectangle<C,D>&& move )
+        {
+                return this->coords == move.coords && this->dims == move.dims;
         }
 
         friend std::ostream &operator<< ( std::ostream &os, const rectangle<C,D> &rect )

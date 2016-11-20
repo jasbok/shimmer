@@ -12,6 +12,7 @@ public:
         virtual ~renderer(){};
         virtual void resize(const dimensions<>& dims) = 0;
         virtual void pixels(void* pixels) = 0;
+        virtual void pixels ( void* pixels, const rectangle<coordinates<unsigned int>, dimensions<unsigned int>>& rect ) = 0;
         virtual void* map_buffer() = 0;
         virtual void unmap_buffer() = 0;
         virtual void source_format(const dimensions<>& dims, unsigned int bpp, pixel_format format, pixel_type type) = 0;
