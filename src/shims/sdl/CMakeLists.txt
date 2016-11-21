@@ -11,4 +11,4 @@ set(SRCS
 
 add_library(shimmer_sdl SHARED ${SRCS})
 target_link_libraries(shimmer_sdl shimmer ${ALL_OPENGL_LIBRARIES})
-install (TARGETS shimmer_sdl DESTINATION libshimmer_sdl)
+install (TARGETS shimmer_sdl DESTINATION libshimmer)

@@ -5,6 +5,9 @@ set(SRCS
     "common/event_system.cpp"
     "common/file_helpers.cpp"
     "common/regex_helpers.cpp"
+    "font/font_face.cpp"
+    "font/font_loader.cpp"
+    "font/freetype.cpp"
     "input/keyboard.cpp"
     "input/mouse.cpp"
     "video/opengl/formats.cpp"
@@ -23,6 +26,6 @@ set(SRCS
     "shimmer.cpp")
 
 add_library(shimmer SHARED ${SRCS})
-target_link_libraries(shimmer ${ALL_OPENGL_LIBRARIES})
-target_include_directories(shimmer BEFORE PUBLIC ".")
+target_link_libraries(shimmer ${ALL_OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES})
+target_include_directories(shimmer BEFORE PUBLIC "." ${FREETYPE_INCLUDE_DIRS})
 install (TARGETS shimmer DESTINATION libshimmer)

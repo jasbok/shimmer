@@ -1,5 +1,6 @@
 list(APPEND tests
     "catch.cpp"
+    "freetype.cpp"
     "mouse.cpp"
 )
 add_executable(catch ${tests})
