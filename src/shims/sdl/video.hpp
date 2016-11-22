@@ -5,6 +5,7 @@
 
 namespace shims_sdl{
         void process_window_resize ( SDL_Event* event );
+        void check_updates();
         bool do_update();
 }
 

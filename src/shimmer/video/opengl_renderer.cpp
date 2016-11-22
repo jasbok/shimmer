@@ -8,7 +8,7 @@ shimmer::opengl_renderer * shimmer::opengl_renderer::create()
 {
         glewExperimental = true;
         glewInit();
-        glPixelStorei ( GL_UNPACK_ALIGNMENT, 4 );
+        glPixelStorei ( GL_UNPACK_ALIGNMENT, 1 );
         return new opengl_renderer();
 }
 
@@ -44,15 +44,15 @@ void shimmer::opengl_renderer::source_format ( const dimensions<>& dims, unsigne
         .bpp ( bpp )
         .pixel_format ( gl_formats::pixel_format_from ( format ) )
         .pixel_type ( gl_formats::pixel_type_from ( type ) )
-        .filter ( GL_NEAREST )
+        .filter ( GL_LINEAR )
         .setup();
 }
 
 void shimmer::opengl_renderer::render()
 {
-        glClearColor ( 1.0f, 0.0f, 0.0f, 1.0f );
+        glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
         glClear ( GL_COLOR_BUFFER_BIT );
-        _background.render();
+        //_background.render();
         _foreground.render();
 }
 

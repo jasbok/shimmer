@@ -45,6 +45,7 @@ void shimmer::video::update ( void* pixels, const std::vector<rectangle<> >& rec
         ymax += ymax % 2;
 
         _renderer->pixels ( pixels, {{xmin, ymin},{xmax - xmin, ymax - ymin}} );
+        //_renderer->pixels ( pixels );
         render();
 }
 

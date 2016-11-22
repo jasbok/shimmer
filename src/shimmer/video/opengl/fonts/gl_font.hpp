@@ -6,8 +6,10 @@
 namespace shimmer{
         class gl_font{
         public:
-                gl_font(Face face);
+                gl_font(font_face&& face);
+                virtual ~gl_font();
         private:
+                font_face _face;
         };
 }
 

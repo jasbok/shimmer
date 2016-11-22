@@ -2,6 +2,7 @@
 
 SDL_Surface *source = nullptr;
 SDL_Surface *target = nullptr;
+std::vector<shimmer::rectangle<>> update_queue;
 unsigned long ticks = 0;
 
 void shims_sdl::process_window_resize ( SDL_Event* event )
@@ -20,6 +21,15 @@ void shims_sdl::process_window_resize ( SDL_Event* event )
 
         // Do not propagate resize event to application
         event->active.type = SDL_NOEVENT;
+}
+
+void shims_sdl::check_updates()
+{
+        if ( !update_queue.empty() && do_update() ) {
+                shimmer_->video()->update ( source->pixels, update_queue );
+                update_queue.clear();
+                sym::SDL_GL_SwapBuffers();
+        }
 }
 
 bool shims_sdl::do_update()
@@ -108,14 +118,15 @@ void SDL_UpdateRects ( SDL_Surface* screen, int numrects, SDL_Rect* rects )
 {
         SHIM_LOG();
         sym::SDL_UpdateRects ( screen, numrects, rects );
-        if ( screen == source && shims_sdl::do_update() ) {
-                std::vector<shimmer::rectangle<>> srects;
-                srects.reserve ( numrects );
+        if ( screen == source ) {
                 for ( int i = 0; i < numrects; i++ ) {
-                        srects.push_back ( { { rects[i].x, rects[i].y }, { rects[i].w, rects[i].h } } );
+                        update_queue.push_back ( { { rects[i].x, rects[i].y }, { rects[i].w, rects[i].h } } );
                 }
-                shimmer_->video()->update ( source->pixels, srects );
-                sym::SDL_GL_SwapBuffers();
+                if ( shims_sdl::do_update() ) {
+                        shimmer_->video()->update ( source->pixels, update_queue );
+                        update_queue.clear();
+                        sym::SDL_GL_SwapBuffers();
+                }
         }
 }
 
@@ -123,14 +134,17 @@ int SDL_UpperBlit ( SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_R
 {
         SHIM_LOG();
         int result = sym::SDL_UpperBlit ( src, srcrect, dst, dstrect );
-
-        if ( dst == source  && shims_sdl::do_update() ) {
+        if ( dst == source ) {
                 if ( dstrect ) {
-                        shimmer_->video()->update ( source->pixels, {{ { dstrect->x, dstrect->y }, { dstrect->w, dstrect->h } }} );
+                        update_queue.push_back ( { { dstrect->x, dstrect->y }, { dstrect->w, dstrect->h } } );
                 } else {
-                        shimmer_->video()->update ( source->pixels );
+                        update_queue.push_back ( { { 0, 0 }, { static_cast<unsigned int> ( source->w ), static_cast<unsigned int> ( source->h ) } } );
                 }
-                sym::SDL_GL_SwapBuffers();
+                if ( shims_sdl::do_update() ) {
+                        shimmer_->video()->update ( source->pixels, update_queue );
+                        update_queue.clear();
+                        sym::SDL_GL_SwapBuffers();
+                }
         }
         return result;
 }
