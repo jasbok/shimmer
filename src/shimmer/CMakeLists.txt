@@ -10,6 +10,8 @@ set(SRCS
     "font/freetype.cpp"
     "input/keyboard.cpp"
     "input/mouse.cpp"
+    "video/opengl/fonts/gl_font.cpp"
+    "video/opengl/fonts/gl_glyph.cpp"
     "video/opengl/formats.cpp"
     "video/opengl/glsl_variable.cpp"
     "video/opengl/opengl_helpers.cpp"

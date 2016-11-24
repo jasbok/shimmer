@@ -39,19 +39,24 @@ void shimmer::quad::operator= ( shimmer::quad && move )
 
 void shimmer::quad::aspect_ratio ( const dimensions<GLfloat>& ratio )
 {
-
-        GLfloat screen_vertices[] = {
+        _buffer_data ( {
                 // Position                             // Texcoord
-                ratio.w,   ratio.h,   0.0,              1.0, 0.0,
-                ratio.w,   -ratio.h,  0.0,              1.0, 1.0,
-                -ratio.w,  -ratio.h,  0.0,              0.0, 1.0,
-                -ratio.w,  ratio.h,   0.0,              0.0, 0.0
-        };
+                -ratio.w,  ratio.h,   0.0,              0.0, 0.0,       // Top Left
+                ratio.w,   ratio.h,   0.0,              1.0, 0.0,       // Top Right
+                ratio.w,   -ratio.h,  0.0,              1.0, 1.0,       // Bottom Right
+                -ratio.w,  -ratio.h,  0.0,              0.0, 1.0        // Bottom Left
+        } );
+}
 
-        glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
-        glBufferData ( GL_ARRAY_BUFFER, sizeof ( screen_vertices ), screen_vertices, GL_STATIC_DRAW );
-        glBindBuffer ( GL_ARRAY_BUFFER, 0 );
-
+void shimmer::quad::shape ( const rectangle<coordinates<GLfloat>,dimensions<GLfloat>> rect )
+{
+        _buffer_data ( {
+                // Position                                                                     // Texcoord
+                rect.coords.x,                  rect.coords.y,                    0.0,          0.0, 0.0,       // Top Left
+                rect.coords.x + rect.dims.w,    rect.coords.y,                    0.0,          1.0, 0.0,       // Top Right
+                rect.coords.x + rect.dims.w,    rect.coords.y + rect.dims.h,      0.0,          1.0, 1.0,       // Bottom Right
+                rect.coords.x,                  rect.coords.y + rect.dims.h,      0.0,          0.0, 1.0        // Bottom Left
+        } );
 }
 
 void shimmer::quad::bind ( const std::shared_ptr<shader>& shader )
@@ -78,4 +83,11 @@ void shimmer::quad::render ()
         glBindVertexArray ( _vao );
         glDrawArrays ( GL_QUADS, 0, 4 );
         glBindVertexArray ( 0 );
+}
+
+void shimmer::quad::_buffer_data ( const std::vector<GLfloat>& data )
+{
+        glBindBuffer ( GL_ARRAY_BUFFER, _vbo );
+        glBufferData ( GL_ARRAY_BUFFER, data.size() * sizeof ( GLfloat ), &data[0], GL_STATIC_DRAW );
+        glBindBuffer ( GL_ARRAY_BUFFER, 0 );
 }

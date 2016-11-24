@@ -20,7 +20,7 @@ shimmer::opengl_renderer::opengl_renderer()
 
         _foreground = render_object (
                               std::make_shared<quad> ( _aspect_ratio ),
-                              _shader_manager.create ( {config::instance().vertex_shader}, {config::instance().fragment_shader} )
+                              _shader_manager.create ( {config::instance().vertex_shader}, {"hsv_adaptive_scaler.frag"} )
                       );
 
         _background = render_object (

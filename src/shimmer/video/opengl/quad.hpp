@@ -4,7 +4,7 @@
 #include "model.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
-#include "../../common/types.hpp"
+#include "common/types.hpp"
 #include <GL/glew.h>
 #include <memory>
 
@@ -18,16 +18,19 @@ public:
         quad ( quad&& quad );
         virtual ~quad();
 
-        void operator=(quad&& move);
+        void operator= ( quad&& move );
 
         void aspect_ratio ( const dimensions<GLfloat>& ratio );
+        void shape ( const rectangle<coordinates<GLfloat>, dimensions<GLfloat>> rect );
         void render () override;
-        void bind (const std::shared_ptr<shader>& shader) override;
+        void bind ( const std::shared_ptr<shader>& shader ) override;
 private:
         GLuint _vbo;
         GLuint _vao;
-
-        void operator=(const quad& copy);
+private:
+        quad ( const quad& copy ) = delete;
+        void operator= ( const quad& copy ) = delete;
+        void _buffer_data ( const std::vector<GLfloat>& data );
 };
 }
 
