@@ -19,11 +19,14 @@ public:
         void operator= ( gl_font&& move );
         gl_glyph& operator[] ( unsigned char c );
 
-        void font_face ( font_face&& face, unsigned int range );
+        void font_face ( font_face& face );
         gl_glyph& glyph ( unsigned char c );
+
+        shimmer::coordinates<int> kern(unsigned char left, unsigned char right);
 private:
-        GLuint* _textures;
+        GLuint *_textures;
         std::vector<gl_glyph> _glyphs;
+        std::vector<coordinates<int>> _kern_distances;
 };
 }
 

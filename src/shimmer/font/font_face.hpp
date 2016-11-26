@@ -2,6 +2,7 @@
 #define SHIMMER_FONT_FONT_FACE_HPP
 
 #include "freetype.hpp"
+#include "common/types.hpp"
 
 namespace shimmer
 {
@@ -17,12 +18,14 @@ public:
 
         FT_GlyphSlot glyph ( unsigned int code );
         FT_GlyphSlot operator[] ( unsigned int code );
+        bool has_kerning();
+        coordinates<int> kern_distance(unsigned int left, unsigned int right);
 private:
         FT_Face _face;
         unsigned int _font_size;
 private:
-        font_face ( const font_face& copy );
-        void operator= ( const font_face& copy );
+        font_face ( const font_face& copy ) = delete;
+        void operator= ( const font_face& copy ) = delete;
 };
 }
 

@@ -53,11 +53,16 @@ GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type )
                 glCompileShader ( shader );
                 glGetShaderiv ( shader, GL_COMPILE_STATUS, &SUCCESS );
                 if ( !SUCCESS ) {
+                        std::regex line_regex("\n");
                         glGetShaderInfoLog ( shader, BUFFER_SIZE, nullptr, LOG );
-                        std::cerr << "Shader Compilation Failed: " << LOG << std::endl;
+                        std::cerr << "Shader Compilation Failed: " << LOG << "\n";
+                        unsigned int num = 1;
                         for ( auto source : sources ) {
-                                std::cerr << source << std::endl;
+                                for(auto line : split(source, line_regex)){
+                                        std::cerr << num++ << ": " << line << "\n";
+                                }
                         }
+                        std::cerr << std::flush;
                 }
                 delete [] gl_sources;
         } else {

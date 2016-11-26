@@ -1,4 +1,5 @@
 #include "opengl_renderer.hpp"
+#include "font/font_loader.hpp"
 #include "opengl/formats.hpp"
 #include "opengl/quad.hpp"
 #include "common/config.hpp"
@@ -8,6 +9,8 @@ shimmer::opengl_renderer * shimmer::opengl_renderer::create()
 {
         glewExperimental = true;
         glewInit();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glPixelStorei ( GL_UNPACK_ALIGNMENT, 1 );
         return new opengl_renderer();
 }
@@ -20,13 +23,27 @@ shimmer::opengl_renderer::opengl_renderer()
 
         _foreground = render_object (
                               std::make_shared<quad> ( _aspect_ratio ),
-                              _shader_manager.create ( {config::instance().vertex_shader}, {"hsv_adaptive_scaler.frag"} )
-                      );
+                              _shader_manager.create (
+        { config::instance().shaders_prefix + "/surface/vs/" + config::instance().vertex_shader},
+        { config::instance().shaders_prefix + "/surface/fs/hsv_adaptive_scaler.frag"} ) );
 
         _background = render_object (
-                              std::make_shared<quad> ( dimensions<float>(1.0f, 1.0f) ),
-                              _shader_manager.create ( {config::instance().vertex_shader}, {"hsv.frag"} )
-                      );
+                              std::make_shared<quad> ( dimensions<float> ( 1.0f, 1.0f ) ),
+                              _shader_manager.create (
+        { config::instance().shaders_prefix + "/surface/vs/" + config::instance().vertex_shader},
+        { config::instance().shaders_prefix + "/surface/fs/hsv.frag"} ) );
+
+        font_loader font_loader;
+        std::shared_ptr<font_face> face = font_loader.load ( "../../../fonts/xolonium/ttf/Xolonium-Regular.ttf", 48 );
+        std::shared_ptr<gl_font> gl_font = std::make_shared<class gl_font>();
+        gl_font->font_face(*face);
+
+        auto text_shader = _shader_manager.create (
+        { config::instance().shaders_prefix + "/text/text.vert"},
+        { config::instance().shaders_prefix + "/text/text.frag"} );
+
+        _text_renderer.font(gl_font);
+        _text_renderer.shader(text_shader);
 }
 
 shimmer::opengl_renderer::~opengl_renderer()
@@ -35,6 +52,7 @@ shimmer::opengl_renderer::~opengl_renderer()
 void shimmer::opengl_renderer::resize ( const dimensions<>& dims )
 {
         glViewport ( 0, 0, dims.w, dims.h );
+        _text_renderer.resolution(dimensions<GLfloat>(dims.w, dims.h));
 }
 
 void shimmer::opengl_renderer::source_format ( const dimensions<>& dims, unsigned int bpp, shimmer::pixel_format format, shimmer::pixel_type type )
@@ -52,14 +70,15 @@ void shimmer::opengl_renderer::render()
 {
         glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
         glClear ( GL_COLOR_BUFFER_BIT );
-        //_background.render();
+        _background.render();
         _foreground.render();
+        //_text_renderer.draw("// Fragment_Shader -> hsv_adaptive_scaler.frag", {50,50});
 }
 
-void shimmer::opengl_renderer::aspect_ratio(const dimensions<float>& dims)
+void shimmer::opengl_renderer::aspect_ratio ( const dimensions<float>& dims )
 {
         _aspect_ratio = dims;
-        std::static_pointer_cast<quad>(_foreground.render_model())->aspect_ratio(_aspect_ratio);
+        std::static_pointer_cast<quad> ( _foreground.render_model() )->aspect_ratio ( _aspect_ratio );
 }
 
 void shimmer::opengl_renderer::pixels ( void* pixels )
@@ -67,7 +86,7 @@ void shimmer::opengl_renderer::pixels ( void* pixels )
         _source_texture->pixels ( pixels );
 }
 
-void shimmer::opengl_renderer::pixels(void* pixels, const rectangle<coordinates<unsigned int>, dimensions<unsigned int> >& rect)
+void shimmer::opengl_renderer::pixels ( void* pixels, const rectangle<coordinates<unsigned int>, dimensions<unsigned int> >& rect )
 {
         _source_texture->pixels ( pixels, rect );
 }

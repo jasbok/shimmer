@@ -9,6 +9,15 @@ shimmer::shader::~shader()
         glDeleteProgram ( _program );
 }
 
+shimmer::shader& shimmer::shader::use_program()
+{
+        glUseProgram ( _program );
+        for(auto uniform_output : _uniform_outputs){
+                uniform_output->process();
+        }
+        return *this;
+}
+
 void shimmer::shader::use_program() const
 {
         glUseProgram ( _program );

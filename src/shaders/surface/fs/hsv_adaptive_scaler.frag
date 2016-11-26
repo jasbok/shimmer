@@ -1,18 +1,18 @@
 #version 130
-// #include /common/fs/colourspace.frag
+// #include /common/colourspace.frag
 
 varying vec2 fs_texcoord;
 uniform sampler2D shimmer_application;
 uniform vec2 res_ratio;
 
 uniform float h_segment = 7.5f;
-uniform float h_clamp_range = 0.90f;
+uniform float h_clamp_range = 0.50f;
 
 uniform float s_segment = 0.1f;
-uniform float s_clamp_range = 0.90f;
+uniform float s_clamp_range = 0.50f;
 
-uniform float v_segment = 0.05f;
-uniform float v_clamp_range = 0.90f;
+uniform float v_segment = 0.1f;
+uniform float v_clamp_range = 0.20f;
 
 float clamp(float value, float segment, float clamp_range){
     float seg = mod(value, segment);

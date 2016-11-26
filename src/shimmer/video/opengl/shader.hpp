@@ -5,6 +5,7 @@
 #include "common/macros.hpp"
 #include "uniforms/uniform_output.hpp"
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -17,6 +18,7 @@ public:
         shader ( GLuint program );
         virtual ~shader();
 
+        shader& use_program();
         void use_program() const;
         void reset_program() const;
 
@@ -27,6 +29,13 @@ public:
         shader& add ( const glsl_variable& var );
         shader& add ( const std::vector<glsl_variable>& variables );
 
+        template<typename T>
+        shader& set_uniform( const std::string& name, const T& value){
+                if(has_uniform(name)){
+                        _uniforms[name].value(value);
+                }
+                return *this;
+        }
         friend std::ostream &operator<< ( std::ostream &os, const shader& shader )
         {
                 os << "[ program = " << shader.program()

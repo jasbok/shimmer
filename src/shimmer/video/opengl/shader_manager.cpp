@@ -8,9 +8,7 @@
 #include "uniforms/ticks_output.hpp"
 
 shimmer::shader_manager::shader_manager ()
-{
-        _list_shaders();
-}
+{}
 
 shimmer::shader_manager::~shader_manager()
 {}
@@ -23,8 +21,8 @@ std::unordered_map<std::string, enum shimmer::shader_manager::shimmer_uniforms> 
 
 std::shared_ptr<shimmer::shader> shimmer::shader_manager::create ( const std::vector<std::string>& vs_in, const std::vector<std::string>& fs_in )
 {
-        auto vs_sources = _read_sources ( config::instance().shaders_prefix + "/vs/", vs_in );
-        auto fs_sources = _read_sources ( config::instance().shaders_prefix + "/fs/", fs_in );
+        auto vs_sources = _read_sources ( vs_in );
+        auto fs_sources = _read_sources ( fs_in );
         auto vs_compiled = compile_shader ( vs_sources, GL_VERTEX_SHADER );
         auto fs_compiled = compile_shader ( fs_sources, GL_FRAGMENT_SHADER );
         auto program = _link_compiled ( {vs_compiled}, {fs_compiled} );
@@ -38,20 +36,13 @@ std::shared_ptr<shimmer::shader> shimmer::shader_manager::create ( const std::ve
         return result;
 }
 
-
-void shimmer::shader_manager::_list_shaders()
-{
-        _vs_shaders = list_directory ( config::instance().shaders_prefix + "/vs" );
-        _fs_shaders = list_directory ( config::instance().shaders_prefix + "/fs" );
-}
-
-std::vector<std::string> shimmer::shader_manager::_read_sources ( const std::string& base, const std::vector<std::string>& paths )
+std::vector<std::string> shimmer::shader_manager::_read_sources ( const std::vector<std::string>& paths )
 {
         std::vector<std::string> sources;
         std::regex version_regex ( "\\s*#version\\s\\d{3}\\s*" );
         sources.push_back ( "#version 130\n" );
         for ( auto path : paths ) {
-                std::string source = std::regex_replace ( read_contents ( base + path ), version_regex , "" );
+                std::string source = std::regex_replace ( read_contents ( path ), version_regex , "" );
                 if ( !source.empty() ) {
                         std::regex include_regex ( "\\s*\\/{2}\\s*#include\\s+([\\w.\\/\\\\]*)\\s*" );
                         for ( auto include : find_all ( source, include_regex, 1 ) ) {
@@ -62,6 +53,15 @@ std::vector<std::string> shimmer::shader_manager::_read_sources ( const std::str
                 sources.push_back ( source );
         }
         return sources;
+}
+
+std::vector<std::string> shimmer::shader_manager::_read_sources ( const std::string& base, const std::vector<std::string>& paths )
+{
+        std::vector<std::string> full_paths;
+        for(auto path : paths){
+                full_paths.push_back(base + path);
+        }
+        return _read_sources(paths);
 }
 
 std::vector<GLuint> shimmer::shader_manager::_compile_sources ( const std::vector<std::string>& sources, GLuint type )

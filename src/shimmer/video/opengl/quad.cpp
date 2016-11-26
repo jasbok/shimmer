@@ -59,6 +59,17 @@ void shimmer::quad::shape ( const rectangle<coordinates<GLfloat>,dimensions<GLfl
         } );
 }
 
+void shimmer::quad::shape(GLfloat x, GLfloat y, GLfloat w, GLfloat h)
+{
+        _buffer_data ( {
+                // Position                     // Texcoord
+                x,      y,      0.0,            0.0, 0.0,       // Top Left
+                x + w,  y,      0.0,            1.0, 0.0,       // Top Right
+                x + w,  y + h,  0.0,            1.0, 1.0,       // Bottom Right
+                x,      y + h,  0.0,            0.0, 1.0        // Bottom Left
+        } );
+}
+
 void shimmer::quad::bind ( const std::shared_ptr<shader>& shader )
 {
         glBindVertexArray ( _vao );

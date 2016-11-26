@@ -5,6 +5,7 @@
 #include "opengl/quad.hpp"
 #include "opengl/render_object.hpp"
 #include "opengl/shader_manager.hpp"
+#include "opengl/text_renderer.hpp"
 #include "opengl/texture.hpp"
 #include <memory>
 
@@ -28,6 +29,7 @@ private:
         SHIMMER_GETTER ( opengl_renderer, dimensions<float>, aspect_ratio );
         render_object _foreground, _background;
         shader_manager _shader_manager;
+        text_renderer _text_renderer;
         std::shared_ptr<texture> _source_texture;
 private:
         opengl_renderer();

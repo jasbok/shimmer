@@ -22,8 +22,6 @@ public:
 private:
         SHIMMER_MEMBER(shader_manager, std::string, shader_dir);
         SHIMMER_MEMBER(shader_manager, std::shared_ptr<texture>, application_texture);
-        SHIMMER_GETTER(shader_manager, std::vector<std::string>, vs_shaders);
-        SHIMMER_GETTER(shader_manager, std::vector<std::string>, fs_shaders);
 
         enum class shimmer_uniforms
         {
@@ -34,7 +32,7 @@ private:
         static std::unordered_map<std::string, enum shimmer_uniforms> _uniform_map;
 
 private:
-        void _list_shaders();
+        std::vector<std::string> _read_sources ( const std::vector<std::string>& paths );
         std::vector<std::string> _read_sources ( const std::string& base, const std::vector<std::string>& paths );
         std::vector<GLuint> _compile_sources ( const std::vector<std::string>& sources, GLuint type );
         GLuint _link_compiled ( const std::vector<GLuint>& vs, const std::vector<GLuint>& fs );

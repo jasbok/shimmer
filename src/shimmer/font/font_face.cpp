@@ -44,3 +44,15 @@ FT_GlyphSlot shimmer::font_face::operator[] ( unsigned int code )
 {
         return glyph ( code );
 }
+
+bool shimmer::font_face::has_kerning()
+{
+        return FT_HAS_KERNING(_face);
+}
+
+shimmer::coordinates<int> shimmer::font_face::kern_distance(unsigned int left, unsigned int right)
+{
+        FT_Vector vec;
+        FT_Get_Kerning(_face, left, right, FT_KERNING_DEFAULT, &vec);
+        return coordinates<int>(vec.x, vec.y);
+}

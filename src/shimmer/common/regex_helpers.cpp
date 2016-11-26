@@ -33,3 +33,9 @@ std::vector<std::vector<std::string>> shimmer::find_all ( const std::string& src
         }
         return results;
 }
+
+std::vector<std::string> shimmer::split ( const std::string& src, const std::regex& regex )
+{
+        std::sregex_token_iterator first {src.begin(), src.end(), regex, -1} , last;
+        return {first, last};
+}

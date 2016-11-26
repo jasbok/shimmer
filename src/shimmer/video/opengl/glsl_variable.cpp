@@ -38,7 +38,20 @@ const std::unordered_map<std::string, enum shimmer::glsl_variable::type> shimmer
 
         {"usampler1D", shimmer::glsl_variable::type::USAMPLER1D},
         {"usampler2D", shimmer::glsl_variable::type::USAMPLER2D},
-        {"usampler3D", shimmer::glsl_variable::type::USAMPLER3D}
+        {"usampler3D", shimmer::glsl_variable::type::USAMPLER3D},
+
+        {"mat2", shimmer::glsl_variable::type::MAT2},
+        {"mat3", shimmer::glsl_variable::type::MAT3},
+        {"mat4", shimmer::glsl_variable::type::MAT4},
+
+        {"mat2x3", shimmer::glsl_variable::type::MAT2X3},
+        {"mat3x2", shimmer::glsl_variable::type::MAT3X2},
+
+        {"mat2x4", shimmer::glsl_variable::type::MAT2X4},
+        {"mat4x2", shimmer::glsl_variable::type::MAT4X2},
+
+        {"mat3x4", shimmer::glsl_variable::type::MAT3X4},
+        {"mat4x3", shimmer::glsl_variable::type::MAT4X3}
 };
 
 shimmer::glsl_variable::glsl_variable()

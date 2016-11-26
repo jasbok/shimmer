@@ -19,6 +19,7 @@ set(SRCS
     "video/opengl/render_object.cpp"
     "video/opengl/shader.cpp"
     "video/opengl/shader_manager.cpp"
+    "video/opengl/text_renderer.cpp"
     "video/opengl/texture.cpp"
     "video/opengl/uniforms/application_output.cpp"
     "video/opengl/uniforms/ticks_output.cpp"

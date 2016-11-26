@@ -1,7 +1,11 @@
 #include "gl_font.hpp"
 
 shimmer::gl_font::gl_font()
-{}
+        : _textures ( new GLuint[128] ),
+          _kern_distances ( 128 * 128 )
+{
+
+}
 
 shimmer::gl_font::gl_font ( shimmer::gl_font && move )
         : _textures ( move._textures ), _glyphs ( std::move ( move._glyphs ) )
@@ -14,6 +18,7 @@ shimmer::gl_font::~gl_font()
 {
         if ( _textures ) {
                 glDeleteTextures ( _glyphs.size(), _textures );
+                delete [] _textures;
         }
 }
 
@@ -30,8 +35,9 @@ shimmer::gl_glyph& shimmer::gl_font::operator[] ( unsigned char c )
         return glyph ( c );
 }
 
-void shimmer::gl_font::font_face ( shimmer::font_face && face, unsigned int range )
+void shimmer::gl_font::font_face ( shimmer::font_face& face )
 {
+        unsigned int range = 128;
         if ( !_glyphs.empty() ) {
                 glDeleteTextures ( _glyphs.size(), _textures );
                 _glyphs.clear();
@@ -43,9 +49,9 @@ void shimmer::gl_font::font_face ( shimmer::font_face && face, unsigned int rang
         for ( unsigned int c = 0; c < range; c++ ) {
                 auto g = face[c];
                 auto glyph = gl_glyph()
-                             .dims ( {static_cast<GLuint> ( g->metrics.width ), static_cast<GLuint> ( g->metrics.height ) } )
-                             .bearing ( { static_cast<GLint> ( g->metrics.horiBearingX ), static_cast<GLint> ( g->metrics.horiBearingY ) } )
-                             .advance ( g->advance.x )
+                             .dims ( dimensions<GLuint> ( g->bitmap.width, g->bitmap.rows ) )
+                             .bearing ( coordinates<GLint> ( g->bitmap_left, g->bitmap_top ) )
+                             .advance ( g->advance.x >> 6 )
                              .texture ( _textures[c] );
 
                 glBindTexture ( GL_TEXTURE_2D, _textures[c] );
@@ -66,9 +72,22 @@ void shimmer::gl_font::font_face ( shimmer::font_face && face, unsigned int rang
 
                 _glyphs.push_back ( glyph );
         }
+
+        if ( face.has_kerning() ) {
+                for ( unsigned int j = 0; j < range; j++ ) {
+                        for ( unsigned int i = 0; i < range; i++ ) {
+                                _kern_distances[j * range + i] = face.kern_distance ( i, j );
+                        }
+                }
+        }
 }
 
 shimmer::gl_glyph& shimmer::gl_font::glyph ( unsigned char c )
 {
         return _glyphs[c < _glyphs.size() ? c : 0];
+}
+
+shimmer::coordinates<int> shimmer::gl_font::kern ( unsigned char left, unsigned char right )
+{
+        return _kern_distances[right * 128 + left];
 }

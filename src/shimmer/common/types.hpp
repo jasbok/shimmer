@@ -28,7 +28,6 @@ public:
                 : w ( move.w ), h ( move.h )
         {}
 
-
         dimensions& operator= ( const dimensions& copy )
         {
                 this->w = copy.w;
@@ -104,6 +103,16 @@ public:
         bool operator!= ( const coordinates<T>& op )
         {
                 return this->x != op.x || this->y != op.y;
+        }
+
+        coordinates operator+ ( const coordinates<T>& op )
+        {
+                return {this->x + op.x, this->y + op->y};
+        }
+
+        coordinates operator- ( const coordinates<T>& op )
+        {
+                return {this->x - op.x, this->y - op->y};
         }
 
         friend std::ostream &operator<< ( std::ostream &os, const coordinates<T> &coords )
@@ -194,6 +203,63 @@ public:
         friend std::ostream &operator<< ( std::ostream &os, const variable& var )
         {
                 os << "[ type = " << var.type << ", name = " << var.name << ", size = " << var.size << " ]";
+                return os;
+        }
+};
+
+template<typename T = unsigned int>
+class colour
+{
+public:
+        T r, g, b, a;
+
+        colour ()
+                : r ( 0 ), g ( 0 ), b ( 0 ), a ( 0 )
+        {}
+
+        colour ( T r, T g, T b, T a )
+                : r ( r ), g ( g ), b ( b ), a ( a )
+        {}
+
+        colour ( const colour& copy )
+                : r ( copy.r ), g ( copy.g ), b ( copy.b ), a ( copy.a )
+        {}
+
+        colour ( colour&& move )
+                : r ( move.r ), g ( move.g ), b ( move.b ), a ( move.a )
+        {}
+
+        colour& operator= ( const colour& copy )
+        {
+                this->r = copy.r;
+                this->g = copy.g;
+                this->b = copy.b;
+                this->a = copy.a;
+                return *this;
+        }
+
+        colour& operator= ( colour&& move )
+        {
+                this->r = move.r;
+                this->g = move.g;
+                this->b = move.b;
+                this->a = move.a;
+                return *this;
+        }
+
+        bool operator== ( const colour<T>& op )
+        {
+                return this->r == op.r && this->g == op.g && this->b == op.b && this->a == op.a;
+        }
+
+        bool operator!= ( const colour<T>& op )
+        {
+                return this->r != op.r || this->g != op.g || this->b != op.b || this->a != op.a;
+        }
+
+        friend std::ostream &operator<< ( std::ostream &os, const colour<T> &colour )
+        {
+                os << "( r = " << colour.r << ", g = " << colour.g << ", b = " << colour.b << ", a = " << colour.a << " )";
                 return os;
         }
 };

@@ -22,6 +22,7 @@ public:
 
         void aspect_ratio ( const dimensions<GLfloat>& ratio );
         void shape ( const rectangle<coordinates<GLfloat>, dimensions<GLfloat>> rect );
+        void shape ( GLfloat x, GLfloat y, GLfloat w, GLfloat h);
         void render () override;
         void bind ( const std::shared_ptr<shader>& shader ) override;
 private:
