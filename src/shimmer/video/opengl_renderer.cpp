@@ -16,35 +16,10 @@ shimmer::opengl_renderer * shimmer::opengl_renderer::create ( const std::shared_
 
 shimmer::opengl_renderer::opengl_renderer ( const std::shared_ptr<config>& config )
         : _config ( config ),
-        _shader_manager()
+          _source_texture ( std::make_shared<texture>() ),
+          _shader_manager()
 {
-        _source_texture = std::make_shared<texture>();
         _shader_manager.application_texture ( _source_texture );
-        _shader_manager.base_path(_config->read_str ( "paths.shaders" ));
-
-        _foreground = render_object (
-                              std::make_shared<quad> ( _aspect_ratio ),
-                              _shader_manager.create (
-        { _config->read_str ( "renderer.foreground.vertex" ) },
-        { _config->read_str ( "renderer.foreground.fragment" ) } ) );
-
-        _background = render_object (
-                              std::make_shared<quad> ( dimensions<float> ( 1.0f, 1.0f ) ),
-                              _shader_manager.create (
-        { _config->read_str ( "renderer.background.vertex" ) },
-        { _config->read_str ( "renderer.background.fragment" )} ) );
-
-        font_loader font_loader;
-        std::shared_ptr<font_face> face = font_loader.load ( _config->read_str ( "paths.fonts" ) + _config->read_str ( "renderer.font.regular" ), 48 );
-        std::shared_ptr<gl_font> gl_font = std::make_shared<class gl_font>();
-        gl_font->font_face ( *face );
-
-        auto text_shader = _shader_manager.create (
-        { "/text/text.vert"},
-        { "/text/text.frag"} );
-
-        _text_renderer.font ( gl_font );
-        _text_renderer.shader ( text_shader );
 }
 
 shimmer::opengl_renderer::~opengl_renderer()
@@ -63,7 +38,6 @@ void shimmer::opengl_renderer::source_format ( const dimensions<>& dims, unsigne
         .bpp ( bpp )
         .pixel_format ( gl_formats::pixel_format_from ( format ) )
         .pixel_type ( gl_formats::pixel_type_from ( type ) )
-        .filter ( _config->is_value("renderer.texture.filter", "linear") ? GL_LINEAR : GL_NEAREST )
         .setup();
 }
 
@@ -71,9 +45,10 @@ void shimmer::opengl_renderer::render()
 {
         glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
         glClear ( GL_COLOR_BUFFER_BIT );
-        _background.render();
+        //_background.render();
         _foreground.render();
-        //_text_renderer.draw("// Fragment_Shader -> hsv_adaptive_scaler.frag", {50,50});
+        //_menu.render();
+        //_text_renderer.draw ( "// Fragment_Shader -> hsv_adaptive_scaler.frag", {50,50} );
 }
 
 void shimmer::opengl_renderer::aspect_ratio ( const dimensions<float>& dims )
@@ -81,6 +56,13 @@ void shimmer::opengl_renderer::aspect_ratio ( const dimensions<float>& dims )
         _aspect_ratio = dims;
         std::static_pointer_cast<quad> ( _foreground.render_model() )->aspect_ratio ( _aspect_ratio );
 }
+
+void shimmer::opengl_renderer::texture_filter ( const std::string& filter )
+{
+        _texture_filter = filter.compare ( "linear" ) == 0 ? GL_LINEAR : GL_NEAREST;
+        _source_texture->filter ( _texture_filter );
+}
+
 
 void shimmer::opengl_renderer::pixels ( void* pixels )
 {
@@ -100,4 +82,43 @@ void * shimmer::opengl_renderer::map_buffer()
 void shimmer::opengl_renderer::unmap_buffer()
 {
         _source_texture->unmap_buffer();
+}
+
+void shimmer::opengl_renderer::background_shaders ( const std::vector<std::string>& vertex_shaders, const std::vector<std::string>& fragment_shaders )
+{
+        _background = render_object (
+                              std::make_shared<quad> ( dimensions<float> ( 1.0f, 1.0f ) ),
+                              _shader_manager.create ( vertex_shaders, fragment_shaders )
+                      );
+}
+
+void shimmer::opengl_renderer::foreground_shaders ( const std::vector<std::string>& vertex_shaders, const std::vector<std::string>& fragment_shaders )
+{
+        _foreground = render_object (
+                              std::make_shared<quad> ( _aspect_ratio ),
+                              _shader_manager.create ( vertex_shaders, fragment_shaders )
+                      );
+}
+
+void shimmer::opengl_renderer::menu_shaders ( const std::vector<std::string>& vertex_shaders, const std::vector<std::string>& fragment_shaders )
+{
+        _menu = render_object (
+                              std::make_shared<quad> ( dimensions<float> ( 1.0f, 1.0f ) ),
+                              _shader_manager.create ( vertex_shaders, fragment_shaders )
+                      );
+        _menu.render_shader()->set_uniform("colour", glm::vec4(0.0f, 0.0f, 0.0f, 0.75f));
+}
+
+void shimmer::opengl_renderer::font ( const std::string& regular, const std::string& bold, unsigned int size )
+{
+        font_loader font_loader;
+        std::shared_ptr<font_face> face = font_loader.load ( regular, size );
+        std::shared_ptr<gl_font> gl_font = std::make_shared<class gl_font>();
+        gl_font->font_face ( *face );
+        _text_renderer.font ( gl_font );
+}
+
+void shimmer::opengl_renderer::font_shaders ( const std::vector<std::string>& vertex_shaders, const std::vector<std::string>& fragment_shaders )
+{
+        _text_renderer.shader ( _shader_manager.create ( vertex_shaders, fragment_shaders ) );
 }

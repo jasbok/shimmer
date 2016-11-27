@@ -42,11 +42,11 @@ std::vector<std::string> shimmer::shader_manager::_read_sources ( const std::vec
         std::regex version_regex ( "\\s*#version\\s\\d{3}\\s*" );
         sources.push_back ( "#version 130\n" );
         for ( auto path : paths ) {
-                std::string source = std::regex_replace ( read_contents ( _base_path + path ), version_regex , "" );
+                std::string source = std::regex_replace ( read_contents ( path ), version_regex , "" );
                 if ( !source.empty() ) {
                         std::regex include_regex ( "\\s*\\/{2}\\s*#include\\s+([\\w.\\/\\\\]*)\\s*" );
                         for ( auto include : find_all ( source, include_regex, 1 ) ) {
-                                std::string include_source = read_contents ( _base_path + "/" + include );
+                                std::string include_source = read_contents ( include );
                                 sources.push_back ( std::regex_replace ( include_source, version_regex , "" ) );
                         }
                 }

@@ -57,11 +57,14 @@ public:
         SHIMMER_GLSL_VARIABLE_VALUE ( type::FLOAT, GLuint, glUniform1ui );
         SHIMMER_GLSL_VARIABLE_VALUE ( type::FLOAT, GLfloat, glUniform1f );
 
-#define SHIMMER_GLSL_VARIABLE_VALUE_VEC(TYPE, GLM_TYPE, GL_UNIFORM)     \
-        void value(const GLM_TYPE& val){                                \
-                if(_type == TYPE){                                      \
-                        GL_UNIFORM(_location, 1, glm::value_ptr(val));  \
-                }                                                       \
+#define SHIMMER_GLSL_VARIABLE_VALUE_VEC(TYPE, GLM_TYPE, GL_UNIFORM)                     \
+        void value(const GLM_TYPE& val){                                                \
+                if(_type == TYPE){                                                      \
+                        GL_UNIFORM(_location, 1, glm::value_ptr(val));                  \
+                }                                                                       \
+                else{                                                                   \
+                        printf("Uniform %s is not of type TYPE.\n", _name.c_str());     \
+                }                                                                       \
         }
         SHIMMER_GLSL_VARIABLE_VALUE_VEC ( type::IVEC2, glm::ivec2, glUniform2iv );
         SHIMMER_GLSL_VARIABLE_VALUE_VEC ( type::IVEC3, glm::ivec3, glUniform3iv );

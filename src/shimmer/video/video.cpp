@@ -18,8 +18,14 @@ void shimmer::video::setup ()
         if ( !_renderer ) {
                 _renderer = std::unique_ptr<renderer> ( opengl_renderer::create ( _config ) );
         }
+        _renderer->background_shaders( _config->read_strs("renderer.background.vertex"), _config->read_strs("renderer.background.fragment") );
+        _renderer->foreground_shaders( _config->read_strs("renderer.foreground.vertex"), _config->read_strs("renderer.foreground.fragment") );
+        _renderer->menu_shaders( _config->read_strs("renderer.menu.vertex"), _config->read_strs("renderer.menu.fragment") );
+        _renderer->font( _config->read_str("renderer.font.regular"), _config->read_str("renderer.font.bold"), _config->read_int("renderer.font.size"));
+        _renderer->font_shaders( _config->read_strs("renderer.font.vertex"), _config->read_strs("renderer.font.fragment"));
         _renderer->source_format ( _application_resolution, _bpp, _pixel_format, _pixel_type );
         _renderer->aspect_ratio ( _aspect_ratio );
+        _renderer->texture_filter( _config->read_str("renderer.texture.filter"));
 }
 
 void shimmer::video::update ( void* pixels )

@@ -8,10 +8,10 @@ shimmer::texture::texture()
           _data(nullptr),
           _dims (),
           _bpp ( 32 ),
-          _filter ( GL_LINEAR ),
           _internal_format ( GL_RGB ),
           _pixel_format ( GL_BGRA ),
-          _pixel_type ( GL_UNSIGNED_BYTE )
+          _pixel_type ( GL_UNSIGNED_BYTE ),
+          _filter ( GL_LINEAR )
 {
         glGenTextures ( 1, &_gl_texture );
         glGenBuffers ( 2, _pbo );
@@ -28,10 +28,10 @@ shimmer::texture::texture (
          _data(nullptr),
          _dims ( dims ),
          _bpp ( bpp ),
-         _filter ( GL_LINEAR ),
          _internal_format ( GL_RGB ),
          _pixel_format ( pixel_format ),
-         _pixel_type ( pixel_type )
+         _pixel_type ( pixel_type ),
+         _filter ( GL_LINEAR )
 {
         glGenTextures ( 1, &_gl_texture );
         glGenBuffers ( 2, _pbo );
@@ -48,8 +48,6 @@ shimmer::texture::~texture()
 void shimmer::texture::setup()
 {
         glBindTexture ( GL_TEXTURE_2D, _gl_texture );
-        glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filter );
-        glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _filter );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
         glTexImage2D ( GL_TEXTURE_2D,
@@ -106,6 +104,16 @@ void * shimmer::texture::map_buffer()
 void shimmer::texture::unmap_buffer()
 {
         _unmap_buffer ( {{0, 0}, _dims} );
+}
+
+shimmer::texture & shimmer::texture::filter(GLenum filter)
+{
+        _filter = filter;
+        glBindTexture ( GL_TEXTURE_2D, _gl_texture );
+        glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filter );
+        glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _filter );
+        glBindTexture ( GL_TEXTURE_2D, 0 );
+        return *this;
 }
 
 void shimmer::texture::_unmap_buffer ( const rectangle<coordinates<GLuint>, dimensions<GLuint>>& rect )

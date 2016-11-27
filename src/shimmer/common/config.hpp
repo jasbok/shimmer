@@ -2,7 +2,7 @@
 #define SHIMMER_CONFIG_HPP
 
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 namespace shimmer
@@ -47,7 +47,7 @@ public:
                 return *this;
         }
 private:
-        std::unordered_map<std::string, std::string> _map;
+        std::map<std::string, std::string> _map;
 };
 }
 

@@ -1,5 +1,5 @@
-#ifndef MENU_HPP
-#define MENU_HPP
+#ifndef SHIMMER_COMMON_MENU_HPP
+#define SHIMMER_COMMON_MENU_HPP
 
 #include <functional>
 #include <string>
@@ -50,8 +50,9 @@ public:
                 _func = func;
         }
 
-        bool operator() (){
-                return _func(*this);
+        bool operator() ()
+        {
+                return _func ( *this );
         }
 
 private:
@@ -64,12 +65,12 @@ template<typename L, typename I>
 class menu
 {
 public:
-        menu() : _curr(0) {}
+        menu() : _curr ( 0 ) {}
         menu ( const L& title, const std::vector<I>& items )
-                : _title ( title ), _items ( items ), _curr(0)
+                : _title ( title ), _items ( items ), _curr ( 0 )
         {}
         menu ( const L& title, std::vector<I>&& items )
-                : _title ( title ), _items ( items ), _curr(0)
+                : _title ( title ), _items ( items ), _curr ( 0 )
         {}
 
         virtual ~menu() {}
@@ -131,7 +132,8 @@ public:
                 return _items[_curr];
         }
 
-        size_t size(){
+        size_t size()
+        {
                 return _items.size();
         }
 private:

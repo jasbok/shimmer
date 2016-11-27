@@ -11,7 +11,7 @@ class texture
 {
 public:
         texture();
-        texture(dimensions<GLuint> dims, unsigned int bpp, GLenum pixel_format, GLenum pixel_type);
+        texture ( dimensions<GLuint> dims, unsigned int bpp, GLenum pixel_format, GLenum pixel_type );
         virtual ~texture();
 
         void setup();
@@ -20,6 +20,8 @@ public:
 
         void* map_buffer();
         void unmap_buffer();
+
+        texture& filter(GLenum filter);
 private:
         GLuint _pbo[2];
         int _pbo_index;
@@ -27,16 +29,16 @@ private:
         unsigned int _buffer_stride;
         GLubyte* _data;
 
-        SHIMMER_GETTER ( texture, GLuint, gl_texture);
         SHIMMER_MEMBER ( texture, dimensions<GLuint>, dims );
         SHIMMER_MEMBER ( texture, unsigned int, bpp );
-        SHIMMER_MEMBER ( texture, GLenum, filter );
         SHIMMER_MEMBER ( texture, GLenum, internal_format );
         SHIMMER_MEMBER ( texture, GLenum, pixel_format );
         SHIMMER_MEMBER ( texture, GLenum, pixel_type );
+        SHIMMER_GETTER ( texture, GLuint, gl_texture );
+        SHIMMER_GETTER ( texture, GLenum, filter );
 
 private:
-        void _unmap_buffer(const rectangle<coordinates<GLuint>, dimensions<GLuint>>& rect);
+        void _unmap_buffer ( const rectangle<coordinates<GLuint>, dimensions<GLuint>>& rect );
 };
 }
 

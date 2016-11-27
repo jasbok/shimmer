@@ -15,17 +15,24 @@ shimmer::config::config()
         {"video.fullscreen", "false"},
 
         {"renderer.aspect_ratio", "original"},
-        {"renderer.texture.filter", "linear"},
+        {"renderer.texture.filter", "nearest"},
 
-        {"renderer.foreground.vertex", "/surface/vs/default.vert"},
-        {"renderer.foreground.fragment", "/surface/fs/default.frag"},
+        {"renderer.foreground.vertex", "/usr/local/libshimmer/shaders/surface/vs/default.vert"},
+        {"renderer.foreground.fragment", "/usr/local/libshimmer/shaders/surface/fs/default.frag"},
 
         {"renderer.background.enabled", "false"},
-        {"renderer.background.vertex", "/surface/vs/default.vert"},
-        {"renderer.background.fragment", "/surface/fs/default.frag"},
+        {"renderer.background.vertex", "/usr/local/libshimmer/shaders/surface/vs/default.vert"},
+        {"renderer.background.fragment", "/usr/local/libshimmer/shaders/surface/fs/default.frag"},
 
-        {"renderer.font.regular", "/xolonium/ttf/Xolonium-Regular.ttf"},
-        {"renderer.font.bold", "/xolonium/ttf/Xolonium-Bold.ttf"}
+        {"renderer.menu.vertex", "/usr/local/libshimmer/shaders/surface/vs/default.vert"},
+        {"renderer.menu.fragment", "/usr/local/libshimmer/shaders/surface/fs/solid.frag"},
+
+        {"renderer.font.regular", "/usr/local/libshimmer/fonts/xolonium/ttf/Xolonium-Regular.ttf"},
+        {"renderer.font.bold", "/usr/local/libshimmer/fonts/xolonium/ttf/Xolonium-Bold.ttf"},
+        {"renderer.font.size", "15"},
+
+        {"renderer.font.vertex", "/usr/local/libshimmer/shaders/text/text.vert"},
+        {"renderer.font.fragment", "/usr/local/libshimmer/shaders/text/text.frag"}
 } )
 {}
 

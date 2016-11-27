@@ -1,9 +1,10 @@
 #ifndef SHIMMER_VIDEO_OPENGL_SHADER
 #define SHIMMER_VIDEO_OPENGL_SHADER
 
-#include "glsl_variable.hpp"
 #include "common/macros.hpp"
 #include "uniforms/uniform_output.hpp"
+#include "glsl_variable.hpp"
+#include "opengl_helpers.hpp"
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <memory>
@@ -30,9 +31,14 @@ public:
         shader& add ( const std::vector<glsl_variable>& variables );
 
         template<typename T>
-        shader& set_uniform( const std::string& name, const T& value){
+        shader& set_uniform( const std::string& name, const T& value, bool use_prog = true){
                 if(has_uniform(name)){
+                        if(use_prog) use_program();
                         _uniforms[name].value(value);
+                        if(use_prog) reset_program();
+                }
+                else{
+                        std::cout << "Shader does not have uniform with name '" << name << "'" << std::endl;
                 }
                 return *this;
         }
