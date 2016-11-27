@@ -2,48 +2,49 @@
 #include "font/font_loader.hpp"
 #include "opengl/formats.hpp"
 #include "opengl/quad.hpp"
-#include "common/config.hpp"
 #include <GL/glew.h>
 
-shimmer::opengl_renderer * shimmer::opengl_renderer::create()
+shimmer::opengl_renderer * shimmer::opengl_renderer::create ( const std::shared_ptr<config>& config )
 {
         glewExperimental = true;
         glewInit();
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable ( GL_BLEND );
+        glBlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glPixelStorei ( GL_UNPACK_ALIGNMENT, 1 );
-        return new opengl_renderer();
+        return new opengl_renderer ( config );
 }
 
-shimmer::opengl_renderer::opengl_renderer()
-        : _aspect_ratio ( {1.0f, 1.0f} )
+shimmer::opengl_renderer::opengl_renderer ( const std::shared_ptr<config>& config )
+        : _config ( config ),
+        _shader_manager()
 {
         _source_texture = std::make_shared<texture>();
         _shader_manager.application_texture ( _source_texture );
+        _shader_manager.base_path(_config->read_str ( "paths.shaders" ));
 
         _foreground = render_object (
                               std::make_shared<quad> ( _aspect_ratio ),
                               _shader_manager.create (
-        { config::instance().shaders_prefix + "/surface/vs/" + config::instance().vertex_shader},
-        { config::instance().shaders_prefix + "/surface/fs/hsv_adaptive_scaler.frag"} ) );
+        { _config->read_str ( "renderer.foreground.vertex" ) },
+        { _config->read_str ( "renderer.foreground.fragment" ) } ) );
 
         _background = render_object (
                               std::make_shared<quad> ( dimensions<float> ( 1.0f, 1.0f ) ),
                               _shader_manager.create (
-        { config::instance().shaders_prefix + "/surface/vs/" + config::instance().vertex_shader},
-        { config::instance().shaders_prefix + "/surface/fs/hsv.frag"} ) );
+        { _config->read_str ( "renderer.background.vertex" ) },
+        { _config->read_str ( "renderer.background.fragment" )} ) );
 
         font_loader font_loader;
-        std::shared_ptr<font_face> face = font_loader.load ( "../../../fonts/xolonium/ttf/Xolonium-Regular.ttf", 48 );
+        std::shared_ptr<font_face> face = font_loader.load ( _config->read_str ( "paths.fonts" ) + _config->read_str ( "renderer.font.regular" ), 48 );
         std::shared_ptr<gl_font> gl_font = std::make_shared<class gl_font>();
-        gl_font->font_face(*face);
+        gl_font->font_face ( *face );
 
         auto text_shader = _shader_manager.create (
-        { config::instance().shaders_prefix + "/text/text.vert"},
-        { config::instance().shaders_prefix + "/text/text.frag"} );
+        { "/text/text.vert"},
+        { "/text/text.frag"} );
 
-        _text_renderer.font(gl_font);
-        _text_renderer.shader(text_shader);
+        _text_renderer.font ( gl_font );
+        _text_renderer.shader ( text_shader );
 }
 
 shimmer::opengl_renderer::~opengl_renderer()
@@ -52,7 +53,7 @@ shimmer::opengl_renderer::~opengl_renderer()
 void shimmer::opengl_renderer::resize ( const dimensions<>& dims )
 {
         glViewport ( 0, 0, dims.w, dims.h );
-        _text_renderer.resolution(dimensions<GLfloat>(dims.w, dims.h));
+        _text_renderer.resolution ( dimensions<GLfloat> ( dims.w, dims.h ) );
 }
 
 void shimmer::opengl_renderer::source_format ( const dimensions<>& dims, unsigned int bpp, shimmer::pixel_format format, shimmer::pixel_type type )
@@ -62,7 +63,7 @@ void shimmer::opengl_renderer::source_format ( const dimensions<>& dims, unsigne
         .bpp ( bpp )
         .pixel_format ( gl_formats::pixel_format_from ( format ) )
         .pixel_type ( gl_formats::pixel_type_from ( type ) )
-        .filter ( GL_LINEAR )
+        .filter ( _config->is_value("renderer.texture.filter", "linear") ? GL_LINEAR : GL_NEAREST )
         .setup();
 }
 

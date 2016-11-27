@@ -19,7 +19,8 @@ public:
         class mouse* mouse();
         class video* video();
 private:
-        event_system _event_system;
+        std::shared_ptr<config> _config;
+        std::shared_ptr<event_system> _event_system;
         class keyboard _keyboard;
         class mouse _mouse;
         class video _video;

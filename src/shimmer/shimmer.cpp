@@ -1,10 +1,11 @@
 #include "shimmer.hpp"
 
 shimmer::shimmer::shimmer()
-        : _event_system(),
-          _keyboard ( &_event_system ),
-          _mouse ( &_event_system ),
-          _video ( &_event_system )
+        :_config ( std::make_shared<config>() ),
+         _event_system( std::make_shared<event_system>()),
+         _keyboard ( _config, _event_system ),
+         _mouse ( _config, _event_system ),
+         _video ( _config, _event_system )
 {}
 
 shimmer::shimmer::~shimmer()

@@ -2,6 +2,7 @@
 #define SHIMMER_VIDEO_OPENGL_RENDERER_HPP
 
 #include "renderer.hpp"
+#include "common/config.hpp"
 #include "opengl/quad.hpp"
 #include "opengl/render_object.hpp"
 #include "opengl/shader_manager.hpp"
@@ -14,7 +15,7 @@ namespace shimmer
 class opengl_renderer : public renderer
 {
 public:
-        static opengl_renderer* create();
+        static opengl_renderer* create(const std::shared_ptr<config>& config);
         virtual ~opengl_renderer();
         void resize ( const dimensions<> & dims ) override;
         void pixels ( void * pixels ) override;
@@ -26,13 +27,14 @@ public:
         void render() override;
 
 private:
-        SHIMMER_GETTER ( opengl_renderer, dimensions<float>, aspect_ratio );
-        render_object _foreground, _background;
+        std::shared_ptr<config> _config;
         shader_manager _shader_manager;
         text_renderer _text_renderer;
+        SHIMMER_GETTER ( opengl_renderer, dimensions<float>, aspect_ratio );
+        render_object _foreground, _background;
         std::shared_ptr<texture> _source_texture;
 private:
-        opengl_renderer();
+        opengl_renderer(const std::shared_ptr<config>& config);
 };
 }
 

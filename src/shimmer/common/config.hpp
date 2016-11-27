@@ -1,49 +1,53 @@
 #ifndef SHIMMER_CONFIG_HPP
 #define SHIMMER_CONFIG_HPP
 
-#ifndef DATA_PREFIX
-#define DATA_PREFIX "/usr/local/libshimmer"
-#endif
-
-#ifndef SHADERS_PREFIX
-#define SHADERS_PREFIX "/usr/local/libshimmer/shaders"
-#endif
-
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace shimmer
 {
 class config
 {
 public:
-        // VIDEO
-        unsigned int width, height;
-        unsigned int update_rate;
-        unsigned int filter_level;
-        bool keep_aspect_ratio;
-
-        // FILESYSTEM
-        std::string data_prefix;
-        std::string shaders_prefix;
-
-        // SHADERS
-        std::string vertex_shader;
-        std::string fragment_shader;
-
-public:
-        static config &instance();
-
-        bool toggle_keep_aspect_ratio();
-
-        unsigned int next_filter_level();
-
-private:
         config();
-
         config ( const config &conf );
-        const config &operator= ( const config &conf );
+        config ( config &&move );
+        virtual ~config();
 
-        virtual ~config() {}
+        config &operator= ( const config &copy );
+        config &operator= ( config &&move );
+
+        std::string& operator[] ( const std::string& key );
+
+        bool exists ( const std::string& key );
+
+        bool read_bool ( const std::string& key );
+        char read_char ( const std::string& key );
+        int read_int ( const std::string& key );
+        float read_float ( const std::string& key );
+        std::string read_str ( const std::string& key );
+
+        std::vector<std::string> read_strs( const std::string& key, const std::string& split = "\\s+");
+        std::vector<int> read_ints( const std::string& key, const std::string& split = "\\s+");
+        std::vector<float> read_floats( const std::string& key, const std::string& split = "\\s+");
+
+        bool is_value(const std::string& key, char value);
+        bool is_value(const std::string& key, float value);
+        bool is_value(const std::string& key, const std::string& value);
+        bool is_value(const std::string& key, int value);
+
+        config& write(const std::string& key, bool value);
+        config& write(const std::string& key, char value);
+        config& write(const std::string& key, const std::string& value);
+
+        template <typename T>
+        config& write(const std::string& key, const T& value){
+                _map[key] = std::to_string(value);
+                return *this;
+        }
+private:
+        std::unordered_map<std::string, std::string> _map;
 };
 }
 

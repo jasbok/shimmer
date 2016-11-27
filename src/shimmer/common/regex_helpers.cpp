@@ -39,3 +39,8 @@ std::vector<std::string> shimmer::split ( const std::string& src, const std::reg
         std::sregex_token_iterator first {src.begin(), src.end(), regex, -1} , last;
         return {first, last};
 }
+
+std::vector<std::string> shimmer::split ( const std::string& src, const std::string& regex )
+{
+        return split(src, std::regex(regex));
+}

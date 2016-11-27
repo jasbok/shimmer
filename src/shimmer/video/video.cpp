@@ -2,8 +2,11 @@
 #include "opengl_renderer.hpp"
 #include <algorithm>
 
-shimmer::video::video ( class event_system* event_system )
-        : _event_system ( event_system ), _renderer ( nullptr ), _max_resolution ( 3840, 2160 )
+shimmer::video::video ( const std::shared_ptr<config>& config, const std::shared_ptr<event_system>& event_system )
+        :_config ( config ),
+         _event_system ( event_system ),
+         _renderer ( nullptr ),
+         _max_resolution ( 3840, 2160 )
 {}
 
 shimmer::video::~video()
@@ -13,7 +16,7 @@ void shimmer::video::setup ()
 {
         _calculate_aspect_ratio();
         if ( !_renderer ) {
-                _renderer = std::unique_ptr<renderer> ( opengl_renderer::create() );
+                _renderer = std::unique_ptr<renderer> ( opengl_renderer::create ( _config ) );
         }
         _renderer->source_format ( _application_resolution, _bpp, _pixel_format, _pixel_type );
         _renderer->aspect_ratio ( _aspect_ratio );
@@ -45,7 +48,6 @@ void shimmer::video::update ( void* pixels, const std::vector<rectangle<> >& rec
         ymax += ymax % 2;
 
         _renderer->pixels ( pixels, {{xmin, ymin},{xmax - xmin, ymax - ymin}} );
-        //_renderer->pixels ( pixels );
         render();
 }
 
@@ -98,11 +100,29 @@ void shimmer::video::unmap_buffer()
 
 void shimmer::video::_calculate_aspect_ratio()
 {
-        float ar_app = _application_resolution.w / ( float ) _application_resolution.h;
-        float ar_video = _video_resolution.w / ( float ) _video_resolution.h;
-        float ar_factor = ar_app / ar_video;
-        _aspect_ratio.w = ar_factor > 1.0f ?  1.0f : ar_factor;
-        _aspect_ratio.h = ar_factor > 1.0f ? 1.0f / ar_factor : 1.0f;
+        if ( _config->is_value ( "renderer.aspect_ratio", "stretch" ) ) {
+                _aspect_ratio = { 1.0f, 1.0f };
+        } else {
+                float ar_app = _application_resolution.w / ( float ) _application_resolution.h;
+                float ar_video = _video_resolution.w / ( float ) _video_resolution.h;
+                float ar_factor = ar_app / ar_video;
+
+                if ( !_config->is_value ( "renderer.aspect_ratio", "original" ) ) {
+                        auto ar = _config->read_floats ( "renderer.aspect_ratio", "\\s*:\\s*" );
+                        if ( ar.size() == 2 ) {
+                                ar_factor = ar[0] / ar[1] / ar_video;
+                        }
+                }
+                if ( _config->is_value ( "renderer.aspect_ratio", "zoom" ) ) {
+                        _aspect_ratio.w = ar_factor < 1.0f ?  1.0f : ar_factor;
+                        _aspect_ratio.h = ar_factor < 1.0f ? 1.0f / ar_factor : 1.0f;
+                } else {
+                        _aspect_ratio.w = ar_factor > 1.0f ?  1.0f : ar_factor;
+                        _aspect_ratio.h = ar_factor > 1.0f ? 1.0f / ar_factor : 1.0f;
+                }
+        }
 }
+
+
 
 

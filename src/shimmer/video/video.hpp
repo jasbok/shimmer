@@ -1,11 +1,12 @@
 #ifndef SHIMMER_VIDEO_VIDEO_HPP
 #define SHIMMER_VIDEO_VIDEO_HPP
 
-#include "renderer.hpp"
+#include "common/config.hpp"
 #include "common/enums.hpp"
 #include "common/event_system.hpp"
 #include "common/macros.hpp"
 #include "common/types.hpp"
+#include "renderer.hpp"
 #include <memory>
 #include <vector>
 
@@ -14,7 +15,7 @@ namespace shimmer
 class video
 {
 public:
-        video(class event_system* event_system);
+        video(const std::shared_ptr<config>& config, const std::shared_ptr<event_system>& event_system);
         virtual ~video();
 
         void setup ();
@@ -28,8 +29,10 @@ public:
         void resize_application ( const dimensions<>& application );
         void resize_video ( const dimensions<>& video );
 private:
-        class event_system* _event_system;
+        std::shared_ptr<config> _config;
+        std::shared_ptr<event_system> _event_system;
         std::unique_ptr<renderer> _renderer;
+
         SHIMMER_GETTER ( video, dimensions<>, application_resolution );
         SHIMMER_GETTER ( video, dimensions<>, video_resolution );
         SHIMMER_MEMBER ( video, dimensions<>, max_resolution );

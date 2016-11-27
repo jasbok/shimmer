@@ -2,6 +2,7 @@
 #define SHADER_MANAGER_HPP
 
 #include "shader.hpp"
+#include "common/config.hpp"
 #include "common/types.hpp"
 #include "uniforms/uniform_output.hpp"
 #include "texture.hpp"
@@ -20,7 +21,7 @@ public:
 
         std::shared_ptr<shader> create ( const std::vector<std::string> &vs_shaders, const std::vector<std::string> &fs_shaders );
 private:
-        SHIMMER_MEMBER(shader_manager, std::string, shader_dir);
+        SHIMMER_MEMBER(shader_manager, std::string, base_path);
         SHIMMER_MEMBER(shader_manager, std::shared_ptr<texture>, application_texture);
 
         enum class shimmer_uniforms
