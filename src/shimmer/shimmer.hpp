@@ -1,8 +1,8 @@
 #ifndef SHIMMER_HPP
 #define SHIMMER_HPP
 
-#include "common/config.hpp"
 #include "common/event_system.hpp"
+#include "config/config.hpp"
 #include "input/keyboard.hpp"
 #include "input/mouse.hpp"
 #include "video/video.hpp"

@@ -1,4 +1,5 @@
 #include "regex_helpers.hpp"
+#include <iostream>
 
 std::vector<std::string> shimmer::find_all ( const std::string& src, const std::regex& regex, unsigned int group )
 {
@@ -42,5 +43,31 @@ std::vector<std::string> shimmer::split ( const std::string& src, const std::reg
 
 std::vector<std::string> shimmer::split ( const std::string& src, const std::string& regex )
 {
-        return split(src, std::regex(regex));
+        return split ( src, std::regex ( regex ) );
 }
+
+std::string shimmer::replace ( const std::string& src, const std::regex& regex, const std::string& sub )
+{
+        return std::regex_replace ( src, regex, sub );
+}
+
+std::string shimmer::replace ( const std::string& src, const std::string& regex, const std::string& sub )
+{
+        return replace ( src, std::regex ( regex ), sub );
+}
+
+std::string shimmer::transform ( const std::string& src, const std::regex& regex, const std::function<std::string ( const std::string & ) >& func )
+{
+        std::string ret;
+
+        for(auto it = std::sregex_token_iterator(src.begin(), src.end(), regex, {0}); it != std::sregex_token_iterator(); it++){
+                ret += (it->matched ? func(*it) : *it) + *(it->first);
+        }
+        return ret;
+}
+
+std::string shimmer::transform ( const std::string& src, const std::string& regex, const std::function<std::string ( const std::string & ) >& func )
+{
+        return transform ( src, std::regex ( regex ), func );
+}
+

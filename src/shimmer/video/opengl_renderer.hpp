@@ -2,7 +2,7 @@
 #define SHIMMER_VIDEO_OPENGL_RENDERER_HPP
 
 #include "renderer.hpp"
-#include "common/config.hpp"
+#include "config/config.hpp"
 #include "opengl/quad.hpp"
 #include "opengl/render_object.hpp"
 #include "opengl/shader_manager.hpp"

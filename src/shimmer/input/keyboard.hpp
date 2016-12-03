@@ -1,8 +1,8 @@
 #ifndef SHIMMER_INPUT_KEYBOARD_HPP
 #define SHIMMER_INPUT_KEYBOARD_HPP
 
-#include "common/config.hpp"
 #include "common/event_system.hpp"
+#include "config/config.hpp"
 #include <memory>
 
 namespace shimmer

@@ -1,9 +1,9 @@
 #ifndef SHIMMER_INPUT_MOUSE_HPP
 #define SHIMMER_INPUT_MOUSE_HPP
 
-#include "common/config.hpp"
 #include "common/event_system.hpp"
 #include "common/types.hpp"
+#include "config/config.hpp"
 #include <memory>
 
 namespace shimmer

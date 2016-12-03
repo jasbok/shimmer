@@ -1,11 +1,11 @@
 #ifndef SHIMMER_VIDEO_VIDEO_HPP
 #define SHIMMER_VIDEO_VIDEO_HPP
 
-#include "common/config.hpp"
 #include "common/enums.hpp"
 #include "common/event_system.hpp"
 #include "common/macros.hpp"
 #include "common/types.hpp"
+#include "config/config.hpp"
 #include "renderer.hpp"
 #include <memory>
 #include <vector>

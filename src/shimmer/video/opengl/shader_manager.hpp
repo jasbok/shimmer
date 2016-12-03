@@ -2,7 +2,6 @@
 #define SHADER_MANAGER_HPP
 
 #include "shader.hpp"
-#include "common/config.hpp"
 #include "common/types.hpp"
 #include "uniforms/uniform_output.hpp"
 #include "texture.hpp"

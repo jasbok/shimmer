@@ -1,5 +1,5 @@
 #include "config.hpp"
-#include "regex_helpers.hpp"
+#include "common/regex_helpers.hpp"
 #include <algorithm>
 #include <iostream>
 
@@ -9,16 +9,16 @@ shimmer::config::config()
         {"paths.fonts", "/usr/local/libshimmer/fonts"},
         {"paths.shaders", "/usr/local/libshimmer/shaders"},
 
-        {"video.width", "0"},
-        {"video.height", "0"},
+        {"video.resolution.width", "0"},
+        {"video.resolution.height", "0"},
         {"video.refresh_rate", "59"},
         {"video.fullscreen", "false"},
 
-        {"renderer.aspect_ratio", "original"},
+        {"renderer.aspect_ratio", "stretch"},
         {"renderer.texture.filter", "nearest"},
 
         {"renderer.foreground.vertex", "/usr/local/libshimmer/shaders/surface/vs/default.vert"},
-        {"renderer.foreground.fragment", "/usr/local/libshimmer/shaders/surface/fs/default.frag"},
+        {"renderer.foreground.fragment", "/usr/local/libshimmer/shaders/surface/fs/hsv_adaptive_scaler.frag"},
 
         {"renderer.background.enabled", "false"},
         {"renderer.background.vertex", "/usr/local/libshimmer/shaders/surface/vs/default.vert"},

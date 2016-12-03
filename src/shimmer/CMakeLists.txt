@@ -1,10 +1,11 @@
 add_subdirectory(catch)
 
 set(SRCS 
-    "common/config.cpp"
     "common/event_system.cpp"
     "common/file_helpers.cpp"
     "common/regex_helpers.cpp"
+    "config/config.cpp"
+    "config/menu_builder.cpp"
     "font/font_face.cpp"
     "font/font_loader.cpp"
     "font/freetype.cpp"

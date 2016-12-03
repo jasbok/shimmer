@@ -1,6 +1,5 @@
 #include "shader_manager.hpp"
 #include "opengl_helpers.hpp"
-#include "common/config.hpp"
 #include "common/file_helpers.hpp"
 #include "common/regex_helpers.hpp"
 #include "uniforms/application_output.hpp"
