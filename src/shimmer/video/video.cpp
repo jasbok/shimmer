@@ -26,6 +26,8 @@ void shimmer::video::setup ()
         _renderer->source_format ( _application_resolution, _bpp, _pixel_format, _pixel_type );
         _renderer->aspect_ratio ( _aspect_ratio );
         _renderer->texture_filter( _config->read_str("renderer.texture.filter"));
+        std::cout << "Video Res: " << _video_resolution << std::endl;
+        _renderer->resize(_video_resolution);
 }
 
 void shimmer::video::update ( void* pixels )

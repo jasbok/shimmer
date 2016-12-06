@@ -7,11 +7,11 @@ shimmer::quad::quad()
         aspect_ratio ( {1.0, 1.0} );
 }
 
-shimmer::quad::quad ( const dimensions<GLfloat>& ratio )
+shimmer::quad::quad ( const dimensions<GLfloat>& ratio, bool flip_y )
 {
         glGenBuffers ( 1, &_vbo );
         glGenVertexArrays ( 1, &_vao );
-        aspect_ratio ( ratio );
+        aspect_ratio ( ratio, flip_y );
 }
 
 shimmer::quad::quad ( shimmer::quad&& move )
@@ -37,37 +37,68 @@ void shimmer::quad::operator= ( shimmer::quad && move )
 }
 
 
-void shimmer::quad::aspect_ratio ( const dimensions<GLfloat>& ratio )
+void shimmer::quad::aspect_ratio ( const dimensions<GLfloat>& ratio, bool flip_y )
 {
-        _buffer_data ( {
-                // Position                             // Texcoord
-                -ratio.w,  ratio.h,   0.0,              0.0, 0.0,       // Top Left
-                ratio.w,   ratio.h,   0.0,              1.0, 0.0,       // Top Right
-                ratio.w,   -ratio.h,  0.0,              1.0, 1.0,       // Bottom Right
-                -ratio.w,  -ratio.h,  0.0,              0.0, 1.0        // Bottom Left
-        } );
+        if ( !flip_y ) {
+                _buffer_data ( {
+                        // Position                             // Texcoord
+                        -ratio.w,  ratio.h,   0.0,              0.0, 0.0,       // Top Left
+                        ratio.w,   ratio.h,   0.0,              1.0, 0.0,       // Top Right
+                        ratio.w,   -ratio.h,  0.0,              1.0, 1.0,       // Bottom Right
+                        -ratio.w,  -ratio.h,  0.0,              0.0, 1.0,       // Bottom Left
+                } );
+        } else {
+                _buffer_data ( {
+                        // Position                             // Texcoord
+                        -ratio.w,  ratio.h,   0.0,              0.0, 1.0,       // Top Left
+                        ratio.w,   ratio.h,   0.0,              1.0, 1.0,       // Top Right
+                        ratio.w,   -ratio.h,  0.0,              1.0, 0.0,       // Bottom Right
+                        -ratio.w,  -ratio.h,  0.0,              0.0, 0.0,       // Bottom Left
+                } );
+        }
 }
 
-void shimmer::quad::shape ( const rectangle<coordinates<GLfloat>,dimensions<GLfloat>> rect )
+void shimmer::quad::shape ( const rectangle<coordinates<GLfloat>,dimensions<GLfloat>> rect, bool flip_y )
 {
-        _buffer_data ( {
-                // Position                                                                     // Texcoord
-                rect.coords.x,                  rect.coords.y,                    0.0,          0.0, 0.0,       // Top Left
-                rect.coords.x + rect.dims.w,    rect.coords.y,                    0.0,          1.0, 0.0,       // Top Right
-                rect.coords.x + rect.dims.w,    rect.coords.y + rect.dims.h,      0.0,          1.0, 1.0,       // Bottom Right
-                rect.coords.x,                  rect.coords.y + rect.dims.h,      0.0,          0.0, 1.0        // Bottom Left
-        } );
+        if ( !flip_y ) {
+                _buffer_data ( {
+                        // Position                                                                     // Texcoord
+                        rect.coords.x,                  rect.coords.y,                    0.0,          0.0, 0.0,       // Top Left
+                        rect.coords.x + rect.dims.w,    rect.coords.y,                    0.0,          1.0, 0.0,       // Top Right
+                        rect.coords.x + rect.dims.w,    rect.coords.y + rect.dims.h,      0.0,          1.0, 1.0,       // Bottom Right
+                        rect.coords.x,                  rect.coords.y + rect.dims.h,      0.0,          0.0, 1.0,       // Bottom Left
+                } );
+        } else {
+                _buffer_data ( {
+                        // Position                                                                     // Texcoord
+                        rect.coords.x,                  rect.coords.y,                    0.0,          0.0, 1.0,       // Top Left
+                        rect.coords.x + rect.dims.w,    rect.coords.y,                    0.0,          1.0, 1.0,       // Top Right
+                        rect.coords.x + rect.dims.w,    rect.coords.y + rect.dims.h,      0.0,          1.0, 0.0,       // Bottom Right
+                        rect.coords.x,                  rect.coords.y + rect.dims.h,      0.0,          0.0, 0.0,       // Bottom Left
+                } );
+        }
 }
 
-void shimmer::quad::shape(GLfloat x, GLfloat y, GLfloat w, GLfloat h)
+
+void shimmer::quad::shape ( GLfloat x, GLfloat y, GLfloat w, GLfloat h, bool flip_y )
 {
-        _buffer_data ( {
-                // Position                     // Texcoord
-                x,      y,      0.0,            0.0, 0.0,       // Top Left
-                x + w,  y,      0.0,            1.0, 0.0,       // Top Right
-                x + w,  y + h,  0.0,            1.0, 1.0,       // Bottom Right
-                x,      y + h,  0.0,            0.0, 1.0        // Bottom Left
-        } );
+        if ( !flip_y ) {
+                _buffer_data ( {
+                        // Position                     // Texcoord
+                        x,      y,      0.0,            0.0, 0.0,       // Top Left
+                        x + w,  y,      0.0,            1.0, 0.0,       // Top Right
+                        x + w,  y + h,  0.0,            1.0, 1.0,       // Bottom Right
+                        x,      y + h,  0.0,            0.0, 1.0,       // Bottom Left
+                } );
+        } else {
+                _buffer_data ( {
+                        // Position                     // Texcoord
+                        x,      y,      0.0,            0.0, 1.0,       // Top Left
+                        x + w,  y,      0.0,            1.0, 1.0,       // Top Right
+                        x + w,  y + h,  0.0,            1.0, 0.0,       // Bottom Right
+                        x,      y + h,  0.0,            0.0, 0.0,       // Bottom Left
+                } );
+        }
 }
 
 void shimmer::quad::bind ( const std::shared_ptr<shader>& shader )

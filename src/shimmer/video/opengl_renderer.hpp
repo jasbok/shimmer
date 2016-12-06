@@ -35,11 +35,14 @@ public:
 private:
         std::shared_ptr<config> _config;
         std::shared_ptr<texture> _source_texture;
+        std::shared_ptr<texture> _fbo_texture;
+        GLuint _fbo;
         shader_manager _shader_manager;
         text_renderer _text_renderer;
+        dimensions<> _viewport_resolution;
         dimensions<float> _aspect_ratio;
         GLenum _texture_filter;
-        render_object _foreground, _background, _menu;
+        render_object _foreground, _foreground_fbo, _background, _menu;
 private:
         opengl_renderer(const std::shared_ptr<config>& config);
 };
