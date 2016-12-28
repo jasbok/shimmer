@@ -26,7 +26,6 @@ void shimmer::video::setup ()
         _renderer->source_format ( _application_resolution, _bpp, _pixel_format, _pixel_type );
         _renderer->aspect_ratio ( _aspect_ratio );
         _renderer->texture_filter( _config->read_str("renderer.texture.filter"));
-        std::cout << "Video Res: " << _video_resolution << std::endl;
         _renderer->resize(_video_resolution);
 }
 
@@ -50,6 +49,9 @@ void shimmer::video::update ( void* pixels, const std::vector<rectangle<> >& rec
                 ymax = std::max<unsigned int> ( ymax, r.dims.h + r.coords.y );
         }
 
+//        xmax = xmax < _application_resolution.w ? xmax : _application_resolution.w;
+//        ymax = ymax < _application_resolution.h ? ymax : _application_resolution.h;
+
         xmin -= xmin % 2;
         xmax += xmax % 2;
         ymin -= ymin % 2;
@@ -66,6 +68,7 @@ void shimmer::video::render()
 
 void shimmer::video::resize ( const dimensions<>& application, const dimensions<>& video )
 {
+        bool do_resize = false;
         _application_resolution = application;
 
         if (
@@ -73,12 +76,13 @@ void shimmer::video::resize ( const dimensions<>& application, const dimensions<
                 video.w <= _max_resolution.w &&
                 video.h >= 128 &&
                 video.h <= _max_resolution.h ) {
+                do_resize = _video_resolution.w != video.w || _video_resolution.h != video.h;
                 _video_resolution.w = video.w;
                 _video_resolution.h = video.h;
         }
         _calculate_aspect_ratio();
 
-        if ( _renderer ) {
+        if ( _renderer && do_resize ) {
                 _renderer->resize ( _video_resolution );
                 _renderer->aspect_ratio ( _aspect_ratio );
         }

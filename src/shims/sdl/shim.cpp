@@ -23,6 +23,6 @@ void SDL_Quit()
 SDL_GrabMode SDL_WM_GrabInput ( SDL_GrabMode mode )
 {
         SHIM_LOG();
-        return sym::SDL_WM_GrabInput ( SDL_GRAB_OFF );
-        //return sym::SDL_WM_GrabInput ( mode );
+        //return sym::SDL_WM_GrabInput ( SDL_GRAB_OFF );
+        return sym::SDL_WM_GrabInput ( mode );
 }

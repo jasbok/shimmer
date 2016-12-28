@@ -62,6 +62,7 @@ GLuint compile_shader ( const std::vector<std::string>& sources, GLuint type )
                                         std::cerr << num++ << ": " << line << "\n";
                                 }
                         }
+                        std::cerr << "Shader Compilation Failed: " << LOG << "\n";
                         std::cerr << std::flush;
                 }
                 delete [] gl_sources;

@@ -42,6 +42,13 @@ bool shims_sdl::do_update()
         return false;
 }
 
+void shims_sdl::do_full_update(){
+        shimmer_->video()->update ( source->pixels );
+        sym::SDL_GL_SwapBuffers();
+        ticks = SDL_GetTicks();
+        update_queue.clear();
+}
+
 SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
 {
         SHIM_LOG();
@@ -73,6 +80,8 @@ SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
         .pixel_type ( pixel_type );
 
         shimmer_->video()->setup();
+        update_queue.clear();
+
 
         return source;
 }
@@ -87,20 +96,14 @@ SDL_Surface * SDL_GetVideoSurface()
 int SDL_Flip ( SDL_Surface* screen )
 {
         SHIM_LOG();
-        if ( shims_sdl::do_update() ) {
-                shimmer_->video()->update ( source->pixels );
-                sym::SDL_GL_SwapBuffers();
-        }
+        shims_sdl::do_full_update();
         return 0;
 }
 
 void SDL_GL_SwapBuffers()
 {
         SHIM_LOG();
-        if ( shims_sdl::do_update() ) {
-                shimmer_->video()->update ( source->pixels );
-                sym::SDL_GL_SwapBuffers();
-        }
+        shims_sdl::do_full_update();
 }
 
 

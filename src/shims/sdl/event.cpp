@@ -13,7 +13,7 @@ int SDL_PollEvent ( SDL_Event* event )
 
 void shims_sdl::process_event(SDL_Event* event)
 {
-        if ( event ) {
+        if ( event && event->active.type == event->type ) {
                 switch ( event->type ) {
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:
@@ -30,6 +30,6 @@ void shims_sdl::process_event(SDL_Event* event)
                 default:
                         break;
                 }
-                shims_sdl::check_updates();
         }
+        shims_sdl::check_updates();
 }

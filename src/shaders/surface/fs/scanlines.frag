@@ -5,5 +5,5 @@ uniform sampler2D shimmer_application;
 
 void main()
 {
-    gl_FragColor = texture2D(shimmer_application, fs_texcoord) * abs(mod(gl_FragCoord.y, 5) - 2) * 0.5;
+    gl_FragColor = vec4(texture2D(shimmer_application, fs_texcoord).rgb * abs(mod(gl_FragCoord.y, 3) - 2) * 0.75f,1.0f);
 }

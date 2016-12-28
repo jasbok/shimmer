@@ -32,6 +32,8 @@ shimmer::opengl_renderer::opengl_renderer ( const std::shared_ptr<config>& confi
                       );
 
         _shader_manager.application_texture ( _source_texture );
+
+        glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
 }
 
 shimmer::opengl_renderer::~opengl_renderer()
@@ -45,8 +47,13 @@ void shimmer::opengl_renderer::resize ( const dimensions<>& dims )
         _text_renderer.resolution ( dimensions<GLfloat> ( dims.w, dims.h ) );
 
         dimensions<> fbo_dims = _source_texture->dims();
-        if(fbo_dims.w < dims.w) fbo_dims.w *= dims.w / fbo_dims.w;
-        if(fbo_dims.h < dims.h) fbo_dims.h *= dims.h / fbo_dims.h;
+        dimensions<> scale_factor = {dims.w / fbo_dims.w, dims.h / fbo_dims.h};
+        scale_factor.w -= scale_factor.w % 2; scale_factor.w = scale_factor.w > 0 ? scale_factor.w : 1;
+        scale_factor.h -= scale_factor.h % 2; scale_factor.h = scale_factor.h > 0 ? scale_factor.h : 1;
+
+        if(fbo_dims.w < dims.w) fbo_dims.w *= scale_factor.w;
+        if(fbo_dims.h < dims.h) fbo_dims.h *= scale_factor.h;
+
         _fbo_texture->dims ( fbo_dims ).setup();
 }
 
@@ -64,21 +71,22 @@ void shimmer::opengl_renderer::render()
 {
         glBindFramebufferEXT ( GL_FRAMEBUFFER_EXT, _fbo );
         glViewport ( 0, 0, _fbo_texture->dims().w, _fbo_texture->dims().h );
-        glClearColor ( 0.0f, 1.0f, 0.0f, 1.0f );
-        glClear ( GL_COLOR_BUFFER_BIT );
+        //glClearColor ( 0.0f, 1.0f, 0.0f, 1.0f );
+        //glClear ( GL_COLOR_BUFFER_BIT );
         _foreground_fbo.render();
         glBindFramebufferEXT ( GL_FRAMEBUFFER_EXT, 0 );
 
         glViewport ( 0, 0, _viewport_resolution.w, _viewport_resolution.h );
-        glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
+        //glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
         glClear ( GL_COLOR_BUFFER_BIT );
         //_background.render();
 
         glActiveTexture ( GL_TEXTURE0 );
         glBindTexture ( GL_TEXTURE_2D, _fbo_texture->gl_texture() );
+        //glBindTexture ( GL_TEXTURE_2D, _source_texture->gl_texture() );
         _foreground.render();
         //_menu.render();
-        //_text_renderer.draw ( "// Fragment_Shader -> hsv_adaptive_scaler.frag", {50,50} );
+        //_text_renderer.draw ( "// Fragment_Shader -> hsv_adaptive_scaler.frag", {20,20} );
 }
 
 void shimmer::opengl_renderer::aspect_ratio ( const dimensions<float>& dims )

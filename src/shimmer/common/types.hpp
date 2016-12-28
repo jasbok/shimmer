@@ -52,6 +52,13 @@ public:
                 return this->w != op.w || this->h != op.h;
         }
 
+        dimensions& operator*= ( const dimensions& op )
+        {
+                this->w *= op.w;
+                this->h *= op.h;
+                return *this;
+        }
+
         friend std::ostream &operator<< ( std::ostream &os, const dimensions<T> &dims )
         {
                 os << "( w = " << dims.w << ", h = " << dims.h << " )";
