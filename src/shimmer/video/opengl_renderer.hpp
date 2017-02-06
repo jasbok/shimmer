@@ -23,6 +23,9 @@ public:
         void * map_buffer() override;
         void unmap_buffer() override;
         void source_format ( const dimensions<>& dims, unsigned int bpp, pixel_format format, pixel_type type ) override;
+        void bind_source_texture_unit() override;
+        void bind_source_fbo() override;
+
         void render() override;
 
         void aspect_ratio ( const dimensions<float> & dims ) override;
@@ -37,6 +40,7 @@ private:
         std::shared_ptr<texture> _source_texture;
         std::shared_ptr<texture> _fbo_texture;
         GLuint _fbo;
+        GLuint _source_fbo;
         shader_manager _shader_manager;
         text_renderer _text_renderer;
         dimensions<> _viewport_resolution;

@@ -24,6 +24,8 @@ public:
         void render();
         void* map_buffer();
         void unmap_buffer();
+        void bind_source_texture_unit();
+        void bind_source_fbo();
 
         void resize ( const dimensions<>& application, const dimensions<>& video );
         void resize_application ( const dimensions<>& application );

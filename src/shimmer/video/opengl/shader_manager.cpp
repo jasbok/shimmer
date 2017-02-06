@@ -116,7 +116,9 @@ std::shared_ptr<shimmer::uniform_output> shimmer::shader_manager::_uniform_outpu
                 switch ( _uniform_map[variable.name()] ) {
                 case shimmer_uniforms::APPLICATION_OUTPUT:
                         if ( variable.type() == glsl_variable::type::SAMPLER2D ) {
-                                return std::make_shared<application_output> ( variable.location(), _application_texture->gl_texture() );
+                                if(_application_texture)
+                                        return std::make_shared<application_output> ( variable.location(), _application_texture->gl_texture() );
+                                return nullptr;
                         }
                         break;
                 case shimmer_uniforms::RANDOM:

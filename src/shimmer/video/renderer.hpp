@@ -17,6 +17,8 @@ public:
         virtual void* map_buffer() = 0;
         virtual void unmap_buffer() = 0;
         virtual void source_format(const dimensions<>& dims, unsigned int bpp, pixel_format format, pixel_type type) = 0;
+        virtual void bind_source_texture_unit() = 0;
+        virtual void bind_source_fbo() = 0;
         virtual void render() = 0;
 
         virtual void aspect_ratio(const dimensions<float>& dims) = 0;

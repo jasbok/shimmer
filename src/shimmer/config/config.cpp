@@ -14,7 +14,7 @@ shimmer::config::config()
         {"video.refresh_rate", "59"},
         {"video.fullscreen", "false"},
 
-        {"renderer.aspect_ratio", "stretch"},
+        {"renderer.aspect_ratio", "original"},
         {"renderer.texture.filter", "nearest"},
 
         {"renderer.foreground.vertex", "/usr/local/libshimmer/shaders/surface/vs/default.vert"},

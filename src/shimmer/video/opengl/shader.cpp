@@ -12,8 +12,10 @@ shimmer::shader::~shader()
 shimmer::shader& shimmer::shader::use_program()
 {
         glUseProgram ( _program );
+        print_gl_error(__FILE__, __LINE__);
         for(auto uniform_output : _uniform_outputs){
                 uniform_output->process();
+                print_gl_error(__FILE__, __LINE__);
         }
         return *this;
 }
@@ -43,12 +45,14 @@ shimmer::glsl_variable shimmer::shader::uniforms ( const std::string& name ) con
 
 bool shimmer::shader::has_attribute ( const std::string& attr ) const
 {
-        return _attributes.find ( attr ) != _attributes.end();
+        auto a = _attributes.find(attr);
+        return a != _attributes.end() && a->second.location() != -1;
 }
 
 bool shimmer::shader::has_uniform ( const std::string& attr ) const
 {
-        return _uniforms.find ( attr ) != _uniforms.end();
+        auto u = _uniforms.find ( attr );
+        return u != _uniforms.end() && u->second.location() != -1;
 }
 
 shimmer::shader& shimmer::shader::add ( const shimmer::glsl_variable& var )

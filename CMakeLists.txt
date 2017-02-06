@@ -6,6 +6,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O1")
 
+set(CMAKE_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/libshimmer")
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/libshimmer")
+
 find_package(OpenGL)
 find_package(GLEW)
 find_package(glm)

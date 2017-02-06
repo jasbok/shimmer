@@ -7,7 +7,7 @@ int SDL_PollEvent ( SDL_Event* event )
 {
         SHIM_LOG();
         int result = sym::SDL_PollEvent ( event );
-        shims_sdl::process_event (event);
+        shims_sdl2::process_event (event);
         return result;
 }
 
@@ -17,7 +17,7 @@ Uint8 SDL_EventState(Uint8 type, int state)
         return sym::SDL_EventState(type, state);
 }
 
-void shims_sdl::process_event(SDL_Event* event)
+void shims_sdl2::process_event(SDL_Event* event)
 {
         if ( event ) {
                 switch ( event->type ) {
@@ -30,12 +30,11 @@ void shims_sdl::process_event(SDL_Event* event)
                 case SDL_MOUSEBUTTONDOWN:
                         process_mouse ( event );
                         break;
-                case SDL_VIDEORESIZE:
+                case SDL_WINDOWEVENT:
                         process_window_resize ( event );
                         break;
                 default:
                         break;
                 }
         }
-        shims_sdl::check_updates();
 }

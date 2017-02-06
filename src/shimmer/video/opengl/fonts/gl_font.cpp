@@ -1,4 +1,5 @@
 #include "gl_font.hpp"
+#include "../opengl_helpers.hpp"
 
 shimmer::gl_font::gl_font()
         : _textures ( new GLuint[128] ),
@@ -48,31 +49,32 @@ void shimmer::gl_font::font_face ( shimmer::font_face& face )
 
         for ( unsigned int c = 0; c < range; c++ ) {
                 auto g = face[c];
-                auto glyph = gl_glyph()
+                auto glyph = gl_glyph();
+                if ( g->bitmap.width > 0 && g->bitmap.rows > 0 && g->bitmap.buffer != nullptr ) {
+                        glyph
                              .dims ( dimensions<GLuint> ( g->bitmap.width, g->bitmap.rows ) )
                              .bearing ( coordinates<GLint> ( g->bitmap_left, g->bitmap_top ) )
                              .advance ( g->advance.x >> 6 )
                              .texture ( _textures[c] );
 
-                glBindTexture ( GL_TEXTURE_2D, _textures[c] );
-                glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-                glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-                glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-                glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-                glTexImage2D ( GL_TEXTURE_2D,
-                               0,
-                               GL_RED,
-                               glyph.dims().w,
-                               glyph.dims().h,
-                               0,
-                               GL_RED,
-                               GL_UNSIGNED_BYTE,
-                               g->bitmap.buffer );
-                glBindTexture ( GL_TEXTURE_2D, 0 );
-
+                        glBindTexture ( GL_TEXTURE_2D, _textures[c] );
+                        glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+                        glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+                        glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+                        glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+                        glTexImage2D ( GL_TEXTURE_2D,
+                                       0,
+                                       GL_RED,
+                                       glyph.dims().w,
+                                       glyph.dims().h,
+                                       0,
+                                       GL_RED,
+                                       GL_UNSIGNED_BYTE,
+                                       g->bitmap.buffer );
+                        glBindTexture ( GL_TEXTURE_2D, 0 );
+                }
                 _glyphs.push_back ( glyph );
         }
-
         if ( face.has_kerning() ) {
                 for ( unsigned int j = 0; j < range; j++ ) {
                         for ( unsigned int i = 0; i < range; i++ ) {

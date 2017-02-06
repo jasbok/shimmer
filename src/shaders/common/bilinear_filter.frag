@@ -12,8 +12,14 @@ vec4 bilinear(sampler2D sampler, vec2 coord){
     d = abs(d);
     vec4 x1 = mix(t00, t10, d.x);
     vec4 x2 = mix(t01, t11, d.x);
-    vec4 ret = mix(x1, x2, d.y);
-    return ret;
+    return mix(x1, x2, d.y);
+}
+
+vec4 bilinear(vec4 t00, vec4 t10, vec4 t01, vec4 t11, vec2 d){
+    d = abs(d);
+    vec4 x1 = mix(t00, t10, d.x);
+    vec4 x2 = mix(t01, t11, d.x);
+    return mix(x1, x2, d.y);
 }
 
 float triangular( float f )

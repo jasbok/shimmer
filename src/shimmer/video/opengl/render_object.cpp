@@ -23,7 +23,11 @@ void shimmer::render_object::render()
                 return ;
         }
 
+        print_gl_error(__FILE__, __LINE__);
         _render_shader->use_program();
+        print_gl_error(__FILE__, __LINE__);
         _render_model->render();
+        print_gl_error(__FILE__, __LINE__);
         _render_shader->reset_program();
+        print_gl_error(__FILE__, __LINE__);
 }

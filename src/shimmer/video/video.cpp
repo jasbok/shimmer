@@ -17,16 +17,20 @@ void shimmer::video::setup ()
         _calculate_aspect_ratio();
         if ( !_renderer ) {
                 _renderer = std::unique_ptr<renderer> ( opengl_renderer::create ( _config ) );
+                _renderer->source_format ( _application_resolution, _bpp, _pixel_format, _pixel_type );
+                _renderer->background_shaders ( _config->read_strs ( "renderer.background.vertex" ), _config->read_strs ( "renderer.background.fragment" ) );
+                _renderer->foreground_shaders ( _config->read_strs ( "renderer.foreground.vertex" ), _config->read_strs ( "renderer.foreground.fragment" ) );
+                _renderer->menu_shaders ( _config->read_strs ( "renderer.menu.vertex" ), _config->read_strs ( "renderer.menu.fragment" ) );
+                _renderer->font ( _config->read_str ( "renderer.font.regular" ), _config->read_str ( "renderer.font.bold" ), _config->read_int ( "renderer.font.size" ) );
+                _renderer->font_shaders ( _config->read_strs ( "renderer.font.vertex" ), _config->read_strs ( "renderer.font.fragment" ) );
         }
-        _renderer->background_shaders( _config->read_strs("renderer.background.vertex"), _config->read_strs("renderer.background.fragment") );
-        _renderer->foreground_shaders( _config->read_strs("renderer.foreground.vertex"), _config->read_strs("renderer.foreground.fragment") );
-        _renderer->menu_shaders( _config->read_strs("renderer.menu.vertex"), _config->read_strs("renderer.menu.fragment") );
-        _renderer->font( _config->read_str("renderer.font.regular"), _config->read_str("renderer.font.bold"), _config->read_int("renderer.font.size"));
-        _renderer->font_shaders( _config->read_strs("renderer.font.vertex"), _config->read_strs("renderer.font.fragment"));
+        if(_bpp == 0 ){
+                std::cerr << "Warning: Setting up video with BPP value of 0..." << std::endl;
+        }
         _renderer->source_format ( _application_resolution, _bpp, _pixel_format, _pixel_type );
         _renderer->aspect_ratio ( _aspect_ratio );
-        _renderer->texture_filter( _config->read_str("renderer.texture.filter"));
-        _renderer->resize(_video_resolution);
+        _renderer->texture_filter ( _config->read_str ( "renderer.texture.filter" ) );
+        _renderer->resize ( _video_resolution );
 }
 
 void shimmer::video::update ( void* pixels )
@@ -48,9 +52,6 @@ void shimmer::video::update ( void* pixels, const std::vector<rectangle<> >& rec
                 xmax = std::max<unsigned int> ( xmax, r.dims.w + r.coords.x );
                 ymax = std::max<unsigned int> ( ymax, r.dims.h + r.coords.y );
         }
-
-//        xmax = xmax < _application_resolution.w ? xmax : _application_resolution.w;
-//        ymax = ymax < _application_resolution.h ? ymax : _application_resolution.h;
 
         xmin -= xmin % 2;
         xmax += xmax % 2;
@@ -110,6 +111,16 @@ void shimmer::video::unmap_buffer()
         _renderer->unmap_buffer();
 }
 
+void shimmer::video::bind_source_texture_unit()
+{
+        _renderer->bind_source_texture_unit();
+}
+
+void shimmer::video::bind_source_fbo()
+{
+        _renderer->bind_source_fbo();
+}
+
 void shimmer::video::_calculate_aspect_ratio()
 {
         if ( _config->is_value ( "renderer.aspect_ratio", "stretch" ) ) {
@@ -134,6 +145,9 @@ void shimmer::video::_calculate_aspect_ratio()
                 }
         }
 }
+
+
+
 
 
 

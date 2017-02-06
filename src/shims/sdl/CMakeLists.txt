@@ -4,6 +4,7 @@ include_directories(${SDL_INCLUDE_DIR} "../../shimmer/")
 
 set(SRCS 
     "event.cpp"
+    "gl.cpp"
     "keyboard.cpp"
     "mouse.cpp"
     "shim.cpp"

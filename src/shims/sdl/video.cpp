@@ -53,6 +53,7 @@ SDL_Surface * SDL_SetVideoMode ( int width, int height, int bpp, Uint32 flags )
 {
         SHIM_LOG();
 
+        bpp = bpp == 0 ? 32 : bpp;
         auto pixel_format = bpp == 16 ? shimmer::pixel_format::RGB : shimmer::pixel_format::BGRA;
         auto pixel_type = bpp == 16 ? shimmer::pixel_type::UNSIGNED_SHORT_5_6_5 : shimmer::pixel_type::UNSIGNED_BYTE;
 

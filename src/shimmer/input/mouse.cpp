@@ -14,7 +14,9 @@ shimmer::mouse::~mouse()
 void shimmer::mouse::_calculate_warp_factors ( const dimensions<>& application, const dimensions<>& video )
 {
         if ( video.w != 0 && video.h != 0 ) {
-                _warp_factor_x = application.w / ( float ) video.w;
-                _warp_factor_y = application.h / ( float ) video.h;
+                float app_ratio = application.w / ( float ) application.h;
+                float vid_ratio = video.w / ( float ) video.h;
+                _warp_factor_x = application.w / ( float ) video.w * (vid_ratio / app_ratio);
+                _warp_factor_y = application.h / ( float ) video.h / (vid_ratio / app_ratio);
         }
 }
