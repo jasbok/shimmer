@@ -12,7 +12,10 @@ public:
         texture() {}
         virtual ~texture() {}
 private:
+        SHIMMER_MEMBER ( texture, std::string, id );
         SHIMMER_MEMBER ( texture, std::string, path );
+        SHIMMER_MEMBER ( texture, unsigned int, width );
+        SHIMMER_MEMBER ( texture, unsigned int, height );
 };
 }
 

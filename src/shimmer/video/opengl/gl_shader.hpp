@@ -1,22 +1,26 @@
 #ifndef SHIMMER_VIDEO_OPENGL_GL_SHADER_HPP
 #define SHIMMER_VIDEO_OPENGL_GL_SHADER_HPP
 
-#include "video/common/shader.hpp"
+#include "common/macros.hpp"
 #include <GL/glew.h>
-#include <memory>
+#include <string>
 #include <vector>
 
 namespace shimmer
 {
-class gl_shader : public shader {
+class gl_shader
+{
 public:
-        gl_shader(const shader& shader);
+        gl_shader(const std::vector<std::string>& sources, GLuint type);
+        gl_shader(std::vector<std::string>&& sources, GLuint type);
         virtual ~gl_shader();
 private:
-        typedef std::vector<std::shared_ptr<GLuint>> compiled_shaders;
-        SHIMMER_MEMBER ( shader, GLuint, program );
-        SHIMMER_MEMBER ( shader, compiled_shaders, fs_shaders );
-        SHIMMER_MEMBER ( shader, compiled_shaders, vs_shaders );
+        SHIMMER_GETTER ( gl_shader, std::vector<std::string> , sources);
+        SHIMMER_GETTER ( gl_shader, GLuint , type);
+        SHIMMER_GETTER ( gl_shader, GLuint, handle );
+
+        void _compile();
+        void _print_errors();
 };
 }
 
