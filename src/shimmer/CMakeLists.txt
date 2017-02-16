@@ -1,8 +1,9 @@
 add_subdirectory(catch)
 
-set(SRCS 
+set(SRCS
     "common/event_system.cpp"
     "common/file_helpers.cpp"
+    "common/file_utils.cpp"
     "common/regex_helpers.cpp"
     "config/config.cpp"
     "config/menu_builder.cpp"
@@ -11,9 +12,13 @@ set(SRCS
     "font/freetype.cpp"
     "input/keyboard.cpp"
     "input/mouse.cpp"
+    "video/common/"
     "video/opengl/fonts/gl_font.cpp"
     "video/opengl/fonts/gl_glyph.cpp"
     "video/opengl/formats.cpp"
+    "video/opengl/gl_resource_manager.cpp"
+    "video/opengl/gl_shader.cpp"
+    "video/opengl/gl_shader_manager.cpp"
     "video/opengl/glsl_variable.cpp"
     "video/opengl/opengl_helpers.cpp"
     "video/opengl/quad.cpp"
