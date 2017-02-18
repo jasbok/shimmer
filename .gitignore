@@ -9,3 +9,4 @@ build
 *.kdev4
 *.user
 *.kate-swp
+*.autosave

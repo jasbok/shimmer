@@ -11,15 +11,15 @@ shimmer::gl_shader_manager::gl_shader_manager()
 shimmer::gl_shader_manager::~gl_shader_manager()
 {}
 
-std::shared_ptr<shimmer::shader> shimmer::gl_shader_manager::get ( const std::shared_ptr<shimmer::shader>& shader )
+std::shared_ptr<shimmer::gl_program> shimmer::gl_shader_manager::get ( const std::shared_ptr<shimmer::shader>& shader )
 {
         auto vs = _get_gl_shaders ( shader->vertex_shaders(), GL_VERTEX_SHADER );
         auto fs = _get_gl_shaders ( shader->fragment_shaders(), GL_FRAGMENT_SHADER );
         auto key = _get_hash ( {vs, fs} );
-        if ( !_shimmer_shaders[key] ) {
-                _shimmer_shaders[key] = std::make_shared<shimmer::gl_program> ( *shader, std::move(vs), std::move(fs) );
+        if ( !_gl_programs[key] ) {
+                _gl_programs[key] = std::make_shared<shimmer::gl_program> ( *shader, std::move(vs), std::move(fs) );
         }
-        return _shimmer_shaders[key];
+        return _gl_programs[key];
 }
 
 std::size_t shimmer::gl_shader_manager::_get_hash ( const std::vector<std::vector<std::shared_ptr<gl_shader> > >& pointers )

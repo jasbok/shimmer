@@ -3,6 +3,7 @@
 
 #include "video/common/shader.hpp"
 #include "video/opengl/gl_shader.hpp"
+#include "video/opengl/gl_program.hpp"
 #include <GL/glew.h>
 #include <memory>
 #include <unordered_map>
@@ -15,9 +16,9 @@ public:
         gl_shader_manager();
         virtual ~gl_shader_manager();
 
-        std::shared_ptr<shader> get ( const std::shared_ptr<shader>& shader );
+        std::shared_ptr<gl_program> get ( const std::shared_ptr<shader>& shader );
 private:
-        std::unordered_map<std::size_t, std::shared_ptr<shader>> _shimmer_shaders;
+        std::unordered_map<std::size_t, std::shared_ptr<gl_program>> _gl_programs;
         std::unordered_map<std::string, std::shared_ptr<gl_shader>> _gl_shaders;
 
         std::size_t _get_hash(const std::vector<std::vector<std::shared_ptr<gl_shader>>>& pointers);

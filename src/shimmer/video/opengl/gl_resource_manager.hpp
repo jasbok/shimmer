@@ -3,6 +3,7 @@
 
 #include "video/common/resource_manager.hpp"
 #include "gl_shader_manager.hpp"
+#include "gl_texture_manager.hpp"
 
 namespace shimmer
 {
@@ -22,6 +23,7 @@ public:
 
 private:
         gl_shader_manager _shader_manager;
+        gl_texture_manager _texture_manager;
 };
 }
 

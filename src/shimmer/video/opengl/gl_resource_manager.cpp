@@ -1,5 +1,6 @@
 #include "gl_resource_manager.hpp"
 #include "gl_shader.hpp"
+#include "gl_texture.hpp"
 
 shimmer::gl_resource_manager::gl_resource_manager()
 {
@@ -41,5 +42,5 @@ std::shared_ptr<shimmer::shader> shimmer::gl_resource_manager::get(const std::sh
 
 std::shared_ptr<shimmer::texture> shimmer::gl_resource_manager::get(const std::shared_ptr<shimmer::texture>& texture)
 {
-        return std::make_shared<shimmer::texture>();
+        return _texture_manager.get(texture);
 }
