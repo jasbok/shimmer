@@ -3,8 +3,10 @@
 
 #include "video/common/shader.hpp"
 #include "gl_shader.hpp"
+#include "gl_uniform.hpp"
 #include <GL/glew.h>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace shimmer
@@ -26,6 +28,8 @@ public:
                 gl_shaders &&gl_fragment_shaders );
 
         virtual ~gl_program();
+
+        virtual void use();
 private:
         SHIMMER_MEMBER ( gl_program, gl_shaders, gl_vertex_shaders );
         SHIMMER_MEMBER ( gl_program, gl_shaders, gl_fragment_shaders );
@@ -33,6 +37,8 @@ private:
 
         void _extend ( const shader& shader );
         void _link_program ();
+        void _parse_variables (const std::shared_ptr<gl_shader>& shader);
+        void _print_errors();
 };
 }
 

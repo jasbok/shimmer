@@ -9,7 +9,7 @@ namespace shimmer
 class gl_texture : public texture
 {
 public:
-        gl_texture(const texture& texture, unsigned int pbo_count);
+        gl_texture(const texture& texture, unsigned int pbo_count = 2);
         virtual ~gl_texture();
 
         virtual texture& filter(const enum texture::filter& filter);
@@ -22,8 +22,10 @@ public:
                 unsigned int x = 0,
                 unsigned int y = 0);
 
+        virtual void bind();
+
 private:
-        SHIMMER_MEMBER(gl_texture, GLuint, gl_handle);
+        SHIMMER_MEMBER(gl_texture, GLuint, handle);
         GLuint* _gl_pbo;
         unsigned int _pbo_count, _curr_pbo;
         unsigned int _bytes_per_pixel;

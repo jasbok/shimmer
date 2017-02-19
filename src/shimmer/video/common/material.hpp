@@ -2,8 +2,8 @@
 #define SHIMMER_VIDEO_COMMON_MATERIAL_HPP
 
 #include "common/macros.hpp"
+#include "sampler.hpp"
 #include "shader.hpp"
-#include "texture.hpp"
 #include "uniform.hpp"
 #include <memory>
 #include <vector>
@@ -13,15 +13,14 @@ namespace shimmer
 class material
 {
 public:
-        material() {}
-        virtual ~material() {}
-private:
-        typedef std::vector<std::shared_ptr<shimmer::texture>> texture_vec;
-        typedef std::vector<std::shared_ptr<shimmer::uniform>> uniform_vec;
+	virtual ~material() {}
 
-        SHIMMER_MEMBER ( material, std::shared_ptr<shimmer::shader>, shader );
-        SHIMMER_MEMBER ( material, texture_vec, textures );
-        SHIMMER_MEMBER ( material, uniform_vec, uniforms );
+	virtual void use() {};
+
+private:
+	typedef std::vector<std::shared_ptr<shimmer::sampler>> sampler_vec;
+	SHIMMER_MEMBER ( material, std::shared_ptr<shimmer::shader>, shader );
+	SHIMMER_MEMBER ( material, sampler_vec, samplers );
 };
 }
 

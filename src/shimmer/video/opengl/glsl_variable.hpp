@@ -14,13 +14,11 @@ namespace shimmer
 class glsl_variable
 {
 public:
-        enum class qualifier
-        {
+        enum class qualifier {
                 UNKNOWN = 0, ATTRIBUTE, UNIFORM, VARYING
         };
 
-        enum class type
-        {
+        enum class type {
                 UNKNOWN = 0,
                 BOOL, INT, UINT, FLOAT, DOUBLE,
                 BVEC2, BVEC3, BVEC4,

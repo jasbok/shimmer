@@ -13,8 +13,6 @@ public:
         std::shared_ptr<gl_texture> get(const std::shared_ptr<texture>& texture);
 private:
         std::unordered_map<std::string, std::shared_ptr<gl_texture>> _textures;
-
-        std::shared_ptr<gl_texture> _create(const std::shared_ptr<texture>& texture);
 };
 }
 

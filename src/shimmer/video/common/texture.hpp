@@ -47,6 +47,8 @@ public:
 		printf("[shimmer] ERROR: Calling unimplemented function: texture::pixels.\n");
 	};
 
+	virtual void bind(){}
+
 private:
 	SHIMMER_MEMBER ( texture, std::string, id );
 	SHIMMER_MEMBER ( texture, enum access, access );

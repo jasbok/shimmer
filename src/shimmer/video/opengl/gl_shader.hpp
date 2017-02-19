@@ -2,6 +2,7 @@
 #define SHIMMER_VIDEO_OPENGL_GL_SHADER_HPP
 
 #include "common/macros.hpp"
+#include "glsl_variable.hpp"
 #include <GL/glew.h>
 #include <string>
 #include <vector>
@@ -15,11 +16,13 @@ public:
         gl_shader(std::vector<std::string>&& sources, GLuint type);
         virtual ~gl_shader();
 private:
-        SHIMMER_GETTER ( gl_shader, std::vector<std::string> , sources);
-        SHIMMER_GETTER ( gl_shader, GLuint , type);
+        SHIMMER_GETTER ( gl_shader, std::vector<std::string>, sources);
+        SHIMMER_GETTER ( gl_shader, std::vector<glsl_variable>, variables);
+        SHIMMER_GETTER ( gl_shader, GLuint, type);
         SHIMMER_GETTER ( gl_shader, GLuint, handle );
 
         void _compile();
+        void _read_variables();
         void _print_errors();
 };
 }

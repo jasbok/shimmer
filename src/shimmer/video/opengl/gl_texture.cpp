@@ -13,7 +13,7 @@ gl_texture::gl_texture(const texture& texture, unsigned int pbo_count)
 
 gl_texture::~gl_texture()
 {
-        if(_gl_handle) glDeleteTextures(1, &_gl_handle);
+        if(_handle) glDeleteTextures(1, &_handle);
         if(_gl_pbo){
                 glDeleteBuffers(_pbo_count, _gl_pbo);
                 delete [] _gl_pbo;
@@ -55,12 +55,16 @@ void gl_texture::pixels(void *pixels, unsigned int w, unsigned int h, unsigned i
         }
 }
 
+void gl_texture::bind()
+{
+        glBindTexture(GL_TEXTURE_2D, _handle);
+}
+
 void gl_texture::_extend(const texture &texture)
 {
         id(texture.id());
         width(texture.width());
         height(texture.height());
-
         access(texture.access());
         filter(texture.filter());
         format(texture.format());
@@ -74,8 +78,8 @@ void gl_texture::_create()
         _bytes_per_pixel = _bpp_from(format());
         _size = width() * height() * _bytes_per_pixel;
 
-        glGenTextures ( 1, &_gl_handle );
-        glBindTexture ( GL_TEXTURE_2D, _gl_handle );
+        glGenTextures ( 1, &_handle );
+        glBindTexture ( GL_TEXTURE_2D, _handle );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter );
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -91,7 +95,7 @@ void gl_texture::_create()
                        0 );
         glBindTexture ( GL_TEXTURE_2D, 0 );
 
-        if(access() == texture::access::STREAMING){
+        if(_pbo_count && access() == texture::access::STREAMING){
                 _gl_pbo = new GLuint[_pbo_count];
                 glGenBuffers ( _pbo_count, _gl_pbo );
         }
@@ -116,7 +120,7 @@ void * gl_texture::_map_buffer()
 void gl_texture::_unmap_buffer ( unsigned int w, unsigned int h, unsigned int x, unsigned int y )
 {
         glUnmapBuffer ( GL_PIXEL_UNPACK_BUFFER );
-        glBindTexture ( GL_TEXTURE_2D, _gl_handle );
+        glBindTexture ( GL_TEXTURE_2D, _handle );
         glTexSubImage2D ( GL_TEXTURE_2D,
                           0,
                           x, y, w, h,
@@ -130,9 +134,9 @@ void gl_texture::_unmap_buffer ( unsigned int w, unsigned int h, unsigned int x,
 
 void gl_texture::_update_filter()
 {
-        if(_gl_handle){
+        if(_handle){
                 auto filter = _gl_filter();
-                glBindTexture ( GL_TEXTURE_2D, _gl_handle );
+                glBindTexture ( GL_TEXTURE_2D, _handle );
                 glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter );
                 glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter );
                 glBindTexture ( GL_TEXTURE_2D, 0 );
