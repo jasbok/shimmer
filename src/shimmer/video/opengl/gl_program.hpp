@@ -36,6 +36,7 @@ private:
         SHIMMER_GETTER ( gl_program, GLuint, handle );
 
         void _extend ( const shader& shader );
+        std::vector<gl_shaders> _all_shaders();
         void _link_program ();
         void _parse_variables (const std::shared_ptr<gl_shader>& shader);
         void _print_errors();
