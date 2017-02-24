@@ -18,7 +18,7 @@ shimmer::config::config()
         {"renderer.texture.filter", "nearest"},
 
         {"renderer.foreground.vertex", "/usr/local/libshimmer/shaders/surface/vs/default.vert"},
-        {"renderer.foreground.fragment", "/usr/local/libshimmer/shaders/surface/fs/bilinear_clamp_scaler.frag"},
+        {"renderer.foreground.fragment", "/usr/local/libshimmer/shaders/surface/fs/xbrz4x.frag"},
 
         {"renderer.background.enabled", "false"},
         {"renderer.background.vertex", "/usr/local/libshimmer/shaders/surface/vs/default.vert"},

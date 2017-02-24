@@ -3,7 +3,17 @@
 
 #include <dlfcn.h>
 
-#define DLSYM(FUNC) namespace sym { static auto FUNC = (FUNC##_Handle)(dlsym(RTLD_NEXT, #FUNC)); }
+#define DLSYM(FUNC) namespace sym {                                         \
+                static auto FUNC = [](){                                    \
+                    auto dlsym_ptr = dlsym(RTLD_NEXT, #FUNC);                   \
+                    if(!dlsym_ptr){                                             \
+                        printf("Unable to find function: %s\n", #FUNC);     \
+                        abort();                                            \
+                    }                                                       \
+                    return (FUNC##_Handle)(dlsym_ptr);                          \
+                }();                                                        \
+            }
+
 #define HANDLE_TYPEDEF(RET, FUNC, ARGS...) typedef RET (*FUNC##_Handle)(ARGS)
 #define SHIM(RET, FUNC, ARGS...) HANDLE_TYPEDEF(RET, FUNC, ARGS); DLSYM(FUNC); RET FUNC (ARGS)
 #define HANDLE (*__handle)
