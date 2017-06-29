@@ -10,13 +10,15 @@ namespace shimmer
 class gl_sampler : public sampler
 {
 public:
-	gl_sampler(const sampler& sampler);
-	virtual ~gl_sampler();
-private:
-	SHIMMER_MEMBER(gl_sampler, GLint, location);
+    gl_sampler(const sampler& sampler);
+    virtual ~gl_sampler();
 
-	void _extend(const sampler& sampler);
-	void _calc_location();
+    virtual void bind();
+private:
+    SHIMMER_MEMBER(gl_sampler, GLuint, texture_unit);
+    SHIMMER_MEMBER(gl_sampler, GLint, location);
+
+    void _extend(const sampler& sampler);
 };
 }
 

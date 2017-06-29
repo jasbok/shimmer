@@ -10,7 +10,8 @@ class font
 {
 public:
 private:
-        SHIMMER_MEMBER(font, std::string, path);
+        SHIMMER_MEMBER ( font, std::string, id );
+        SHIMMER_MEMBER ( font, std::string, path );
 };
 }
 

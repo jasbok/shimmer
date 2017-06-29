@@ -11,9 +11,9 @@ namespace shimmer
 class gl_material_manager
 {
 public:
-        std::unordered_map<std::string, std::shared_ptr<gl_material>> _materials;
-
+    std::shared_ptr<gl_material> get(const std::shared_ptr<material>& material);
 private:
+    std::unordered_map<std::string, std::shared_ptr<gl_material>> _materials;
 };
 }
 

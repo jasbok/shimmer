@@ -6,25 +6,23 @@ namespace shimmer
 
 gl_sampler::gl_sampler(const sampler &sampler)
 {
-        _extend(sampler);
-        _calc_location();
+    _extend(sampler);
 }
 
 gl_sampler::~gl_sampler()
 {}
 
-void gl_sampler::_extend(const sampler &sampler)
+void gl_sampler::bind()
 {
-        name(sampler.name());
-        texture(sampler.texture());
+    glUniform1i(_location, _texture_unit);
+    glActiveTexture(_texture_unit + GL_TEXTURE0);
+    texture()->bind();
 }
 
-void gl_sampler::_calc_location()
+void gl_sampler::_extend(const sampler &sampler)
 {
-//	if(shader()){
-//		auto program = std::static_pointer_cast<gl_program>(shader());
-//		location(glGetUniformLocation(program->handle(), name().c_str()));
-//	}
+    name(sampler.name());
+    texture(sampler.texture());
 }
 
 }

@@ -45,6 +45,3 @@ std::vector<std::shared_ptr<shimmer::gl_shader>> shimmer::gl_shader_manager::_ge
         }
         return shaders;
 }
-
-
-

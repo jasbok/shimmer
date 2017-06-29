@@ -28,7 +28,7 @@ TEST_CASE ( "Mouse warp function." )
         SECTION ( "After source and target resize." ) {
                 shim.video()->resize ( {100, 200}, {200, 800} );
                 shim.mouse()->transform ( &coords.x, &coords.y );
-                CHECK ( coords == coordinates<> ( 4, 2 ) );
+                CHECK ( coords == coordinates<> ( 2, 4 ) );
         }
 
         SECTION ( "After multiple target resizes." ) {

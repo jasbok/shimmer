@@ -12,11 +12,12 @@ namespace shimmer
 class sampler
 {
 public:
-	virtual ~sampler() {}
-
+        virtual ~sampler() {}
+        virtual void bind() {}
 private:
-	SHIMMER_MEMBER(sampler, std::string, name);
-	SHIMMER_MEMBER(sampler, std::shared_ptr<shimmer::texture>, texture);
+        SHIMMER_MEMBER ( sampler, std::string, id );
+        SHIMMER_MEMBER ( sampler, std::string, name );
+        SHIMMER_MEMBER ( sampler, std::shared_ptr<shimmer::texture>, texture );
 };
 }
 

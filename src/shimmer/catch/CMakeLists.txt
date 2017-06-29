@@ -3,7 +3,9 @@ list(APPEND tests
     "freetype.cpp"
     "menu_builder.cpp"
     "mouse.cpp"
-    "scene_manager.cpp"
+    "video/common/model.cpp"
+    "video/common/scene.cpp"
 )
 add_executable(catch ${tests})
+target_include_directories(catch BEFORE PUBLIC ".")
 target_link_libraries(catch "shimmer")
