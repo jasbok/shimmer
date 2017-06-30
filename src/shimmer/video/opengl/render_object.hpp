@@ -14,12 +14,25 @@ class render_object
 {
 public:
         render_object();
-        render_object ( std::shared_ptr<model> model, std::shared_ptr<shader> shader);
-        virtual ~render_object();
+
+        render_object (
+            std::shared_ptr<model> model,
+            std::shared_ptr<shader> shader);
+
+        virtual ~render_object() {}
+
         void render();
+
 private:
-        SHIMMER_MEMBER ( render_object, std::shared_ptr<class model>, render_model );
-        SHIMMER_MEMBER ( render_object, std::shared_ptr<class shader>, render_shader );
+        SHIMMER_MEMBER (
+            render_object,
+            std::shared_ptr<class model>,
+            render_model );
+
+        SHIMMER_MEMBER (
+            render_object,
+            std::shared_ptr<class shader>,
+            render_shader );
 };
 }
 

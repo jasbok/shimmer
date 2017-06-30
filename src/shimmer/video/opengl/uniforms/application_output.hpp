@@ -9,11 +9,14 @@ namespace shimmer
 class application_output : public uniform_output
 {
 public:
-        application_output(GLint location, GLuint texture);
-        virtual ~application_output();
-        void process() override;
+    application_output ( GLint location, GLuint texture );
+
+    virtual ~application_output() {}
+
+    void process() override;
+
 private:
-        GLuint _texture;
+    GLuint _texture;
 };
 }
 

@@ -12,8 +12,9 @@ class fbo
 {
 public:
 private:
-        typedef std::vector<std::shared_ptr<shimmer::texture>> texture_vec;
-        SHIMMER_MEMBER(fbo, texture_vec, colour_attachments);
+    typedef std::vector<std::shared_ptr<shimmer::texture>> texture_vec;
+
+    SHIMMER_MEMBER ( fbo, texture_vec, colour_attachments );
 };
 }
 

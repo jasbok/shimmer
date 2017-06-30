@@ -17,15 +17,28 @@ namespace shimmer
 class resource_manager
 {
 public:
-        virtual ~resource_manager() {}
+    virtual ~resource_manager() {}
 
-        virtual std::shared_ptr<shimmer::fbo> get ( const std::shared_ptr<shimmer::fbo>& fbo ) = 0;
-        virtual std::shared_ptr<shimmer::font> get ( const std::shared_ptr<shimmer::font>& font ) = 0;
-        virtual std::shared_ptr<shimmer::material> get ( const std::shared_ptr<shimmer::material>& material ) = 0;
-        virtual std::shared_ptr<shimmer::mesh> get ( const std::shared_ptr<shimmer::mesh>& mesh ) = 0;
-        virtual std::shared_ptr<shimmer::model> get ( const std::shared_ptr<shimmer::model>& model ) = 0;
-        virtual std::shared_ptr<shimmer::shader> get ( const std::shared_ptr<shimmer::shader>& shader ) = 0;
-        virtual std::shared_ptr<shimmer::texture> get ( const std::shared_ptr<shimmer::texture>& texture ) = 0;
+    virtual std::shared_ptr<shimmer::fbo>
+    get ( const std::shared_ptr<shimmer::fbo>& fbo ) = 0;
+
+    virtual std::shared_ptr<shimmer::font>
+    get ( const std::shared_ptr<shimmer::font>& font ) = 0;
+
+    virtual std::shared_ptr<shimmer::material>
+    get ( const std::shared_ptr<shimmer::material>& material ) = 0;
+
+    virtual std::shared_ptr<shimmer::mesh>
+    get ( const std::shared_ptr<shimmer::mesh>& mesh ) = 0;
+
+    virtual std::shared_ptr<shimmer::model>
+    get ( const std::shared_ptr<shimmer::model>& model ) = 0;
+
+    virtual std::shared_ptr<shimmer::shader>
+    get ( const std::shared_ptr<shimmer::shader>& shader ) = 0;
+
+    virtual std::shared_ptr<shimmer::texture>
+    get ( const std::shared_ptr<shimmer::texture>& texture ) = 0;
 };
 }
 

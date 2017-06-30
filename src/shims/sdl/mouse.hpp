@@ -3,9 +3,17 @@
 
 #include "shim.hpp"
 
-SHIM ( Uint8, SDL_GetMouseState, int* x, int* y );
-SHIM ( Uint8, SDL_GetRelativeMouseState, int* x, int* y );
-SHIM ( void, SDL_WarpMouse, Uint16 x, Uint16 y );
+SHIM ( Uint8, SDL_GetMouseState,
+       int* x,
+       int* y );
+
+SHIM ( Uint8, SDL_GetRelativeMouseState,
+       int* x,
+       int* y );
+
+SHIM ( void, SDL_WarpMouse,
+       Uint16 x,
+       Uint16 y );
 
 namespace shims_sdl
 {

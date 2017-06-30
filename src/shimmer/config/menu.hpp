@@ -14,18 +14,24 @@ namespace shimmer
 class menu
 {
 public:
+    menu ( const std::shared_ptr<event_system> event_system );
 
-        menu(const std::shared_ptr<event_system> event_system);
-        virtual ~menu();
+    virtual ~menu();
 
-        void build_from ( const shimmer::config& conf );
+    void build_from ( const shimmer::config& conf );
+
 private:
-        typedef std::map<std::string, menu_item> item_map;
-        typedef std::map<std::string, item_map> menu_map;
-        menu_map _data;
-        item_map::iterator _curr_item;
-        item_map::iterator _curr_menu;
-        std::shared_ptr<event_system> _event_system;
+    typedef std::map<std::string, menu_item> item_map;
+
+    typedef std::map<std::string, item_map> menu_map;
+
+    menu_map _data;
+
+    item_map::iterator _curr_item;
+
+    item_map::iterator _curr_menu;
+
+    std::shared_ptr<event_system> _event_system;
 };
 }
 

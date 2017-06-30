@@ -8,10 +8,11 @@ namespace shimmer
 class ticks_output : public uniform_output
 {
 public:
-        ticks_output(GLint location);
-        virtual ~ticks_output();
-        void process() override;
-private:
+    ticks_output ( GLint location );
+
+    virtual ~ticks_output() {}
+
+    void process() override;
 };
 }
 

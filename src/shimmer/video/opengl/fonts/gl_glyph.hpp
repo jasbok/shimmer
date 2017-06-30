@@ -10,10 +10,10 @@ namespace shimmer
 class gl_glyph
 {
 private:
-        SHIMMER_MEMBER ( gl_glyph, GLint, texture );
-        SHIMMER_MEMBER ( gl_glyph, coordinates<GLint>, bearing );
-        SHIMMER_MEMBER ( gl_glyph, dimensions<GLuint>, dims );
-        SHIMMER_MEMBER ( gl_glyph, GLint, advance );
+    SHIMMER_MEMBER ( gl_glyph, GLint, texture );
+    SHIMMER_MEMBER ( gl_glyph, coordinates<GLint>, bearing );
+    SHIMMER_MEMBER ( gl_glyph, dimensions<GLuint>, dims );
+    SHIMMER_MEMBER ( gl_glyph, GLint, advance );
 };
 }
 

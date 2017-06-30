@@ -8,5 +8,5 @@ std::string shimmer::freetype_string_from ( FT_Error code )
 #define FT_ERRORDEF( e, v, s )  case e: return s;
 #define FT_ERROR_END_LIST       }
 #include FT_ERRORS_H
-        return "unknown";
+    return "unknown";
 }

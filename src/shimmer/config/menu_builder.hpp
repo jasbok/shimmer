@@ -12,17 +12,22 @@ namespace shimmer
 class menu_builder
 {
 public:
-        typedef std::map<std::string, menu_item> shimmer_menu;
-        typedef std::map<std::string, shimmer_menu> shimmer_menu_system;
+    typedef std::map<std::string, menu_item> shimmer_menu;
 
-        menu_builder(const std::shared_ptr<event_system>& event_system);
-        shimmer_menu_system build ( const config& conf );
-        virtual ~menu_builder();
+    typedef std::map<std::string, shimmer_menu> shimmer_menu_system;
 
-        static std::string format_title(const std::string& str);
+    menu_builder ( const std::shared_ptr<event_system>& event_system );
+
+    shimmer_menu_system build ( const config& conf );
+
+    virtual ~menu_builder();
+
+    static std::string format_title ( const std::string& str );
+
 private:
-        std::shared_ptr<event_system> _event_system;
-        shimmer_menu_system _generate_menu_items(const config& conf);
+    std::shared_ptr<event_system> _event_system;
+
+    shimmer_menu_system _generate_menu_items ( const config& conf );
 };
 }
 

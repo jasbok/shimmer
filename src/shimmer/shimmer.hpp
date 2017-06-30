@@ -12,18 +12,21 @@ namespace shimmer
 class shimmer
 {
 public:
-        shimmer();
-        virtual ~shimmer();
+    shimmer();
+    virtual ~shimmer();
 
-        class keyboard* keyboard();
-        class mouse* mouse();
-        class video* video();
+    class keyboard* keyboard();
+
+    class mouse* mouse();
+
+    class video* video();
+
 private:
-        std::shared_ptr<config> _config;
-        std::shared_ptr<event_system> _event_system;
-        class keyboard _keyboard;
-        class mouse _mouse;
-        class video _video;
+    std::shared_ptr<config> _config;
+    std::shared_ptr<event_system> _event_system;
+    class keyboard _keyboard;
+    class mouse _mouse;
+    class video _video;
 };
 }
 

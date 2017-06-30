@@ -13,14 +13,16 @@ namespace shimmer
 class material
 {
 public:
-	virtual ~material() {}
+    virtual ~material() {}
 
-	virtual void use() {};
+    virtual void use() {};
 
 private:
-	typedef std::vector<std::shared_ptr<shimmer::sampler>> sampler_vec;
-	SHIMMER_MEMBER ( material, std::shared_ptr<shimmer::shader>, shader );
-	SHIMMER_MEMBER ( material, sampler_vec, samplers );
+    typedef std::vector<std::shared_ptr<shimmer::sampler>> sampler_vec;
+
+    SHIMMER_MEMBER ( material, std::shared_ptr<shimmer::shader>, shader );
+
+    SHIMMER_MEMBER ( material, sampler_vec, samplers );
 };
 }
 

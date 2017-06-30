@@ -9,10 +9,12 @@ namespace shimmer
 class uniform_output
 {
 public:
-        virtual void process() = 0;
-        virtual ~uniform_output() {};
+    virtual void process() = 0;
+
+    virtual ~uniform_output() {};
+
 private:
-        SHIMMER_MEMBER(uniform_output, GLint, location);
+    SHIMMER_MEMBER ( uniform_output, GLint, location );
 };
 }
 

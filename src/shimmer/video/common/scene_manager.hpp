@@ -12,13 +12,22 @@ namespace shimmer
 class scene_manager
 {
 public:
-        scene_manager() {}
-        virtual ~scene_manager() {}
+    scene_manager() {}
+
+    virtual ~scene_manager() {}
+
 private:
-        typedef std::unordered_map<std::string, std::shared_ptr<shimmer::scene>> scene_map;
-        typedef std::shared_ptr<shimmer::resource_manager> resource_manager_ptr;
-        SHIMMER_MEMBER ( scene_manager, scene_map, scenes );
-        SHIMMER_MEMBER ( scene_manager, resource_manager_ptr, resource_manager );
+    typedef std::unordered_map<std::string, std::shared_ptr<shimmer::scene>>
+            scene_map;
+
+    typedef std::shared_ptr<shimmer::resource_manager> resource_manager_ptr;
+
+    SHIMMER_MEMBER ( scene_manager, scene_map, scenes );
+
+    SHIMMER_MEMBER (
+        scene_manager,
+        resource_manager_ptr,
+        resource_manager );
 };
 }
 

@@ -1,8 +1,10 @@
 #include "formats.hpp"
 
-GLenum shimmer::gl_formats::pixel_format_from(shimmer::pixel_format format)
+namespace shimmer{
+GLenum gl_formats::pixel_format_from(pixel_format format)
 {
         GLenum pixel_format = GL_BGRA;
+
         switch ( format ) {
         case pixel_format::RGB:
                 pixel_format = GL_RGB;
@@ -16,12 +18,14 @@ GLenum shimmer::gl_formats::pixel_format_from(shimmer::pixel_format format)
         default:
                 break;
         }
+
         return pixel_format;
 }
 
-GLenum shimmer::gl_formats::pixel_type_from(shimmer::pixel_type type)
+GLenum gl_formats::pixel_type_from(pixel_type type)
 {
         GLenum pixel_type = GL_UNSIGNED_BYTE;
+
         switch ( type ) {
         case pixel_type::UNSIGNED_SHORT_5_6_5:
                 pixel_type = GL_UNSIGNED_SHORT_5_6_5;
@@ -32,6 +36,7 @@ GLenum shimmer::gl_formats::pixel_type_from(shimmer::pixel_type type)
         default:
                 break;
         }
+
         return pixel_type;
 }
-
+}

@@ -10,10 +10,11 @@ namespace shimmer
 class mesh
 {
 public:
-        mesh() {}
-        virtual ~mesh() {}
+    mesh() {}
+
+    virtual ~mesh() {}
 private:
-        SHIMMER_MEMBER ( mesh, std::vector<std::vector<glm::vec3>>, polygons );
+    SHIMMER_MEMBER ( mesh, std::vector<std::vector<glm::vec3>>, polygons );
 };
 }
 

@@ -5,10 +5,15 @@
 #include "../shim_macros.h"
 #include <SDL.h>
 
-extern class::shimmer::shimmer *shimmer_;
+extern class::shimmer::shimmer* shimmer_;
 
-SHIM ( int, SDL_Init, Uint32 flags );
-SHIM ( void, SDL_Quit, void );
-SHIM ( SDL_GrabMode, SDL_WM_GrabInput, SDL_GrabMode mode );
+SHIM ( int, SDL_Init,
+       Uint32 flags );
+
+SHIM ( void, SDL_Quit,
+       void );
+
+SHIM ( SDL_GrabMode, SDL_WM_GrabInput,
+       SDL_GrabMode mode );
 
 #endif

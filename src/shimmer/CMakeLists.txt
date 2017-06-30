@@ -3,7 +3,6 @@ add_subdirectory(catch)
 set(SRCS
     "common/event_system.cpp"
     "common/file_helpers.cpp"
-    "common/file_utils.cpp"
     "common/regex_helpers.cpp"
     "config/config.cpp"
     "config/menu_builder.cpp"
